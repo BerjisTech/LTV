@@ -1,0 +1,68 @@
+/**
+ *
+ * Apply Here your Custom CSS
+ *
+*/
+
+.mainFlex {
+    display       : flex;
+    flex-direction: row;
+    font-size     : medium;
+    width         : 100vw;
+    height        : 100vh;
+    overflow-y    : hidden;
+    overflow-x    : hidden;
+}
+
+.leftPanel {
+    width       : 350px;
+    border-right: 1px solid #c0c0c0;
+    height      : 100vh;
+    overflow-y  : auto;
+}
+
+.appPane {
+    display        : flex;
+    flex-direction : row;
+    align-items    : center;
+    justify-content: flex-start;
+    margin-top     : 10px;
+    padding-bottom : 10px;
+    border-bottom  : 1px solid #c0c0c0;
+}
+
+.appPane img {
+    width        : 50px;
+    border-radius: 7px;
+    margin       : 10px;
+}
+
+.appPane div {
+    display       : flex;
+    flex-direction: column;
+    flex-grow     : 4;
+}
+
+.appPane div span:first-of-type {
+    font-weight: 600;
+    color      : #555555;
+}
+
+.appPane .app_link {
+    width           : 90px;
+    height          : 40px;
+    text-align      : center;
+    color           : #ffffff;
+    background-color: #21D1B1;
+    border-radius   : 4px;
+    margin-left     : 10px;
+    margin-right    : 10px;
+    display         : flex;
+    align-items     : center;
+    padding         : 10px;
+
+}
+
+.mainPanel {
+    flex-grow: 4;
+}

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Slade extends CI_Controller
+class Ltv extends CI_Controller
 {
     public function __construct()
     {
@@ -63,6 +63,19 @@ class Slade extends CI_Controller
         $data['page_name'] = 'app';
         $data['page_title'] = $app->app_name;
         $this->load->view('index', $data);
+    }
+
+    public function csv()
+    {
+        header('Content-Type: application/json');
+        $file = fopen(base_url('data/ads_keywords.csv'), 'r');
+        $data = array();
+        while (($line = fgetcsv($file)) !== FALSE) :
+            $data[] = $line;
+        endwhile;
+
+        fclose($file);
+        print_r(json_encode($data));
     }
 
     public function transactions($app_id)

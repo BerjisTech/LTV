@@ -16,7 +16,7 @@ include('separate_data.php');
             </div>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div class="tab-pane active" id="line-chart">
+                    <div class="tab-pane active" id="revenue-chart">
                         <div id="revenue_chart" class="morrischart" style="height: 300px"></div>
                     </div>
                 </div>
@@ -27,38 +27,25 @@ include('separate_data.php');
         <div class="panel panel-primary" id="charts_env">
             <div class="panel-heading">
                 <div class="panel-title">
-                    Installs
+
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-
+                        <li class="active"><a href="#installs-chart" data-toggle="tab">Installs</a></li>
+                        <li class=""><a href="#uninstalls-chart" data-toggle="tab">Uninstalls</a></li>
+                        <li class=""><a href="#user-chart" data-toggle="tab">User Growth</a></li>
                     </ul>
                 </div>
             </div>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div class="tab-pane active" id="area-chart">
+                    <div class="tab-pane active" id="installs-chart">
                         <div id="installs_chart" class="morrischart" style="height: 300px"></div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="panel panel-primary" id="charts_env">
-            <div class="panel-heading">
-                <div class="panel-title">
-                    User Growth
-                </div>
-                <div class="panel-options">
-                    <ul class="nav nav-tabs">
-
-                    </ul>
-                </div>
-            </div>
-            <div class="panel-body">
-                <div class="tab-content">
-                    <div class="tab-pane active" id="area-chart">
+                    <div class="tab-pane" id="uninstalls-chart">
+                        <div id="uninstalls_chart" class="morrischart" style="height: 300px"></div>
+                    </div>
+                    <div class="tab-pane " id="user-chart">
                         <div id="users_chart" class="morrischart" style="height: 300px"></div>
                     </div>
                 </div>

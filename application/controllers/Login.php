@@ -1,23 +1,24 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Login extends CI_Controller {
+class Login extends CI_Controller
+{
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see https://codeigniter.com/user_guide/general/urls.html
-	 */
+    /**
+     * Index Page for this controller.
+     *
+     * Maps to the following URL
+     * 		http://example.com/index.php/welcome
+     *	- or -
+     * 		http://example.com/index.php/welcome/index
+     *	- or -
+     * Since this controller is set as the default controller in
+     * config/routes.php, it's displayed at http://example.com/
+     *
+     * So any other public methods not prefixed with an underscore will
+     * map to /index.php/welcome/<method_name>
+     * @see https://codeigniter.com/user_guide/general/urls.html
+     */
     public function __construct()
     {
         parent::__construct();
@@ -27,18 +28,20 @@ class Login extends CI_Controller {
         $this->output->set_header('Pragma: no-cache');
         $this->output->set_header("Expires: Mon, 26 Jul 2020 05:00:00 GMT");
         date_default_timezone_set("Africa/Nairobi");
-        
-        if(isset($_SESSION['user_id'])){
-            header("Location: ".base_url());
+
+        if (isset($_SESSION['user_id'])) {
+            header("Location: " . base_url());
         }
     }
 
-	public function index(){
-		$this->load->view('auth/login');
+    public function index()
+    {
+        $this->load->view('auth/login');
     }
-    
+
     //Ajax login function 
-    function signin() {
+    function signin()
+    {
         $response = array();
 
         //Recieving post input of email, password from ajax request
@@ -58,7 +61,8 @@ class Login extends CI_Controller {
     }
 
     //Validating login from ajax request
-    function validate_login($username = '', $password = '') {
+    function validate_login($username = '', $password = '')
+    {
         $credential = array('username' => $username, 'password' => $password);
 
 
@@ -73,7 +77,7 @@ class Login extends CI_Controller {
             $this->session->set_userdata('login_type', 'admin');
             return 'success';
         }
-        
+
         return 'invalid';
     }
 }

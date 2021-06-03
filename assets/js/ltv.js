@@ -8,7 +8,7 @@ area_chart_demo.parent().show();
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 var weekdays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-const drawLines = (line_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
+const drawLine = (line_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
     $('#' + line_chart_pane).parent().show()
     var line_chart = Morris.Line({
         element: line_chart_pane,
@@ -35,7 +35,7 @@ const drawLines = (line_chart_pane, graph_data, graph_keys, graph_labels, graph_
 
 
 // Area Charts
-const drawAreas = (area_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
+const drawArea = (area_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
     $('#' + area_chart_pane).parent().show()
     var area_chart = Morris.Area({
         element: area_chart_pane,
@@ -58,6 +58,18 @@ const drawAreas = (area_chart_pane, graph_data, graph_keys, graph_labels, graph_
         redraw: true
     });
     $('#' + area_chart_pane).parent().attr('style', 'width: 100% !important;');
+}
+
+const drawBar = (bar_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
+    Morris.Bar({
+        element: bar_chart_pane,
+        axes: true,
+        data: graph_data,
+        xkey: 'y',
+        ykeys: graph_keys,
+        labels: graph_labels,
+        barColors: graph_colors
+    });
 }
 
 function getRandomInt(min, max) {

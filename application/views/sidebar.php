@@ -42,6 +42,10 @@
 					<?php endforeach; ?>
 				</ul>
 			</li>
+			<li class="<?php if ($page_name == 'reviews') {
+							echo 'active';
+						} ?>"> <a href="<?php echo base_url('reviews'); ?>"><i class="entypo-gauge"></i><span class="title">Reviews</span></a>
+			</li>
 			<li class="has-sub <?php if ($page_name == 'fund') {
 									echo 'active';
 								} ?>"> <a href="<?php echo base_url(); ?>payroll">

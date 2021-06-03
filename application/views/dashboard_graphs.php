@@ -139,12 +139,22 @@
 			barColor: '#00b19d'
 		});
 
-		$(".monthly-sales").sparkline([1, 12, 23, 12, 34, 34, 56, 35, 46, 79, 45, 78, 34, 90, 87, 76], {
+		$(".monthly-sales").sparkline([
+
+			<?php
+			$user_growth = $this->db->select('*, date_format(from_unixtime(install_date), "%Y %m %d") as year, date_format(from_unixtime(install_date), "%m") as month, date_format(from_unixtime(install_date), "%d") as day')->where('install_date >=', strtotime('05-05-2021'))->group_by('day')->order_by('year', 'asc')->get('installs')->result_array();
+			foreach ($user_growth as $fetch) {
+				$total = (($fetch['new'] + $fetch['reopened']) - ($fetch['uninstalled'] + $fetch['closed']));
+				echo $total . ',';
+			}
+			?>
+
+		], {
 			type: 'bar',
 			barColor: '#485671',
-			height: '80px',
-			barWidth: 10,
-			barSpacing: 2
+			height: '250px',
+			barWidth: 20,
+			barSpacing: 3
 		});
 
 		// JVector Maps

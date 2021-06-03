@@ -31,21 +31,21 @@ include('separate_data.php');
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#installs-chart" data-toggle="tab">Installs</a></li>
+                        <li class=""><a href="#installs-chart" data-toggle="tab">Installs</a></li>
                         <li class=""><a href="#uninstalls-chart" data-toggle="tab">Uninstalls</a></li>
-                        <li class=""><a href="#user-chart" data-toggle="tab">User Growth</a></li>
+                        <li class="active"><a href="#user-chart" data-toggle="tab">User Growth</a></li>
                     </ul>
                 </div>
             </div>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div class="tab-pane active" id="installs-chart">
+                    <div class="tab-pane" id="installs-chart">
                         <div id="installs_chart" class="morrischart" style="height: 300px"></div>
                     </div>
                     <div class="tab-pane" id="uninstalls-chart">
                         <div id="uninstalls_chart" class="morrischart" style="height: 300px"></div>
                     </div>
-                    <div class="tab-pane " id="user-chart">
+                    <div class="tab-pane active" id="user-chart">
                         <div id="users_chart" class="morrischart" style="height: 300px"></div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Ltv extends CI_Controller
+class Slade extends CI_Controller
 {
     public function __construct()
     {
@@ -63,6 +63,23 @@ class Ltv extends CI_Controller
         $data['page_name'] = 'app';
         $data['page_title'] = $app->app_name;
         $this->load->view('index', $data);
+    }
+
+    public function reviews()
+    {
+        $data['page_name'] = 'reviews';
+        $data['page_title'] = 'Add Reviews';
+        $this->load->view('index', $data);
+    }
+
+    public function recordReviews()
+    {
+        if ($this->db->where('review_by', $this->input->post('review_by'))->get('reviews')->num_rows() > 0) {
+            die('A review by ' . $this->input->post('review_by') . ' already exists');
+        }
+        $_POST['review_date'] = strtotime($this->input->post('review_date'));
+        $data = $this->security->xss_clean($this->input->post());
+        $this->db->insert('reviews', $data);
     }
 
     public function csv()

@@ -105,13 +105,17 @@
 
     let revenue_keys = ['a']
     let revenue_labels = ['Revenue']
-    let revenue_colors = ['#21D1B1']
+    let revenue_colors = ['#1D47F1']
+
+    let user_keys = ['a']
+    let user_labels = ['User Growth']
+    let user_colors = ['#C90100']
 
     let install_labels = ['Installs']
     let install_colors = ['#E7C00B']
 
     let uninstall_labels = ['Uninstalls']
-    let uninstall_colors = ['#C90100']
+    let uninstall_colors = ['#D05421']
 
     let reviews_keys = ['a', 'b', 'c', 'd', 'e']
     let reviews_labels = ['5 star', '4 star', '3 star', '2 star', '1 star']
@@ -122,11 +126,11 @@
 
 
     jQuery(document).ready(function($) {
-        drawLines('revenue_chart', revenue_data, revenue_keys, revenue_labels, revenue_colors)
-        drawLines('users_chart', user_data, revenue_keys, revenue_labels, revenue_colors)
-        drawLines('installs_chart', installs_data, revenue_keys, install_labels, install_colors)
-        drawLines('uninstalls_chart', uninstalls_data, revenue_keys, uninstall_labels, uninstall_colors)
-        drawAreas('reviews_chart', reviews_data, reviews_keys, reviews_labels, reviews_colors)
+        drawLine('revenue_chart', revenue_data, revenue_keys, revenue_labels, revenue_colors)
+        drawBar('users_chart', user_data, user_keys, user_labels, user_colors)
+        drawLine('installs_chart', installs_data, revenue_keys, install_labels, install_colors)
+        drawLine('uninstalls_chart', uninstalls_data, revenue_keys, uninstall_labels, uninstall_colors)
+        drawArea('reviews_chart', reviews_data, reviews_keys, reviews_labels, reviews_colors)
     })
 </script>
 

@@ -70,6 +70,24 @@
         <?php endfor; ?>
     ];
 
+    let churn_data = [<?php for ($m = 30; $m > 0; $m--) :
+                            $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
+                            $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
+                y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
+                a: <?php
+                            $where = "`app_id` = $app_id AND `install_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
+                            $installs = $this->db->where($where)->get('installs')->row();
+                            $total = ((($installs->uninstalled + $installs->closed) / ($installs->new + $installs->reopened)) * 100);
+                            if ($total == '') {
+                                echo '0';
+                            } else {
+                                echo $total;
+                            }
+                    ?>
+            },
+        <?php endfor; ?>
+    ];
+
     let reviews_data = [<?php for ($m = 30; $m > 0; $m--) :
                             $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
                             $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
@@ -117,6 +135,9 @@
     let uninstall_labels = ['Uninstalls']
     let uninstall_colors = ['#D05421']
 
+    let churn_labels = ['Churn (%)']
+    let churn_colors = ['#71DFCC']
+
     let reviews_keys = ['a', 'b', 'c', 'd', 'e']
     let reviews_labels = ['5 star', '4 star', '3 star', '2 star', '1 star']
     let reviews_colors = ['#D05421', '#21D1B1', '#C90100', '#E7C00B', '#1E1E1E']
@@ -130,6 +151,7 @@
         drawBar('users_chart', user_data, user_keys, user_labels, user_colors)
         drawLine('installs_chart', installs_data, revenue_keys, install_labels, install_colors)
         drawLine('uninstalls_chart', uninstalls_data, revenue_keys, uninstall_labels, uninstall_colors)
+        drawLine('churn_chart', churn_data, revenue_keys, uninstall_labels, uninstall_colors)
         drawArea('reviews_chart', reviews_data, reviews_keys, reviews_labels, reviews_colors)
     })
 </script>

@@ -85,7 +85,7 @@ class Slade extends CI_Controller
     public function csv()
     {
         header('Content-Type: application/json');
-        $file = fopen(base_url('data/ads_keywords.csv'), 'r');
+        $file = fopen(base_url('data/history.csv'), 'r');
         $data = array();
         while (($line = fgetcsv($file)) !== FALSE) :
             $data[] = $line;
@@ -106,13 +106,12 @@ class Slade extends CI_Controller
         $response = json_decode($this->install_uninstall($app_code, $time_start, $time_end), TRUE);
         header('Content-Type: application/json');
         $data = json_encode($response);
-        echo $data;
+        // echo $data;
 
-        // if (!isset($data['errors'])) {
-        //     $events = $response['data']['app']['events']['edges'];
-        //     echo json_encode($events);
-        //     $data = array();
-        // }
+        if (!isset($data['errors'])) {
+            $events = $response['data']['app']['events']['edges'];
+            echo json_encode($events);
+        }
 
     }
 

@@ -14,7 +14,7 @@
 		</header>
 		<div class="sidebar-user-info">
 			<div class="sui-normal"> <a href="#" class="user-link"> <img src="<?php echo base_url(); ?>assets/images/favicon.ico" width="55" alt="" class="img-circle" />
-					<span>Welcome,</span> <strong>Melisa</strong> </a> </div>
+					<span>Welcome,</span> <strong>Melissa</strong> </a> </div>
 			<div class="sui-hover inline-links animate-in"> <a href="#"> <i class="entypo-pencil"></i>
 					New Page
 				</a> <a href="#"> <i class="entypo-mail"></i>
@@ -45,6 +45,10 @@
 			<li class="<?php if ($page_name == 'reviews') {
 							echo 'active';
 						} ?>"> <a href="<?php echo base_url('reviews'); ?>"><i class="entypo-gauge"></i><span class="title">Reviews</span></a>
+			</li>
+			<li class="<?php if ($page_name == 'revenue') {
+							echo 'active';
+						} ?>"> <a href="<?php echo base_url('revenue'); ?>"><i class="entypo-gauge"></i><span class="title">Revenue</span></a>
 			</li>
 			<li class="has-sub <?php if ($page_name == 'fund') {
 									echo 'active';

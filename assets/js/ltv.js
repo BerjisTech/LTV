@@ -33,6 +33,35 @@ const drawLine = (line_chart_pane, graph_data, graph_keys, graph_labels, graph_c
     $('#' + line_chart_pane).parent().attr('style', 'width: 100% !important;');
 }
 
+const drawPercentLine = (line_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
+    $('#' + line_chart_pane).parent().show()
+    var line_chart = Morris.Line({
+        element: line_chart_pane,
+        data: graph_data,
+        xkey: 'y',
+        ykeys: graph_keys,
+        labels: graph_labels,
+        lineColors: graph_colors,
+        xLabelFormat: function (d) {
+            return d.getDate() + ' ' + months[d.getMonth()];
+        },
+        dateFormat: function (x) {
+            let shit = new Date(x);
+            var douche = shit.getDate() + ' ' + months[shit.getMonth()];
+            return douche;
+        },
+        resize: true,
+        smooth: true,
+        pointSize: 0,
+        redraw: true,
+        formatter: function (value) { return (value) + '%' },
+        hoverCallback: function (value) {
+            return `Churn ${value} %`;
+        }
+    });
+    $('#' + line_chart_pane).parent().attr('style', 'width: 100% !important;');
+}
+
 
 // Area Charts
 const drawArea = (area_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {

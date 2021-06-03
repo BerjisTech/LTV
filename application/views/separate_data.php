@@ -77,12 +77,15 @@
                 a: <?php
                             $where = "`app_id` = $app_id AND `install_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
                             $installs = $this->db->where($where)->get('installs')->row();
-                            $total = ((($installs->uninstalled + $installs->closed) / ($installs->new + $installs->reopened)) * 100);
-                            if ($total == '') {
-                                echo '0';
+                            $lost = ($installs->uninstalled + $installs->closed);
+                            $gained = ($installs->new + $installs->reopened);
+
+                            if ($lost == '' || $lost == 0 || $gained == '' || $gained == 0) {
+                                $total = 0;
                             } else {
-                                echo $total;
+                                $total = (($lost / $gained) * 100);
                             }
+                            echo number_format($total);
                     ?>
             },
         <?php endfor; ?>
@@ -151,7 +154,7 @@
         drawBar('users_chart', user_data, user_keys, user_labels, user_colors)
         drawLine('installs_chart', installs_data, revenue_keys, install_labels, install_colors)
         drawLine('uninstalls_chart', uninstalls_data, revenue_keys, uninstall_labels, uninstall_colors)
-        drawLine('churn_chart', churn_data, revenue_keys, uninstall_labels, uninstall_colors)
+        drawPercentLine('churn_chart', churn_data, revenue_keys, churn_labels, churn_colors)
         drawArea('reviews_chart', reviews_data, reviews_keys, reviews_labels, reviews_colors)
     })
 </script>

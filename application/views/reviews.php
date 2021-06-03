@@ -10,35 +10,22 @@ include('review_graphs.php');
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#pc_chart" data-toggle="tab">PC</a></li>
-                        <li class=""><a href="#icu_chart" data-toggle="tab">ICU</a></li>
-                        <li class=""><a href="#pon_chart" data-toggle="tab">PON</a></li>
-                        <li class=""><a href="#bdn_chart" data-toggle="tab">BDN</a></li>
-                        <li class=""><a href="#wpn_chart" data-toggle="tab">WPN</a></li>
-                        <li class=""><a href="#tfx_chart" data-toggle="tab">TFX</a></li>
+                        <li class="active"><a href="#all_chart" data-toggle="tab">All Reviews</a></li>
+                        <li class=""><a href="#edit_chart" data-toggle="tab">Edit Reviews</a></li>
                     </ul>
                 </div>
             </div>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div class="tab-pane active" id="pc_chart">
+                    <div class="tab-pane active" id="all_chart">
                         <div id="pc_reviews_chart" class="morrischart" style="height: 300px"></div>
-                    </div>
-                    <div class="tab-pane" id="icu_chart">
                         <div id="icu_reviews_chart" class="morrischart" style="height: 300px"></div>
-                    </div>
-                    <div class="tab-pane" id="pon_chart">
                         <div id="pon_reviews_chart" class="morrischart" style="height: 300px"></div>
-                    </div>
-                    <div class="tab-pane" id="bdn_chart">
                         <div id="bdn_reviews_chart" class="morrischart" style="height: 300px"></div>
-                    </div>
-                    <div class="tab-pane" id="wpn_chart">
                         <div id="wpn_reviews_chart" class="morrischart" style="height: 300px"></div>
-                    </div>
-                    <div class="tab-pane" id="tfx_chart">
                         <div id="tfx_reviews_chart" class="morrischart" style="height: 300px"></div>
                     </div>
+                    <div class="tab-pane active" id="edit_chart"></div>
                 </div>
             </div>
         </div>
@@ -61,7 +48,7 @@ include('review_graphs.php');
             <input type="date" class="form-control" name="review_date" />
         </div>
         <div class="input-group col-sm-12">
-            <label>Credits To</label>
+            <label>Requested By</label>
             <input type="text" class="form-control" name="credited_to" />
         </div>
         <div class="input-group col-sm-12">

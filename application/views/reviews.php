@@ -10,39 +10,38 @@ include('review_graphs.php');
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#all_chart" data-toggle="tab">All Reviews</a></li>
+                        <?php foreach ($all_apps as $key => $graph_dom) : ?>
+                            <li class="<?php if ($key == 0) : ?>active<?php endif; ?>"><a href="#<?php echo $graph_dom['app_code']; ?>_chart" data-toggle="tab"><?php echo $graph_dom['app_code']; ?></a></li>
+                        <?php endforeach; ?>
                         <li class=""><a href="#edit_chart" data-toggle="tab">Edit Reviews</a></li>
                     </ul>
                 </div>
             </div>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div class="tab-pane active" id="all_chart">
-                        <div id="pc_reviews_chart" class="morrischart" style="height: 300px"></div>
+                    <?php foreach ($all_apps as $key => $graph_dom) : ?>
+                        <div class="tab-pane <?php if ($key == 0) : ?>active<?php endif; ?>" id="<?php echo $graph_dom['app_code']; ?>_chart">
+                            <div id="<?php echo $graph_dom['app_code']; ?>_reviews_chart" class="morrischart" style="height: 300px"></div>
+                        </div>
+                    <?php endforeach; ?>
+                    <!-- <div id="pc_reviews_chart" class="morrischart" style="height: 300px"></div>
                         <div id="icu_reviews_chart" class="morrischart" style="height: 300px"></div>
                         <div id="pon_reviews_chart" class="morrischart" style="height: 300px"></div>
                         <div id="bdn_reviews_chart" class="morrischart" style="height: 300px"></div>
                         <div id="wpn_reviews_chart" class="morrischart" style="height: 300px"></div>
-                        <div id="tfx_reviews_chart" class="morrischart" style="height: 300px"></div>
-                    </div>
+                        <div id="tfx_reviews_chart" class="morrischart" style="height: 300px"></div> -->
                     <div class="tab-pane active" id="edit_chart"></div>
                 </div>
             </div>
         </div>
     </div>
     <form action="recordReviews" method="POST" class="review_form col-sm-4">
+        <h3>Add Reviews Data for <?php echo $app->app_name; ?></h3>
         <div class="input-group col-sm-12">
             <label>Rating</label>
             <input type="number" min="1" max="5" class="form-control" name="rating" />
         </div>
-        <div class="input-group col-sm-12">
-            <label>Rating</label>
-            <select type="number" min="1" max="8" class="form-control" name="app_id">
-                <?php foreach ($this->db->get('apps')->result_array() as $app) : ?>
-                    <option value="<?php echo $app['app_id']; ?>"><?php echo $app['app_name']; ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+        <input type="hidden" class="form-control" name="app_id" readonly value="<?php echo $app->app_id ?>">
         <div class="input-group col-sm-12">
             <label>Review Date</label>
             <input type="date" class="form-control" name="review_date" />
@@ -77,6 +76,8 @@ include('review_graphs.php');
                 setTimeout(() => {
                     $('.alert-success').remove()
                 }, 1000)
+                $("#<?php echo $app->app_code ?>_reviews_chart").empty();
+                drawLine('<?php echo $app->app_code ?>_reviews_chart', <?php echo $app->app_code ?>_reviews_data, reviews_keys, reviews_labels, reviews_colors)
             },
             error: (e) => {
                 $(`<div class="alert alert-danger"><strong>Oh snap!</strong> ${e} </div>`).insertBefore($('.submit_review'));

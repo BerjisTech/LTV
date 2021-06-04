@@ -10,7 +10,7 @@ include('separate_data.php');
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-
+                        <li class=""><a href="<?php echo base_url("revenue/$app_id"); ?>" target="_BLANK" style="background: #00A651; color: #ffffff;"><span class="entypo-plus"></span> Add Records</a></li>
                     </ul>
                 </div>
             </div>
@@ -35,6 +35,7 @@ include('separate_data.php');
                         <li class=""><a href="#installs-chart" data-toggle="tab">Installs</a></li>
                         <li class=""><a href="#uninstalls-chart" data-toggle="tab">Uninstalls</a></li>
                         <li class=""><a href="#churn-chart" data-toggle="tab">Churn</a></li>
+                        <li class=""><a href="<?php echo base_url("users/$app_id"); ?>" target="_BLANK" style="background: #00A651; color: #ffffff;"><span class="entypo-plus"></span> Add Records</a></li>
                     </ul>
                 </div>
             </div>
@@ -64,7 +65,7 @@ include('separate_data.php');
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-
+                        <li class=""><a href="<?php echo base_url("reviews/$app_id"); ?>" target="_BLANK" style="background: #00A651; color: #ffffff;"><span class="entypo-plus"></span> Add Records</a></li>
                     </ul>
                 </div>
             </div>
@@ -85,7 +86,7 @@ include('separate_data.php');
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-
+                        <li class=""><a href="<?php echo base_url("ad_spend/$app_id"); ?>" target="_BLANK" style="background: #00A651; color: #ffffff;"><span class="entypo-plus"></span> Add Records</a></li>
                     </ul>
                 </div>
             </div>
@@ -106,7 +107,7 @@ include('separate_data.php');
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-
+                        <li class=""><a href="<?php echo base_url("keywords/$app_id"); ?>" target="_BLANK" style="background: #00A651; color: #ffffff;"><span class="entypo-plus"></span> Add Records</a></li>
                     </ul>
                 </div>
             </div>

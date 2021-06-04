@@ -1,4 +1,7 @@
-<?php #echo $this->db->select('date_format(from_unixtime(date_joined), "%Y") as dateformat')->get('members')->row()->dateformat; 
+<?php
+#echo $this->db->select('date_format(from_unixtime(date_joined), "%Y") as dateformat')->get('members')->row()->dateformat; 
+$time_30 = strtotime('-30 days');
+$time_today = time();
 ?>
 <script type="text/javascript">
 	jQuery(document).ready(function($) {
@@ -38,7 +41,14 @@
 			spotRadius: 2,
 			drawNormalOnTop: true
 		});
-		$(".registrations").sparkline([1, 12, 23, 12, 34, 34, 56, 35, 46, 79, 45, 78, 34, 90, 87, 76], {
+		$(".fund-5").sparkline([
+			<?php
+			$fund_5_mrr = $this->db->select('sum(quaterly.value) as mrr, date_format(from_unixtime(quaterly.recorded), "%d") as day,')->where('apps.app_fund', 5)->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
+			foreach ($fund_5_mrr as $daily) {
+				echo $daily['mrr'] . ',';
+			}
+			?>
+		], {
 			type: 'line',
 			width: '100%',
 			height: '55',
@@ -53,24 +63,15 @@
 			spotRadius: 2,
 			drawNormalOnTop: true
 		});
-		$(".pie-chart").sparkline([
-			<?php echo $this->db->where('app_id', 1)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
-			<?php echo $this->db->where('app_id', 2)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
-			<?php echo $this->db->where('app_id', 3)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
-			<?php echo $this->db->where('app_id', 4)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
-			<?php echo $this->db->where('app_id', 5)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
-			<?php echo $this->db->where('app_id', 6)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
-			<?php echo $this->db->where('app_id', 7)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
-			<?php echo $this->db->where('app_id', 8)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>
-		], {
-			type: 'pie',
-			width: '95',
-			height: '95',
-			sliceColors: ['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']
-		});
 
 
-		$(".contributions").sparkline([1, 12, 23, 12, 34, 34, 56, 35, 46, 79, 45, 78, 34, 90, 87, 76], {
+		$(".fund-6").sparkline([
+			<?php
+			$fund_5_mrr = $this->db->select('sum(quaterly.value) as mrr, date_format(from_unixtime(quaterly.recorded), "%d") as day,')->where('apps.app_fund', 6)->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
+			foreach ($fund_5_mrr as $daily) {
+				echo $daily['mrr'] . ',';
+			}
+			?>], {
 			type: 'line',
 			width: '100%',
 			height: '55',
@@ -86,7 +87,13 @@
 			drawNormalOnTop: true
 		});
 
-		$(".share-capital").sparkline([1, 12, 23, 12, 34, 34, 56, 35, 46, 79, 45, 78, 34, 90, 87, 76], {
+		$(".fund-7").sparkline([
+			<?php
+			$fund_5_mrr = $this->db->select('sum(quaterly.value) as mrr, date_format(from_unixtime(quaterly.recorded), "%d") as day,')->where('apps.app_fund', 7)->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
+			foreach ($fund_5_mrr as $daily) {
+				echo $daily['mrr'] . ',';
+			}
+			?>], {
 			type: 'line',
 			width: '100%',
 			height: '55',
@@ -100,6 +107,22 @@
 			highlightLineColor: '#30487b',
 			spotRadius: 2,
 			drawNormalOnTop: true
+		});
+
+		$(".pie-chart").sparkline([
+			<?php echo $this->db->where('app_id', 1)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
+			<?php echo $this->db->where('app_id', 2)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
+			<?php echo $this->db->where('app_id', 3)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
+			<?php echo $this->db->where('app_id', 4)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
+			<?php echo $this->db->where('app_id', 5)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
+			<?php echo $this->db->where('app_id', 6)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
+			<?php echo $this->db->where('app_id', 7)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>,
+			<?php echo $this->db->where('app_id', 8)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->value; ?>
+		], {
+			type: 'pie',
+			width: '95',
+			height: '95',
+			sliceColors: ['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']
 		});
 		// Sparkline Charts
 		$('.inlinebar').sparkline('html', {

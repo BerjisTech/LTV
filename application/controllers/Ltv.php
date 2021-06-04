@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Slade extends CI_Controller
+class Ltv extends CI_Controller
 {
     public function __construct()
     {
@@ -65,10 +65,46 @@ class Slade extends CI_Controller
         $this->load->view('index', $data);
     }
 
-    public function reviews()
+    public function reviews($app_id)
     {
+        $app = $this->db->where('app_id', $app_id)->get('apps')->row();
+
+        $app_code = $app->app_code;
+
+        $data['app'] = $app;
+        $data['app_id'] = $app_id;
+        $data['all_apps'] = $this->db->get('apps')->result_array();
         $data['page_name'] = 'reviews';
         $data['page_title'] = 'Add Reviews';
+        $this->load->view('index', $data);
+    }
+
+    public function revenue($app_id)
+    {
+        $app = $this->db->where('app_id', $app_id)->get('apps')->row();
+
+        $app_code = $app->app_code;
+
+        $data['app'] = $app;
+        $data['app_id'] = $app_id;
+        $data['all_apps'] = $this->db->get('apps')->result_array();
+        $data['page_name'] = 'revenue';
+        $data['page_title'] = 'Add Reviews';
+        $this->load->view('index', $data);
+    }
+
+    public function users($app_id)
+    {
+        $app = $this->db->where('app_id', $app_id)->get('apps')->row();
+
+        $app_code = $app->app_code;
+
+        $data['app'] = $app;
+        $data['app_id'] = $app_id;
+        $data['all_apps'] = $this->db->get('apps')->result_array();
+        $data['plans'] = $this->db->get('plans')->result_array();
+        $data['page_name'] = 'users';
+        $data['page_title'] = 'Users';
         $this->load->view('index', $data);
     }
 
@@ -82,19 +118,6 @@ class Slade extends CI_Controller
         $this->db->insert('reviews', $data);
     }
 
-    public function csv()
-    {
-        header('Content-Type: application/json');
-        $file = fopen(base_url('data/history.csv'), 'r');
-        $data = array();
-        while (($line = fgetcsv($file)) !== FALSE) :
-            $data[] = $line;
-        endwhile;
-
-        fclose($file);
-        print_r(json_encode($data));
-    }
-
     public function transactions($app_id)
     {
         $app = $this->db->where('app_id', $app_id)->get('apps')->row();
@@ -103,16 +126,16 @@ class Slade extends CI_Controller
         $time_start = strtotime('-30 days');
         $time_end = time();
 
+        echo $app_code, $time_start, $time_end;
         $response = json_decode($this->install_uninstall($app_code, $time_start, $time_end), TRUE);
         header('Content-Type: application/json');
         $data = json_encode($response);
         // echo $data;
 
         if (!isset($data['errors'])) {
-            $events = $response['data']['app']['events']['edges'];
+            $events = $response;
             echo json_encode($events);
         }
-
     }
 
     private function install_uninstall($app, $time_start, $time_end)
@@ -125,29 +148,37 @@ class Slade extends CI_Controller
         $time_start = date('c', $time_start);
         $time_end = date('c', $time_end);
         $postData = '
-        {
-            app(id: "gid://partners/App/' . $app_id . '") {
-              id
-              name
-              events(
-                first: 100,
-                types: [],
-                occurredAtMin: "' . $time_start . '",
-                occurredAtMax: "' . $time_end . '"
-              ) {
-                edges {
-                  node {
-                    type
-                    occurredAt
+        query {
+            transactions(types: [APP_SUBSCRIPTION_SALE], first: 100) {
+              edges {
+                cursor
+                node {
+                  id,
+                  createdAt,
+                  ... on AppSubscriptionSale {
+                    netAmount {
+                      amount
+                    },
+                    app {
+                      name
+                    },
                     shop {
-                      id
+                      myshopifyDomain
                     }
-                    ... on RelationshipUninstalled {
-                      reason
-                      description
+                  },
+                  ... on ServiceSale {
+                    netAmount {
+                      amount
+                    },
+                    shop {
+                      myshopifyDomain
                     }
                   }
                 }
+              },
+              pageInfo {
+                hasNextPage,
+                hasPreviousPage
               }
             }
           }
@@ -180,4 +211,41 @@ class Slade extends CI_Controller
         $this->session->set_flashdata('logout_notification', 'logged_out');
         redirect(base_url() . 'login', 'refresh');
     }
+
+
+    /*public function csv($days)
+    {
+        header('Content-Type: application/json');
+        $file = fopen(base_url('data/history.csv'), 'r');
+        $data = array();
+        $rows = array();
+
+        while (($line = fgetcsv($file)) !== FALSE) :
+            $data[] = $line;
+        endwhile;
+
+        $actual_data = json_encode($data);
+        fclose($file);
+
+        $time_start = strtotime("-$days days");
+        $time_end = time();
+
+        // echo 'After ' . date('d-m-Y', $time_start) . ' Before ' . date('d-m-Y', $time_end);
+        // echo 'On ' . date('m-d-Y', $time_start) . '<br />';
+        foreach ($data as $key => $row) {
+            if ($key != 0 && $row[1] == 'Installed' && date('m-d-Y', strtotime($row[0])) == date('m-d-Y', $time_start)) {
+                $row[0] = strtotime($row[0]);
+                if ($row[3] != '') {
+                    $row[3] = strtotime($row[3]);
+                }
+
+                // $this->db->insert('icu_table', array('icu_id' => '', 'date' => $row[0], 'event' => $row[1], 'details' => $row[2], 'billing_date' => $row[3], 'shop' => $row[4], 'country' => $row[5], 'email' => $row[6], 'domain' => $row[7]));
+            }
+
+            $rows[] = $row;
+            // $rows[] = $row;
+        }
+        $data['history'] = $rows;
+        echo json_encode($rows);
+    }*/
 }

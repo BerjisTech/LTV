@@ -28,27 +28,19 @@
 							echo 'active';
 						} ?>"> <a href="<?php echo base_url(); ?>"><i class="entypo-gauge"></i><span class="title">Dashboard</span></a>
 			</li>
-			<li class="has-sub <?php if ($page_name == 'app') {
+			<li class="has-sub <?php if ($page_name == 'app' || $page_name == 'revenue' || $page_name == 'reviews' || $page_name == 'users') {
 									echo 'active';
 								} ?>"> <a href="">
 					<i class="entypo-gauge"></i><span class="title">Apps</span></a>
 				<ul>
-					<?php foreach ($this->db->get('apps')->result_array() as $app) : ?>
-						<li class="<?php if ($page_title == $app['app_name']) {
+					<?php foreach ($this->db->get('apps')->result_array() as $link_app) : ?>
+						<li class="<?php if ($page_title == $link_app['app_name']) {
 										echo 'active';
 									} ?>">
-							<a href="<?php echo base_url('app/' . $app['app_id']); ?>"><img src="<?php echo $app['app_logo']; ?>" style="width: 20px; border-radius: 5px; margin-right: 10px;" /><span class="title"><?php echo $app['app_name']; ?></span></a>
+							<a href="<?php echo base_url('app/' . $link_app['app_id']); ?>"><img src="<?php echo $link_app['app_logo']; ?>" style="width: 20px; border-radius: 5px; margin-right: 10px;" /><span class="title"><?php echo $link_app['app_name']; ?></span></a>
 						</li>
 					<?php endforeach; ?>
 				</ul>
-			</li>
-			<li class="<?php if ($page_name == 'reviews') {
-							echo 'active';
-						} ?>"> <a href="<?php echo base_url('reviews'); ?>"><i class="entypo-gauge"></i><span class="title">Reviews</span></a>
-			</li>
-			<li class="<?php if ($page_name == 'revenue') {
-							echo 'active';
-						} ?>"> <a href="<?php echo base_url('revenue'); ?>"><i class="entypo-gauge"></i><span class="title">Revenue</span></a>
 			</li>
 			<li class="has-sub <?php if ($page_name == 'fund') {
 									echo 'active';

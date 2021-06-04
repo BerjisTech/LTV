@@ -2,20 +2,20 @@
 <div class="row">
 	<div class="col-md-3 col-sm-6">
 		<div class="tile-stats tile-white stat-tile">
-			<h3>Big number here</h3>
-			<p>Total Monthly Deposits</p> <span class="contributions"></span>
+			<h3>Fund 5</h3>
+			<p><?php echo $this->db->where('app_fund', 5)->get('apps')->num_rows(); ?> App</p> <span class="fund-5"></span>
 		</div>
 	</div>
 	<div class="col-md-3 col-sm-6">
 		<div class="tile-stats tile-white stat-tile">
-			<h3><?php echo $this->db->get('apps')->num_rows(); ?> Apps</h3>
-			<p><?php echo $this->db->get('apps')->num_rows(); ?> more acquired this month</p> <span class="registrations"></span>
+			<h3>Fund 6</h3>
+			<p><?php echo $this->db->where('app_fund', 6)->get('apps')->num_rows(); ?> Apps</p> <span class="fund-6"></span>
 		</div>
 	</div>
 	<div class="col-md-3 col-sm-6">
 		<div class="tile-stats tile-white stat-tile">
-			<h3>Big number here</h3>
-			<p>Total Shares</p> <span class="share-capital"></span>
+			<h3>Fund 7</h3>
+			<p><?php echo $this->db->where('app_fund', 7)->get('apps')->num_rows(); ?> Apps</p> <span class="fund-7"></span>
 		</div>
 	</div>
 	<div class="col-md-3 col-sm-6">

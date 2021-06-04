@@ -102,10 +102,15 @@ class Ltv extends CI_Controller
         $data['app'] = $app;
         $data['app_id'] = $app_id;
         $data['all_apps'] = $this->db->get('apps')->result_array();
-        $data['plans'] = $this->db->get('plans')->result_array();
+        $data['plans'] = $this->db->where('app_id', $app_id)->get('plans')->result_array();
         $data['page_name'] = 'users';
         $data['page_title'] = 'Users';
         $this->load->view('index', $data);
+    }
+
+    public function add_plan()
+    {
+        $this->db->insert('plans', $this->security->xss_clean($this->input->post()));
     }
 
     public function recordReviews()

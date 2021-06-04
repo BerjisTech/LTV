@@ -10,7 +10,7 @@
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="#user-data" data-toggle="tab">Daily Users</a></li>
-                        <li class=""><a href="#plans-data" data-toggle="tab">App Plans</a></li>
+                        <li class=""><a href="#plans-data" data-toggle="tab">Users per Plans</a></li>
                     </ul>
                 </div>
             </div>
@@ -44,19 +44,19 @@
                     <div class="tab-pane active" id="daily-users">
                     </div>
                     <div class="tab-pane" id="app-plans">
-                        <form class="review_form">
-                            <div>
-                                <input type="text" name="plan_name" placeholder="plan name" />
+                        <form class="col-sm-12 plan_form" >
+                            <div style="display: flex;">
+                                <input style="height: 40px;" type="text" name="plan_name" placeholder="plan name" />
                                 <input type="hidden" name="app_id" value="<?php echo $app->app_id; ?>" />
-                                <input type="number" name="price" placeholder="plan name" />
-                                <input type="submit" class="btn btn-primary" value="Add Plan" />
+                                <input style="height: 40px;" type="text" name="price" placeholder="plan price" />
+                                <input type="submit" class="btn btn-sm btn-primary" value="Add Plan" />
                             </div>
                         </form>
-                        <div>
+                        <div class="plans col-sm-12" style="margin-top: 10px;">
                             <?php foreach ($plans as $plan) : ?>
-                                <div>
-                                    <span><?php echo $plan['plan_name']; ?></span>
-                                    <span><?php echo $plan['plan_price']; ?></span>
+                                <div class="alert alert-info">
+                                    <strong><?php echo $plan['plan_name']; ?></strong>
+                                    <span>$<?php echo $plan['price']; ?></span>
                                     <!-- <span><?php echo $plan_total_users; ?></span> -->
                                 </div>
                             <?php endforeach; ?>
@@ -67,3 +67,23 @@
         </div>
     </div>
 </div>
+
+<script>
+    $('.plan_form').on('submit', (e) => {
+        e.preventDefault()
+        $.ajax({
+            url: '<?php echo base_url('add_plan'); ?>',
+            method: 'POST',
+            data: $('.plan_form').serialize(),
+            success: (r) => {
+                $().insertBefore();
+                $('.plans').append($(`<div class="alert alert-info">
+                                    <strong>${$('[name="plan_name"]').val()}</strong>
+                                    <span>${$('[name="price"]').val()}</span>
+                                    <!-- <span><?php echo $plan_total_users; ?></span> -->
+                                </div>`))
+            },
+            error: (e) => {}
+        })
+    })
+</script>

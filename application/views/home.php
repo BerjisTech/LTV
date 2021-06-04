@@ -55,7 +55,7 @@
                             y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                             a: <?php
                                 $where = "`app_id` = 1 AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $shown = $this->db->where($where)->get('quaterly')->row()->value;
+                                $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
                                 if ($shown == '') {
                                     echo '0';
                                 } else {
@@ -64,7 +64,7 @@
                                 ?>,
                             b: <?php
                                 $where = "`app_id` = 2 AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $shown = $this->db->where($where)->get('quaterly')->row()->value;
+                                $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
                                 if ($shown == '') {
                                     echo '0';
                                 } else {
@@ -73,7 +73,7 @@
                                 ?>,
                             c: <?php
                                 $where = "`app_id` = 3 AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $shown = $this->db->where($where)->get('quaterly')->row()->value;
+                                $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
                                 if ($shown == '') {
                                     echo '0';
                                 } else {
@@ -82,7 +82,7 @@
                                 ?>,
                             d: <?php
                                 $where = "`app_id` = 4 AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $shown = $this->db->where($where)->get('quaterly')->row()->value;
+                                $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
                                 if ($shown == '') {
                                     echo '0';
                                 } else {
@@ -91,7 +91,7 @@
                                 ?>,
                             e: <?php
                                 $where = "`app_id` = 5 AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $shown = $this->db->where($where)->get('quaterly')->row()->value;
+                                $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
                                 if ($shown == '') {
                                     echo '0';
                                 } else {
@@ -100,7 +100,7 @@
                                 ?>,
                             f: <?php
                                 $where = "`app_id` = 6 AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $shown = $this->db->where($where)->get('quaterly')->row()->value;
+                                $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
                                 if ($shown == '') {
                                     echo '0';
                                 } else {
@@ -109,7 +109,7 @@
                                 ?>,
                             g: <?php
                                 $where = "`app_id` = 7 AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $shown = $this->db->where($where)->get('quaterly')->row()->value;
+                                $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
                                 if ($shown == '') {
                                     echo '0';
                                 } else {
@@ -118,7 +118,7 @@
                                 ?>,
                             h: <?php
                                 $where = "`app_id` = 8 AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $shown = $this->db->where($where)->get('quaterly')->row()->value;
+                                $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
                                 if ($shown == '') {
                                     echo '0';
                                 } else {

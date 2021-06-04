@@ -110,7 +110,14 @@ class Ltv extends CI_Controller
 
     public function add_plan()
     {
-        $this->db->insert('plans', $this->security->xss_clean($this->input->post()));
+        $plan = $this->input->post('plan_name');
+
+        if ($this->db->field_exists($plan, 'installs')) {
+            $this->db->insert('plans', $this->security->xss_clean($this->input->post()));
+        } else {
+            $this->db->query("ALTER TABLE `installs` ADD `$plan` INT NOT NULL");
+            $this->db->insert('plans', $this->security->xss_clean($this->input->post()));
+        }
     }
 
     public function recordReviews()

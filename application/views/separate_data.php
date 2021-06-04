@@ -5,7 +5,7 @@
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
                             $where = "`app_id` = $app_id AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                            $shown = $this->db->where($where)->get('quaterly')->row()->value;
+                            $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
                             if ($shown == '') {
                                 echo '0';
                             } else {
@@ -57,8 +57,8 @@
                                 $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
-                                $where = "`app_id` = $app_id AND `install_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $installs = $this->db->where($where)->get('installs')->row();
+                                $where = "`app_id` = $app_id AND `uninstall_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
+                                $installs = $this->db->where($where)->get('uninstalls')->row();
                                 $total = ($installs->uninstalled + $installs->closed);
                                 if ($total == '') {
                                     echo '0';
@@ -75,9 +75,12 @@
                             $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
-                            $where = "`app_id` = $app_id AND `install_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                            $installs = $this->db->where($where)->get('installs')->row();
-                            $lost = ($installs->uninstalled + $installs->closed);
+                            $in_where = "`app_id` = $app_id AND `install_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
+                            $installs = $this->db->where($in_where)->get('installs')->row();
+                            $un_where = "`app_id` = $app_id AND `uninstall_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
+                            $uninstalls = $this->db->where($un_where)->get('uninstalls')->row();
+                            
+                            $lost = ($uninstalls->uninstalled + $uninstalls->closed);
                             $gained = ($installs->new + $installs->reopened);
 
                             if ($lost == '' || $lost == 0 || $gained == '' || $gained == 0) {
@@ -91,7 +94,7 @@
         <?php endfor; ?>
     ];
 
-    let reviews_data = [<?php for ($m = 30; $m > 0; $m--) :
+    let reviews_data = [<?php for ($m = 7; $m > 0; $m--) :
                             $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
                             $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
@@ -155,7 +158,7 @@
         drawLine('installs_chart', installs_data, revenue_keys, install_labels, install_colors)
         drawLine('uninstalls_chart', uninstalls_data, revenue_keys, uninstall_labels, uninstall_colors)
         drawPercentLine('churn_chart', churn_data, revenue_keys, churn_labels, churn_colors)
-        drawArea('reviews_chart', reviews_data, reviews_keys, reviews_labels, reviews_colors)
+        drawBar('reviews_chart', reviews_data, reviews_keys, reviews_labels, reviews_colors)
     })
 </script>
 

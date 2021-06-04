@@ -9,7 +9,7 @@
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
                             $where = "`app_id` = $app_id AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                            $shown = $this->db->where($where)->get('quaterly')->row()->value;
+                            $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
                             if ($shown == '') {
                                 echo '0';
                             } else {

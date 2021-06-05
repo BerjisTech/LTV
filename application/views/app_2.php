@@ -82,6 +82,46 @@ include('separate_data.php');
         <div class="panel panel-primary" id="charts_env">
             <div class="panel-heading">
                 <div class="panel-title">
+                    Key words Tracking
+                </div>
+                <div class="panel-options">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#keywords" data-toggle="tab">Keywords</a></li>
+                        <li class=""><a href="#ranking" data-toggle="tab">Ranking</a></li>
+                        <li class=""><a href="<?php echo base_url("keywords/$app_id"); ?>" target="_BLANK" style="background: #00A651; color: #ffffff;"><span class="entypo-plus"></span> Add Records</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="keywords">
+                        <table class="table table-responsive table-active table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>KeyWord</th>
+                                    <th>#</th>
+                                    <th>#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="ranking">
+                        <div id="keywords_chart" class="morrischart" style="height: 300px"></div>
+                    </div>
+                    <div class="tab-pane" id="area-chart">
+                        <div id="keywords_chart" class="morrischart" style="height: 300px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-primary" id="charts_env">
+            <div class="panel-heading">
+                <div class="panel-title">
                     Ad Spend
                 </div>
                 <div class="panel-options">
@@ -94,27 +134,6 @@ include('separate_data.php');
                 <div class="tab-content">
                     <div class="tab-pane active" id="area-chart">
                         <div id="ads_chart" class="morrischart" style="height: 300px"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="panel panel-primary" id="charts_env">
-            <div class="panel-heading">
-                <div class="panel-title">
-                    Key words Tracking
-                </div>
-                <div class="panel-options">
-                    <ul class="nav nav-tabs">
-                        <li class=""><a href="<?php echo base_url("keywords/$app_id"); ?>" target="_BLANK" style="background: #00A651; color: #ffffff;"><span class="entypo-plus"></span> Add Records</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="panel-body">
-                <div class="tab-content">
-                    <div class="tab-pane active" id="area-chart">
-                        <div id="keywords_chart" class="morrischart" style="height: 300px"></div>
                     </div>
                 </div>
             </div>

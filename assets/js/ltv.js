@@ -33,6 +33,31 @@ const drawLine = (line_chart_pane, graph_data, graph_keys, graph_labels, graph_c
     $('#' + line_chart_pane).parent().attr('style', 'width: 100% !important;');
 }
 
+const drawLongLine = (line_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
+    $('#' + line_chart_pane).parent().show()
+    var line_chart = Morris.Line({
+        element: line_chart_pane,
+        data: graph_data,
+        xkey: 'y',
+        ykeys: graph_keys,
+        labels: graph_labels,
+        lineColors: graph_colors,
+        xLabelFormat: function (x) {
+            return x.getDate() + ' ' + months[x.getMonth()] + ' ' + x.getFullYear();
+        },
+        dateFormat: function (x) {
+            let d = new Date(x);
+            var douche = d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+            return douche;
+        },
+        resize: true,
+        smooth: true,
+        pointSize: 0,
+        redraw: true
+    });
+    $('#' + line_chart_pane).parent().attr('style', 'width: 100% !important;');
+}
+
 const drawPercentLine = (line_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
     $('#' + line_chart_pane).parent().show()
     var line_chart = Morris.Line({
@@ -102,10 +127,10 @@ const drawBar = (bar_chart_pane, graph_data, graph_keys, graph_labels, graph_col
 }
 
 const drawPie = (pie_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
-    var donut_chart_demo = $("#donut-chart-demo");
+    var donut_chart_demo = $("#" + pie_chart_pane);
     donut_chart_demo.parent().show();
     var donut_chart = Morris.Donut({
-        element: 'donut-chart-demo',
+        element: pie_chart_pane,
         data: graph_data,
         colors: graph_colors
     });

@@ -49,7 +49,7 @@ $begin = strtotime('05-05-2021');
         });
         $(".fund-5").sparkline([
             <?php
-            $fund_5_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%d") as day,')->where('apps.app_fund', 5)->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
+            $fund_5_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%d%m%Y") as day,')->where('apps.app_fund', 5)->order_by('recorded', 'ASC')->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
             foreach ($fund_5_mrr as $daily) {
                 echo $daily['mrr'] . ',';
             }
@@ -73,7 +73,7 @@ $begin = strtotime('05-05-2021');
 
         $(".fund-6").sparkline([
             <?php
-            $fund_5_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%d") as day,')->where('apps.app_fund', 6)->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
+            $fund_5_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%d%m%Y") as day,')->where('apps.app_fund', 6)->order_by('recorded', 'ASC')->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
             foreach ($fund_5_mrr as $daily) {
                 echo $daily['mrr'] . ',';
             }
@@ -96,7 +96,7 @@ $begin = strtotime('05-05-2021');
 
         $(".fund-7").sparkline([
             <?php
-            $fund_5_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%d") as day,')->where('apps.app_fund', 7)->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
+            $fund_5_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%d%m%Y") as day,')->order_by('recorded', 'ASC')->where('apps.app_fund', 7)->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
             foreach ($fund_5_mrr as $daily) {
                 echo $daily['mrr'] . ',';
             }

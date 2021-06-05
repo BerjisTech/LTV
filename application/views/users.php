@@ -44,6 +44,7 @@
                 <div class="tab-content">
                     <div class="tab-pane active" id="daily-installs">
                         <form class="daily_installs_form">
+                            <input type="hidden" name="app_id" value="<?php echo $app->app_id; ?>" />
                             <?php foreach ($plans as $plan) : ?>
                                 <div>
                                     <p><?php echo $plan['plan_name']; ?></p>
@@ -60,6 +61,7 @@
                     </div>
                     <div class="tab-pane " id="daily-uninstalls">
                         <form class="daily_uninstalls_form">
+                            <input type="hidden" name="app_id" value="<?php echo $app->app_id; ?>" />
                             <?php foreach ($plans as $plan) : ?>
                                 <div>
                                     <label for="<?php echo $plan['plan_name']; ?>"><?php echo $plan['plan_name']; ?></label>

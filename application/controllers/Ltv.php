@@ -93,6 +93,32 @@ class Ltv extends CI_Controller
         $this->load->view('index', $data);
     }
 
+    public function add_revenue()
+    {
+        if ($_SERVER['REQUEST_METHOD'] = 'POST' && isset($_POST)) {
+            $recorded = $this->input->post('recorded');
+            $existence_check = $this->db->where('date_format(from_unixtime(quaterly.recorded), "%d%m%Y") =', date('dmY', strtotime($recorded)))->where('app_id', $this->input->post('app_id'))->get('quaterly');
+            // echo $this->db->last_query();
+            echo $existence_check->num_rows();
+            if ($existence_check->num_rows() > 0) {
+                $existsing_data = $existence_check->row();
+                die('A record on ' . date('j\<\s\u\p\>S\<\/\s\u\p\> M, Y', strtotime($recorded)) . ' already exists.
+            <br />
+            Last 30 Days: $ ' . number_format(floatval($existsing_data->last_30_days)) . '
+            <br />
+            Gross MRR: $ ' . number_format(floatval($existsing_data->gross_mrr)) . '
+            <br />
+            Net Sales: $ ' . number_format(floatval($existsing_data->net_sales)));
+            }
+            $_POST['recorded'] = strtotime($this->input->post('recorded'));
+            // echo json_encode($this->input->post());
+            $data = $this->security->xss_clean($this->input->post());
+            $this->db->insert('quaterly', $data);
+        } else {
+            die('No data was sent');
+        }
+    }
+
     public function users($app_id)
     {
         $app = $this->db->where('app_id', $app_id)->get('apps')->row();
@@ -105,6 +131,22 @@ class Ltv extends CI_Controller
         $data['plans'] = $this->db->where('app_id', $app_id)->get('plans')->result_array();
         $data['page_name'] = 'users';
         $data['page_title'] = 'Users';
+        $this->load->view('index', $data);
+    }
+
+    public function csv()
+    {
+        $csv_file = fopen(base_url('data/history.csv'), 'r');
+        $csv_array = array();
+        while ($csv_data = fgetcsv($csv_file, NULL, ",")) :
+            $csv_array[] = $csv_data;
+        endwhile;
+
+        $data['countries'] = $this->db->get('countries')->result_array();
+        $data['continents'] = $this->db->get('continents')->result_array();
+        $data['csv_data'] = $csv_array;
+        $data['page_name'] = 'csv';
+        $data['page_title'] = 'CSV';
         $this->load->view('index', $data);
     }
 

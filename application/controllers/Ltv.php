@@ -270,23 +270,25 @@ class Ltv extends CI_Controller
                 }
             }
 
-            $query = "INSERT INTO `shopify_data` (`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`) VALUES " . substr_replace($values, "", -1);
+            if (isset($values) && !empty($values)) {
+                $query = "INSERT INTO `shopify_data` (`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`) VALUES " . substr_replace($values, "", -1);
 
-            if ($this->db->query($query) && $next_cursor != '') {
-                echo json_encode(array(
-                    'status' => '200',
-                    'app' => $app_id,
-                    'cursor' => $next_cursor,
-                    'total_data' => count($user_nodes)
-                ));
-            }
-            if ($next_cursor == '') {
-                echo json_encode(array(
-                    'status' => '200',
-                    'app' => $app_id,
-                    'cursor' => 'DONE',
-                    'total_data' => count($user_nodes)
-                ));
+                if ($this->db->query($query) && $next_cursor != '') {
+                    echo json_encode(array(
+                        'status' => '200',
+                        'app' => $app_id,
+                        'cursor' => $next_cursor,
+                        'total_data' => count($user_nodes)
+                    ));
+                }
+                if ($next_cursor == '') {
+                    echo json_encode(array(
+                        'status' => '200',
+                        'app' => $app_id,
+                        'cursor' => 'DONE',
+                        'total_data' => count($user_nodes)
+                    ));
+                }
             }
         } else {
             echo json_encode(array(

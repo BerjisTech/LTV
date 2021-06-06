@@ -172,27 +172,26 @@ class Ltv extends CI_Controller
         $this->db->insert('reviews', $data);
     }
 
-    public function transactions($app_id)
+    public function transactions($app_id, $cursor = '')
     {
         $app = $this->db->where('app_id', $app_id)->get('apps')->row();
 
         $app_code = $app->app_code;
-        $time_start = strtotime('-30 days');
+        $time_start = strtotime('- days');
         $time_end = time();
 
-        echo $app_code, $time_start, $time_end;
-        $response = json_decode($this->install_uninstall($app_code, $time_start, $time_end), TRUE);
+        $response = json_decode($this->daily_users($app_code, $time_start, $time_end, $cursor), TRUE);
         header('Content-Type: application/json');
         $data = json_encode($response);
         // echo $data;
 
         if (!isset($data['errors'])) {
             $events = $response;
-            echo json_encode($events);
+            echo json_encode($events['data']);
         }
     }
 
-    private function install_uninstall($app, $time_start, $time_end)
+    private function daily_users($app, $time_start, $time_end, $cursor)
     {
         $partner_id = $this->config->item($app . '_partner_id');
         $app_id = $this->config->item($app . '_app_id');
@@ -202,41 +201,109 @@ class Ltv extends CI_Controller
         $time_start = date('c', $time_start);
         $time_end = date('c', $time_end);
         $postData = '
-        query {
-            transactions(types: [APP_SUBSCRIPTION_SALE], first: 100) {
-              edges {
-                cursor
-                node {
-                  id,
-                  createdAt,
-                  ... on AppSubscriptionSale {
-                    netAmount {
-                      amount
-                    },
-                    app {
-                      name
-                    },
-                    shop {
-                      myshopifyDomain
+            {
+                app(id: "gid://partners/App/' . $app_id . '") {
+                    id
+                    name
+                    events(
+                        first: 100,
+                        after: "' . $cursor . '"
+                        types: [RELATIONSHIP_INSTALLED RELATIONSHIP_UNINSTALLED],
+                        occurredAtMin: "' . $time_start . '",
+                        occurredAtMax: "' . $time_end . '"
+                        ) {
+                            edges {
+                                cursor 
+                                node {
+                                    type
+                                    occurredAt
+                                    shop {
+                                        id
+                                    }
+                                    ... on RelationshipUninstalled {
+                                        reason
+                                        description
+                                    }
+                                }
+                            }
+                            pageInfo { 
+                                hasPreviousPage 
+                                hasNextPage 
+                            } 
+                        }
                     }
-                  },
-                  ... on ServiceSale {
-                    netAmount {
-                      amount
-                    },
-                    shop {
-                      myshopifyDomain
-                    }
-                  }
-                }
-              },
-              pageInfo {
-                hasNextPage,
-                hasPreviousPage
-              }
-            }
-          }
-          ';
+                }';
+
+        $requestBody = $postData; // json_encode($postData);
+        $ch = curl_init($app_url);
+        curl_setopt_array($ch, array(
+            CURLOPT_POST => TRUE,
+            CURLOPT_SSL_VERIFYPEER => FALSE,
+            CURLOPT_SSL_VERIFYHOST => FALSE,
+            CURLOPT_RETURNTRANSFER => TRUE,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/graphql',
+                'X-Shopify-Access-Token: ' . $this->config->item('icu_access')
+            ),
+            CURLOPT_POSTFIELDS => $requestBody
+        ));
+
+        // Send the request
+        $response = curl_exec($ch);
+
+        // echo '<script> console.log(' . $response . ')</script>';
+        return $response;
+    }
+
+    private function subscriptions($app, $time_start, $time_end, $cursor)
+    {
+        $partner_id = $this->config->item($app . '_partner_id');
+        $app_id = $this->config->item($app . '_app_id');
+
+        $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";
+
+        $time_start = date('c', $time_start);
+        $time_end = date('c', $time_end);
+        $postData = '
+            {
+                transactions (
+                    types: [APP_SUBSCRIPTION_SALE], 
+                    after: "' . $cursor . '", 
+                    createdAtMin: "' . $time_start . '", 
+                    createdAtMax:"' . $time_end . '", 
+                    first: 100) { 
+                        edges { 
+                            cursor 
+                            node { 
+                                id, 
+                                createdAt, 
+                                ... on AppSubscriptionSale { 
+                                    netAmount { 
+                                        amount 
+                                    }, 
+                                    app { 
+                                        name 
+                                    }, 
+                                    shop {  
+                                        myshopifyDomain 
+                                    } 
+                                }, 
+                                ... on ServiceSale { 
+                                    netAmount {  
+                                        amount 
+                                    }, 
+                                    shop {  
+                                        myshopifyDomain 
+                                    } 
+                                } 
+                            } 
+                        }, 
+                        pageInfo { 
+                            hasPreviousPage 
+                            hasNextPage 
+                        } 
+                    } 
+                }';
 
         $requestBody = $postData; // json_encode($postData);
         $ch = curl_init($app_url);
@@ -265,7 +332,6 @@ class Ltv extends CI_Controller
         $this->session->set_flashdata('logout_notification', 'logged_out');
         redirect(base_url() . 'login', 'refresh');
     }
-
 
     /*public function csv($days)
     {

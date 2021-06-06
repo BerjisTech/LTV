@@ -289,6 +289,13 @@ class Ltv extends CI_Controller
                         'total_data' => count($user_nodes)
                     ));
                 }
+            } else {
+                echo json_encode(array(
+                    'status' => '500',
+                    'app' => $app_id,
+                    'cursor' => 'DONE',
+                    'message' => $data['errors']
+                ));
             }
         } else {
             echo json_encode(array(

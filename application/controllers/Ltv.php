@@ -207,7 +207,13 @@ class Ltv extends CI_Controller
 
         $app_code = $app->app_code;
 
-        $time_start = $this->db->order_by('date', 'DESC')->limit(1)->get('shopify_data')->row()->date;
+        $last_counter = $this->db->order_by('date', 'DESC')->limit(1)->get('shopify_data');
+
+        $time_start = strtotime('-3000 days');
+
+        if ($last_counter->num_rows() == 1 && isset($last_counter->row()->date)) {
+            $time_start = $last_counter->row()->date;
+        }
         $time_end = time();
 
         $response = json_decode($this->api_users_data($app_code, $time_start, $time_end, $cursor), TRUE);
@@ -250,7 +256,6 @@ class Ltv extends CI_Controller
                 $domain = $user['node']['shop']['myshopifyDomain'];
                 $cursor = $user['cursor'];
                 $reason = '';
-                $clean_date = date('d M, Y', $date);
 
                 if (isset($user['node']['reason'])) {
                     $reason = str_replace("'", '%27', strtolower($user['node']['reason']));

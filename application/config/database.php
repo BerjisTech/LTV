@@ -75,7 +75,7 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'ltv',
+	'hostname' => 'localhost',
 	'username' => 'root',
 	'password' => '2021Growth!',
 	'database' => 'ltv',

@@ -144,10 +144,40 @@ class Ltv extends CI_Controller
 
         $data['countries'] = $this->db->get('countries')->result_array();
         $data['continents'] = $this->db->get('continents')->result_array();
-        $data['csv_data'] = $csv_array;
-        $data['page_name'] = 'csv';
-        $data['page_title'] = 'CSV';
-        $this->load->view('index', $data);
+
+        foreach ($csv_array as $key => $row) {
+            if ($key > 0) {
+                if ($row[0] != '') {
+                    $row[0] = strtotime($row[0]);
+                }
+                if ($row[3] != '') {
+                    $row[3] = strtotime($row[3]);
+                }
+
+                echo "
+                    ('','$row[0]','$row[1]','$row[2]','$row[3]','$row[4]','$row[5]','$row[6]','$row[7]'),<br />
+                ";
+
+                // $db_data = array(
+                //     'icu_id' => '',
+                //     'date' => $row[0],
+                //     'event' => $row[1],
+                //     'details' => $row[2],
+                //     'billing_date' => $row[3],
+                //     'shop' => $row[4],
+                //     'country' => $row[5],
+                //     'email' => $row[6],
+                //     'domain' => $row[7]
+                // );
+
+                // $this->db->insert('icu_daily', $db_data);
+            }
+        }
+
+        // $data['csv_data'] = $csv_array;
+        // $data['page_name'] = 'csv';
+        // $data['page_title'] = 'CSV';
+        // $this->load->view('index', $data);
     }
 
     public function add_plan()

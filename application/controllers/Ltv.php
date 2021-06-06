@@ -207,7 +207,7 @@ class Ltv extends CI_Controller
 
         $app_code = $app->app_code;
 
-        $time_start = $this->db->order_by('date', 'DESC')->limit(1)->get('icu_table')->row()->date;
+        $time_start = $this->db->order_by('date', 'DESC')->limit(1)->get('shopify_data')->row()->date;
         $time_end = time();
 
         $response = json_decode($this->api_users_data($app_code, $time_start, $time_end, $cursor), TRUE);
@@ -263,14 +263,14 @@ class Ltv extends CI_Controller
                     ->where('details', $reason)
                     ->where('shop', $shop)
                     ->where('domain', $domain)
-                    ->get('icu_table');
+                    ->get('shopify_data');
 
                 if ($check_existence->num_rows() == 0) {
                     $values .= " ('','$app_id','$date','$event','$reason','','$shop','','','$domain'),";
                 }
             }
 
-            $query = "INSERT INTO `icu_table` (`icu_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`) VALUES " . substr_replace($values, "", -1);
+            $query = "INSERT INTO `shopify_data` (`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`) VALUES " . substr_replace($values, "", -1);
 
             if ($this->db->query($query) && $next_cursor != '') {
                 echo json_encode(array(

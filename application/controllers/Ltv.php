@@ -154,9 +154,8 @@ class Ltv extends CI_Controller
                     $row[3] = strtotime($row[3]);
                 }
 
-                echo "
-                    ('','$row[0]','$row[1]','$row[2]','$row[3]','$row[4]','$row[5]','$row[6]','$row[7]'),<br />
-                ";
+                if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
+                    echo "('', '2' ,'$row[0]','$row[1]','$row[2]','$row[3]','$row[4]','$row[5]','$row[6]','$row[7]'),<br />";
 
                 // $db_data = array(
                 //     'icu_id' => '',
@@ -202,22 +201,57 @@ class Ltv extends CI_Controller
         $this->db->insert('reviews', $data);
     }
 
-    public function transactions($app_id, $cursor = '')
+    public function update_shopify_data($app_id, $updating, $cursor = '')
     {
         $app = $this->db->where('app_id', $app_id)->get('apps')->row();
 
         $app_code = $app->app_code;
-        $time_start = strtotime('- days');
+        $time_start = strtotime('-30 days');
         $time_end = time();
 
-        $response = json_decode($this->daily_users($app_code, $time_start, $time_end, $cursor), TRUE);
+        if ($updating == 'subscription') {
+            $response = json_decode($this->subscriptions($app_code, $time_start, $time_end, $cursor), TRUE);
+        }
+
+        if ($updating == 'users') {
+            $response = json_decode($this->daily_users($app_code, $time_start, $time_end, $cursor), TRUE);
+        }
+
         header('Content-Type: application/json');
         $data = json_encode($response);
         // echo $data;
 
-        if (!isset($data['errors'])) {
+        if (!isset($data['errors']) && $data !== null) {
             $events = $response;
             echo json_encode($events['data']);
+            if ($updating == 'users') {
+                $structure = array(
+                    'app' => array(
+                        'id',
+                        'name',
+                        'events' => array(
+                            'edges' => array(
+                                0 => array(
+                                    'cursor',
+                                    'node' => array(
+                                        'type',
+                                        'occurredAt',
+                                        'shop' => array(
+                                            'id'
+                                        )
+                                    )
+                                )
+                            ),
+                            'pageInfo' => array(
+                                'hasPreviousPage',
+                                'hasNextPage'
+                            )
+                        )
+                    )
+                );
+            }
+            if ($updating == 'subscription') {
+            }
         }
     }
 
@@ -230,6 +264,8 @@ class Ltv extends CI_Controller
 
         $time_start = date('c', $time_start);
         $time_end = date('c', $time_end);
+
+        echo $time_start . ' ' . $time_end;
         $postData = '
             {
                 app(id: "gid://partners/App/' . $app_id . '") {
@@ -238,7 +274,7 @@ class Ltv extends CI_Controller
                     events(
                         first: 100,
                         after: "' . $cursor . '"
-                        types: [RELATIONSHIP_INSTALLED RELATIONSHIP_UNINSTALLED],
+                        types: [RELATIONSHIP_REACTIVATED RELATIONSHIP_DEACTIVATED RELATIONSHIP_INSTALLED RELATIONSHIP_UNINSTALLED],
                         occurredAtMin: "' . $time_start . '",
                         occurredAtMax: "' . $time_end . '"
                         ) {
@@ -297,7 +333,7 @@ class Ltv extends CI_Controller
         $postData = '
             {
                 transactions (
-                    types: [APP_SUBSCRIPTION_SALE], 
+                    types: [APP_SUBSCRIPTION_SALE ], 
                     after: "' . $cursor . '", 
                     createdAtMin: "' . $time_start . '", 
                     createdAtMax:"' . $time_end . '", 

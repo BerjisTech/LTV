@@ -75,10 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
+	'hostname' => 'ltv',
 	'username' => 'root',
-	'password' => '',
-	'database' => 'icu',
+	'password' => '2021Growth!',
+	'database' => 'ltv',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

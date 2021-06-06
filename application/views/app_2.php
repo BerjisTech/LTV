@@ -1,7 +1,13 @@
 <?php
 include('separate_data.php');
 ?>
-<div class="row">
+<div class="row mwili_ya_mkuu">
+    <div class="col-sm-12">
+        <button class="btn btn-info pull-right" onclick="startImport('')">Import <?php echo $app->app_code; ?> Data</button>
+    </div>
+    <div class="col-sm-12">
+        <br />
+    </div>
     <div class="col-sm-6">
         <div class="panel panel-primary" id="charts_env">
             <div class="panel-heading">
@@ -140,3 +146,45 @@ include('separate_data.php');
         </div>
     </div>
 </div>
+
+<script>
+    let imported_data = 0;
+
+    function startImport(cursor) {
+        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-info imports"><strong>Importing...</strong> </div></div>`))
+        importUsers(cursor)
+    }
+
+    function importUsers(cursor) {
+        $.ajax({
+            url: `<?php echo base_url("import_shopify_users/$app_id/"); ?>${cursor}`,
+            success: (r) => {
+                r = JSON.parse(r)
+                console.log(r)
+                if (r.status == '200') {
+                    imported_data += r.total_data
+                    setTimeout(() => {
+                        $('.imports').html(`<strong>Importing...</strong> ${imported_data} user data imported so far : (${r.cursor})`)
+                        if (r.cursor != '' && r.cursor != 'DONE') {
+                            importUsers(r.cursor)
+                        } else {
+                            $('.alert-info').remove()
+                        }
+                    }, 1000)
+                    if (r.cursor == 'DONE') {
+                        $('.alert-info').remove()
+                        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success fullImport"><strong>SUCCESS</strong> All ${imported_data} user data succesfully imported <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
+                    }
+                }
+            },
+            error: (e) => {
+                console.log(e)
+                e = JSON.parse(e)
+                $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-danger"><strong>Oh snap!</strong> ${e} </div></div>`))
+                setTimeout(() => {
+                    $('.alert-danger').remove()
+                }, 1000)
+            }
+        })
+    }
+</script>

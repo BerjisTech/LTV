@@ -201,7 +201,104 @@ class Ltv extends CI_Controller
         $this->db->insert('reviews', $data);
     }
 
-    public function update_shopify_data($app_id, $updating, $cursor = '')
+    public function import_shopify_users($app_id, $cursor = '')
+    {
+        $app = $this->db->where('app_id', $app_id)->get('apps')->row();
+
+        $app_code = $app->app_code;
+
+        $time_start = $this->db->order_by('date', 'DESC')->limit(1)->get('icu_table')->row()->date;
+        $time_end = time();
+
+        $response = json_decode($this->api_users_data($app_code, $time_start, $time_end, $cursor), TRUE);
+
+        // header('Content-Type: application/json');
+        $data = json_encode($response);
+        // echo $data;
+
+        if (!isset($response['data'])) {
+            echo json_encode(array(
+                'status' => '500',
+                'app' => $app_id,
+                'cursor' => 'DONE',
+                'message' => 'No data received'
+            ));
+            die();
+        }
+
+        if (!isset($data['errors']) && $data !== null) {
+            // echo json_encode($response['data']);
+            $user_nodes = $response['data']['app']['events']['edges'];
+            $next_page = $response['data']['app']['events']['pageInfo']['hasNextPage'];
+            $previous_page = $response['data']['app']['events']['pageInfo']['hasPreviousPage'];
+            $previous_cursor = '';
+            $next_cursor = '';
+
+            if ($previous_page != '') {
+                $previous_cursor = $user_nodes[0]['cursor'];
+            }
+            if ($next_page != '') {
+                $next_cursor = $user_nodes[count($user_nodes) - 1]['cursor'];
+            }
+
+            $values = '';
+
+            foreach ($user_nodes as $user) {
+                $date = strtotime($user['node']['occurredAt']);
+                $event = strtolower(str_replace('RELATIONSHIP_', '', $user['node']['type']));
+                $shop = str_replace('gid://partners/Shop/', '', $user['node']['shop']['id']);
+                $domain = $user['node']['shop']['myshopifyDomain'];
+                $cursor = $user['cursor'];
+                $reason = '';
+                $clean_date = date('d M, Y', $date);
+
+                if (isset($user['node']['reason'])) {
+                    $reason = str_replace("'", '%27', strtolower($user['node']['reason']));
+                }
+
+                $check_existence = $this->db
+                    ->where('app_id', $app_id)
+                    ->where('date', $date)
+                    ->where('event', $event)
+                    ->where('details', $reason)
+                    ->where('shop', $shop)
+                    ->where('domain', $domain)
+                    ->get('icu_table');
+
+                if ($check_existence->num_rows() == 0) {
+                    $values .= " ('','$app_id','$date','$event','$reason','','$shop','','','$domain'),";
+                }
+            }
+
+            $query = "INSERT INTO `icu_table` (`icu_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`) VALUES " . substr_replace($values, "", -1);
+
+            if ($this->db->query($query) && $next_cursor != '') {
+                echo json_encode(array(
+                    'status' => '200',
+                    'app' => $app_id,
+                    'cursor' => $next_cursor,
+                    'total_data' => count($user_nodes)
+                ));
+            }
+            if ($next_cursor == '') {
+                echo json_encode(array(
+                    'status' => '200',
+                    'app' => $app_id,
+                    'cursor' => 'DONE',
+                    'total_data' => count($user_nodes)
+                ));
+            }
+        } else {
+            echo json_encode(array(
+                'status' => '500',
+                'app' => $app_id,
+                'cursor' => 'DONE',
+                'message' => $data['errors']
+            ));
+        }
+    }
+
+    public function update_subscription($app_id, $cursor = '')
     {
         $app = $this->db->where('app_id', $app_id)->get('apps')->row();
 
@@ -209,13 +306,7 @@ class Ltv extends CI_Controller
         $time_start = strtotime('-30 days');
         $time_end = time();
 
-        if ($updating == 'subscription') {
-            $response = json_decode($this->subscriptions($app_code, $time_start, $time_end, $cursor), TRUE);
-        }
-
-        if ($updating == 'users') {
-            $response = json_decode($this->daily_users($app_code, $time_start, $time_end, $cursor), TRUE);
-        }
+        $response = json_decode($this->api_subscriptions_data($app_code, $time_start, $time_end, $cursor), TRUE);
 
         header('Content-Type: application/json');
         $data = json_encode($response);
@@ -224,38 +315,10 @@ class Ltv extends CI_Controller
         if (!isset($data['errors']) && $data !== null) {
             $events = $response;
             echo json_encode($events['data']);
-            if ($updating == 'users') {
-                $structure = array(
-                    'app' => array(
-                        'id',
-                        'name',
-                        'events' => array(
-                            'edges' => array(
-                                0 => array(
-                                    'cursor',
-                                    'node' => array(
-                                        'type',
-                                        'occurredAt',
-                                        'shop' => array(
-                                            'id'
-                                        )
-                                    )
-                                )
-                            ),
-                            'pageInfo' => array(
-                                'hasPreviousPage',
-                                'hasNextPage'
-                            )
-                        )
-                    )
-                );
-            }
-            if ($updating == 'subscription') {
-            }
         }
     }
 
-    private function daily_users($app, $time_start, $time_end, $cursor)
+    private function api_users_data($app, $time_start, $time_end, $cursor)
     {
         $partner_id = $this->config->item($app . '_partner_id');
         $app_id = $this->config->item($app . '_app_id');
@@ -265,7 +328,6 @@ class Ltv extends CI_Controller
         $time_start = date('c', $time_start);
         $time_end = date('c', $time_end);
 
-        echo $time_start . ' ' . $time_end;
         $postData = '
             {
                 app(id: "gid://partners/App/' . $app_id . '") {
@@ -284,7 +346,8 @@ class Ltv extends CI_Controller
                                     type
                                     occurredAt
                                     shop {
-                                        id
+                                        id,
+                                        myshopifyDomain
                                     }
                                     ... on RelationshipUninstalled {
                                         reason
@@ -321,7 +384,7 @@ class Ltv extends CI_Controller
         return $response;
     }
 
-    private function subscriptions($app, $time_start, $time_end, $cursor)
+    private function api_subscriptions_data($app, $time_start, $time_end, $cursor)
     {
         $partner_id = $this->config->item($app . '_partner_id');
         $app_id = $this->config->item($app . '_app_id');

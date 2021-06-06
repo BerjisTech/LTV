@@ -299,7 +299,7 @@ class Ltv extends CI_Controller
                     'status' => '500',
                     'app' => $app_id,
                     'cursor' => 'DONE',
-                    'message' => $data['errors']
+                    'message' => $data
                 ));
             }
         } else {

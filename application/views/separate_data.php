@@ -21,9 +21,9 @@
                             $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
-                            $where = "`app_id` = $app_id AND `install_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                            $installs = $this->db->where($where)->get('installs')->row();
-                            $total = (($installs->new + $installs->reopened) - ($installs->uninstalled + $installs->closed));
+                            $where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
+                            $installs = $this->db->where($where)->get('icu_data')->row();
+                            $total = (($installs->installed + $installs->reactivated) - ($installs->uninstalled + $installs->deactivated));
                             if ($total == '') {
                                 echo '0';
                             } else {
@@ -39,9 +39,9 @@
                                 $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
-                                $where = "`app_id` = $app_id AND `install_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $installs = $this->db->where($where)->get('installs')->row();
-                                $total = ($installs->new + $installs->reopened);
+                                $where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
+                                $installs = $this->db->where($where)->get('icu_data')->row();
+                                $total = ($installs->installed + $installs->reactivated);
                                 if ($total == '') {
                                     echo '0';
                                 } else {
@@ -57,9 +57,9 @@
                                 $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
-                                $where = "`app_id` = $app_id AND `uninstall_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $installs = $this->db->where($where)->get('uninstalls')->row();
-                                $total = ($installs->uninstalled + $installs->closed);
+                                $where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
+                                $installs = $this->db->where($where)->get('icu_data')->row();
+                                $total = ($installs->uninstalled + $installs->deactivated);
                                 if ($total == '') {
                                     echo '0';
                                 } else {
@@ -75,13 +75,11 @@
                             $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
-                            $in_where = "`app_id` = $app_id AND `install_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                            $installs = $this->db->where($in_where)->get('installs')->row();
-                            $un_where = "`app_id` = $app_id AND `uninstall_date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                            $uninstalls = $this->db->where($un_where)->get('uninstalls')->row();
-                            
-                            $lost = ($uninstalls->uninstalled + $uninstalls->closed);
-                            $gained = ($installs->new + $installs->reopened);
+                            $in_where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
+                            $installs = $this->db->where($in_where)->get('icu_data')->row();
+
+                            $lost = ($installs->uninstalled + $installs->deactivated);
+                            $gained = ($installs->installed + $installs->reactivated);
 
                             if ($lost == '' || $lost == 0 || $gained == '' || $gained == 0) {
                                 $total = 0;

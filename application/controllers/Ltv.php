@@ -470,19 +470,16 @@ class Ltv extends CI_Controller
         return $response;
     }
 
-    public function playData($app_id)
+    public function get_shopify_user_data($app_id, $from, $to)
     {
-        $nowmonth = strtotime(date('d-M-Y', strtotime('-30 days')));
-        $lastmonth = strtotime(date('d-M-Y', strtotime('-1 days')));
+        $nowmonth = strtotime(date('d-M-Y', strtotime("-$to days")));
+        $lastmonth = strtotime(date('d-M-Y', strtotime("-$from days")));
 
         $where = "`app_id` = $app_id AND `date` <= '" . $lastmonth . "' AND `date` >='" . $nowmonth . "'";
 
-        $installed = $this->db->select(
-            ($this->db->where('event', 'installed')->get('shopify_data')->num_rows() - $this->db->where('event', 'uninstalled')->get('shopify_data')->num_rows())
-        )->where($where)->get("shopify_data")->row()->counted;
+        $fetched_data = $this->db->where($where)->get('shopify_data')->result_array();
 
-        echo $installed;
-        echo '<br />' . $this->db->last_query();
+        echo json_encode($fetched_data);
     }
 
     function logout()

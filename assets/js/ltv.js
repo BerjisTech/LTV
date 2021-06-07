@@ -135,7 +135,7 @@ const drawPie = (pie_chart_pane, graph_data, graph_keys, graph_labels, graph_col
         colors: graph_colors
     });
     donut_chart_demo.parent().attr('style', 'width: 100% !important;');
-}
+} 
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;

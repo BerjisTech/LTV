@@ -8,7 +8,7 @@
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Ufami Sacco" />
+    <meta name="description" content="LTV Group SaaS Fund | Your financial base" />
     <meta name="author" content="Berjis Technologies" />
     <link rel="icon" href="<?php echo base_url(); ?>assets/images/favicon.ico">
     <title>LTV Group SaaS Fund | Your financial base</title>

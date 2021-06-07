@@ -22,7 +22,7 @@
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
                             $where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                            $installs = $this->db->where($where)->get('icu_data')->row();
+                            $installs = $this->db->where($where)->get('shopify_data')->row();
                             $total = (($installs->installed + $installs->reactivated) - ($installs->uninstalled + $installs->deactivated));
                             if ($total == '') {
                                 echo '0';
@@ -40,7 +40,7 @@
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
                                 $where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $installs = $this->db->where($where)->get('icu_data')->row();
+                                $installs = $this->db->where($where)->get('shopify_data')->row();
                                 $total = ($installs->installed + $installs->reactivated);
                                 if ($total == '') {
                                     echo '0';
@@ -58,7 +58,7 @@
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
                                 $where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                                $installs = $this->db->where($where)->get('icu_data')->row();
+                                $installs = $this->db->where($where)->get('shopify_data')->row();
                                 $total = ($installs->uninstalled + $installs->deactivated);
                                 if ($total == '') {
                                     echo '0';
@@ -76,7 +76,7 @@
                 y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                 a: <?php
                             $in_where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                            $installs = $this->db->where($in_where)->get('icu_data')->row();
+                            $installs = $this->db->where($in_where)->get('shopify_data')->row();
 
                             $lost = ($installs->uninstalled + $installs->deactivated);
                             $gained = ($installs->installed + $installs->reactivated);

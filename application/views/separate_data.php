@@ -36,7 +36,7 @@
             <?php endfor; ?>
         ];
 
-        let query = '<?php echo $this->db->last_query(); ?>';
+        let query = "<?php echo $this->db->last_query(); ?>";
 
         let installs_data = [<?php for ($m = 30; $m > 0; $m--) :
                                     $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
@@ -55,7 +55,7 @@
             <?php endfor; ?>
         ];
 
-        let query = '<?php echo $this->db->last_query(); ?>';
+        let query = "<?php echo $this->db->last_query(); ?>";
 
         let uninstalls_data = [<?php for ($m = 30; $m > 0; $m--) :
                                     $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
@@ -74,7 +74,7 @@
             <?php endfor; ?>
         ];
 
-        let query = '<?php echo $this->db->last_query(); ?>';
+        let query = "<?php echo $this->db->last_query(); ?>";
 
         let churn_data = [<?php for ($m = 30; $m > 0; $m--) :
                                 $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
@@ -102,7 +102,7 @@
             <?php endfor; ?>
         ];
 
-        let query = '<?php echo $this->db->last_query(); ?>';
+        let query = "<?php echo $this->db->last_query(); ?>";
 
         let reviews_data = [<?php for ($m = 7; $m > 0; $m--) :
                                 $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));

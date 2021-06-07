@@ -24,10 +24,10 @@
                     a: <?php
                                 $where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
 
-                                $installed = $this->db->select('event')->where('event', 'installed')->where($where)->get('shopify_data')->num_rows();
-                                $reactivated = $this->db->select('event')->where('event', 'reactivated')->where($where)->get('shopify_data')->num_rows();
-                                $uninstalled = $this->db->select('event')->where('event', 'uninstalled')->where($where)->get('shopify_data')->num_rows();
-                                $deactivated = $this->db->select('event')->where('event', 'deactivated')->where($where)->get('shopify_data')->num_rows();
+                                $installed = $this->db->select('count(event) as counted')->where('event', 'installed')->where($where)->get('shopify_data')->row()->counted;
+                                $reactivated = $this->db->select('count(event) as counted')->where('event', 'reactivated')->where($where)->get('shopify_data')->row()->counted;
+                                $uninstalled = $this->db->select('count(event) as counted')->where('event', 'uninstalled')->where($where)->get('shopify_data')->row()->counted;
+                                $deactivated = $this->db->select('count(event) as counted')->where('event', 'deactivated')->where($where)->get('shopify_data')->row()->counted;
 
                                 $total = (($installed + $reactivated) - ($uninstalled + $deactivated));
                                 echo $total;
@@ -43,8 +43,8 @@
                     a: <?php
                                     $where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
 
-                                    $installed = $this->db->select('event')->where('event', 'installed')->where($where)->get('shopify_data')->num_rows();
-                                    $reactivated = $this->db->select('event')->where('event', 'reactivated')->where($where)->get('shopify_data')->num_rows();
+                                    $installed = $this->db->select('count(event) as counted')->where('event', 'installed')->where($where)->get('shopify_data')->row()->counted;
+                                    $reactivated = $this->db->select('count(event) as counted')->where('event', 'reactivated')->where($where)->get('shopify_data')->row()->counted;
 
                                     $total = ($installed + $reactivated);
                                     echo $total;
@@ -60,8 +60,8 @@
                     a: <?php
                                     $where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
 
-                                    $uninstalled = $this->db->select('event')->where('event', 'uninstalled')->where($where)->get('shopify_data')->num_rows();
-                                    $deactivated = $this->db->select('event')->where('event', 'deactivated')->where($where)->get('shopify_data')->num_rows();
+                                    $uninstalled = $this->db->select('count(event) as counted')->where('event', 'uninstalled')->where($where)->get('shopify_data')->row()->counted;
+                                    $deactivated = $this->db->select('count(event) as counted')->where('event', 'deactivated')->where($where)->get('shopify_data')->row()->counted;
 
                                     $total = ($uninstalled + $deactivated);
                                     echo $total;
@@ -77,10 +77,10 @@
                     a: <?php
                                 $in_where = "`app_id` = $app_id AND `date` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
 
-                                $installed = $this->db->select('event')->where('event', 'installed')->where($where)->get('shopify_data')->num_rows();
-                                $reactivated = $this->db->select('event')->where('event', 'reactivated')->where($where)->get('shopify_data')->num_rows();
-                                $uninstalled = $this->db->select('event')->where('event', 'uninstalled')->where($where)->get('shopify_data')->num_rows();
-                                $deactivated = $this->db->select('event')->where('event', 'deactivated')->where($where)->get('shopify_data')->num_rows();
+                                $installed = $this->db->select('count(event) as counted')->where('event', 'installed')->where($where)->get('shopify_data')->row()->counted;
+                                $reactivated = $this->db->select('count(event) as counted')->where('event', 'reactivated')->where($where)->get('shopify_data')->row()->counted;
+                                $uninstalled = $this->db->select('count(event) as counted')->where('event', 'uninstalled')->where($where)->get('shopify_data')->row()->counted;
+                                $deactivated = $this->db->select('count(event) as counted')->where('event', 'deactivated')->where($where)->get('shopify_data')->row()->counted;
 
                                 $lost = ($uninstalled + $deactivated);
                                 $gained = ($installed + $reactivated);

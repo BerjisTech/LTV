@@ -22,7 +22,7 @@
                                 $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                     y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                     a: <?php
-                                $where = "`app_id` = $app_id AND `date` >= '" . $lastmonth . "' AND `date` <='" . $nowmonth . "'";
+                                $where = "`app_id` = $app_id AND `date` <= '" . $lastmonth . "' AND `date` >='" . $nowmonth . "'";
 
                                 $installed = $this->db->select('count(event) as counted')->where('event', 'installed')->where($where)->get('shopify_data')->row()->counted;
                                 $reactivated = $this->db->select('count(event) as counted')->where('event', 'reactivated')->where($where)->get('shopify_data')->row()->counted;
@@ -36,12 +36,14 @@
             <?php endfor; ?>
         ];
 
+        let query = '<?php echo $this->db->last_query(); ?>';
+
         let installs_data = [<?php for ($m = 30; $m > 0; $m--) :
                                     $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
                                     $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                     y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                     a: <?php
-                                    $where = "`app_id` = $app_id AND `date` >= '" . $lastmonth . "' AND `date` <='" . $nowmonth . "'";
+                                    $where = "`app_id` = $app_id AND `date` <= '" . $lastmonth . "' AND `date` >='" . $nowmonth . "'";
 
                                     $installed = $this->db->select('count(event) as counted')->where('event', 'installed')->where($where)->get('shopify_data')->row()->counted;
                                     $reactivated = $this->db->select('count(event) as counted')->where('event', 'reactivated')->where($where)->get('shopify_data')->row()->counted;
@@ -53,12 +55,14 @@
             <?php endfor; ?>
         ];
 
+        let query = '<?php echo $this->db->last_query(); ?>';
+
         let uninstalls_data = [<?php for ($m = 30; $m > 0; $m--) :
                                     $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
                                     $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                     y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                     a: <?php
-                                    $where = "`app_id` = $app_id AND `date` >= '" . $lastmonth . "' AND `date` <='" . $nowmonth . "'";
+                                    $where = "`app_id` = $app_id AND `date` <= '" . $lastmonth . "' AND `date` >='" . $nowmonth . "'";
 
                                     $uninstalled = $this->db->select('count(event) as counted')->where('event', 'uninstalled')->where($where)->get('shopify_data')->row()->counted;
                                     $deactivated = $this->db->select('count(event) as counted')->where('event', 'deactivated')->where($where)->get('shopify_data')->row()->counted;
@@ -70,12 +74,14 @@
             <?php endfor; ?>
         ];
 
+        let query = '<?php echo $this->db->last_query(); ?>';
+
         let churn_data = [<?php for ($m = 30; $m > 0; $m--) :
                                 $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
                                 $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
                     y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
                     a: <?php
-                                $where = "`app_id` = $app_id AND `date` >= '" . $lastmonth . "' AND `date` <='" . $nowmonth . "'";
+                                $where = "`app_id` = $app_id AND `date` <= '" . $lastmonth . "' AND `date` >='" . $nowmonth . "'";
 
                                 $installed = $this->db->select('count(event) as counted')->where('event', 'installed')->where($where)->get('shopify_data')->row()->counted;
                                 $reactivated = $this->db->select('count(event) as counted')->where('event', 'reactivated')->where($where)->get('shopify_data')->row()->counted;
@@ -95,6 +101,8 @@
                 },
             <?php endfor; ?>
         ];
+
+        let query = '<?php echo $this->db->last_query(); ?>';
 
         let reviews_data = [<?php for ($m = 7; $m > 0; $m--) :
                                 $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));

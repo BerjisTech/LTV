@@ -5,7 +5,9 @@
     let revenue_colors = ['#D05421']
     let revenue_data;
 
-    fetch_quaterly_data('<?php echo $app_id ?>', 0, 30)
+    jQuery(document).ready(function($) {
+        fetch_quaterly_data('<?php echo $app_id ?>', 0, 30)
+    })
 
     function fetch_quaterly_data(app, from, to) {
         fetch(`${base_url}/get_quaterly/${app}/${from}/${to}`).then((r) => {

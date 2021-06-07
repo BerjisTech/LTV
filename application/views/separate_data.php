@@ -6,7 +6,6 @@
     let installs_data = []
     let uninstalls_data = []
     let churn_data = []
-    fetch_quaterly_data('<?php echo $app_id ?>', 0, 30)
 
     let revenue_data = [<?php for ($m = 30; $m > -1; $m--) :
                             $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
@@ -92,10 +91,10 @@
     jQuery(document).ready(function($) {
         $('#reviews_chart').empty()
         drawBar('reviews_chart', reviews_data, reviews_keys, reviews_labels, reviews_colors)
+
+        fetch_quaterly_data('<?php echo $app_id ?>', 0, 30)
+        fetch_shopify_data('<?php echo $app_id ?>', 0, 30)
     })
-
-
-    fetch_shopify_data('<?php echo $app_id ?>', 0, 30)
 
     function fetch_shopify_data(app, from, to) {
         fetch(`${base_url}/get_shopify_user_data/${app}/${from}/${to}`).then((r) => {

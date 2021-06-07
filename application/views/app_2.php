@@ -1,6 +1,6 @@
 <div class="row mwili_ya_mkuu">
     <div class="col-sm-12">
-        <button class="btn btn-info pull-right" onclick="startImport('')">Import <?php echo $app->app_code; ?> Data</button>
+        <button class="btn btn-info pull-right importButtonShowHideClass" onclick="startImport('')">Import <?php echo $app->app_code; ?> Data</button>
     </div>
     <div class="col-sm-12">
         <br />
@@ -148,6 +148,7 @@
     let imported_data = 0;
 
     function startImport(cursor) {
+        $('.importButtonShowHideClass').hide()
         $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-info imports"><strong>Importing...</strong> </div></div>`))
         importUsers(cursor)
     }
@@ -179,6 +180,7 @@
                         $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success 500Error"><strong>Oh Snap!</strong> Something went wrong when importing the data <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
                     }
                 }
+                $('.importButtonShowHideClass').show()
             },
             error: (e) => {
                 console.log(e)
@@ -187,6 +189,7 @@
                 setTimeout(() => {
                     $('.alert-danger').remove()
                 }, 1000)
+                $('.importButtonShowHideClass').show()
             }
         })
     }

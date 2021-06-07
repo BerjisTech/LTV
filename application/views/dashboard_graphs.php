@@ -173,10 +173,9 @@ $begin = strtotime('05-05-2021');
         $(".monthly-sales").sparkline([
 
             <?php
-            $user_growth = $user_growth = $this->db->query("SELECT *, date_format(from_unixtime(install_date), '%Y %m %d') as year, date_format(from_unixtime(install_date), '%m') as month, date_format(from_unixtime(install_date), '%d') as day FROM `installs` RIGHT OUTER JOIN `uninstalls` ON date_format(from_unixtime(uninstall_date), '%Y %m %d') = date_format(from_unixtime(install_date), '%Y %m %d') WHERE `install_date` >= $begin GROUP BY `day` ORDER BY `year` ASC")->result_array();
-            foreach ($user_growth as $fetch) {
-                $total = (($fetch['new'] + $fetch['reopened']) - ($fetch['uninstalled'] + $fetch['closed']));
-                echo $total . ',';
+            $all_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%Y%m%d") as day,')->order_by('recorded', 'ASC')->where('date_format(from_unixtime(quaterly.recorded), "%Y%m%d") >=', date('Ymd', strtotime('-30 days')))->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
+            foreach ($all_mrr as $daily) {
+                echo $daily['mrr'] . ',';
             }
             ?>
 

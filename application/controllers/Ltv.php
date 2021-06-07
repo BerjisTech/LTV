@@ -211,9 +211,9 @@ class Ltv extends CI_Controller
 
         $time_start = strtotime('-3000 days');
 
-        // if ($last_counter->num_rows() == 1 && isset($last_counter->row()->date)) {
-        //     $time_start = $last_counter->row()->date;
-        // }
+        if ($last_counter->num_rows() == 1 && isset($last_counter->row()->date)) {
+            $time_start = $last_counter->row()->date;
+        }
 
         $time_end = time();
 

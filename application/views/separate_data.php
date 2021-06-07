@@ -30,6 +30,7 @@
                                 $deactivated = $this->db->where('event', 'deactivated')->where($where)->get('shopify_data')->num_rows();
 
                                 $total = (($installed + $reactivated) - ($uninstalled + $deactivated));
+                                echo $total;
                         ?>
                 },
             <?php endfor; ?>
@@ -46,6 +47,7 @@
                                     $reactivated = $this->db->where('event', 'reactivated')->where($where)->get('shopify_data')->num_rows();
 
                                     $total = ($installed + $reactivated);
+                                    echo $total;
                         ?>
                 },
             <?php endfor; ?>
@@ -62,6 +64,7 @@
                                     $deactivated = $this->db->where('event', 'deactivated')->where($where)->get('shopify_data')->num_rows();
 
                                     $total = ($uninstalled + $deactivated);
+                                    echo $total;
                         ?>
                 },
             <?php endfor; ?>

@@ -1,12 +1,12 @@
 <script>
+    $('.morrischart').html(`<img src="<?php echo base_url('assets/images/loader.gif'); ?>" />`)
     let shopify_user_data;
-    
+
     let user_data = []
     let installs_data = []
     let uninstalls_data = []
     let churn_data = []
-
-    fetch_shopify('<?php echo $app_id ?>', 0, 30)
+    fetch_quaterly_data('<?php echo $app_id ?>', 0, 30)
 
     let revenue_data = [<?php for ($m = 30; $m > -1; $m--) :
                             $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
@@ -79,22 +79,38 @@
     let reviews_labels = ['5 star', '4 star', '3 star', '2 star', '1 star']
     let reviews_colors = ['#D05421', '#21D1B1', '#C90100', '#E7C00B', '#1E1E1E']
 
-
-    function fetch_shopify(app, from, to) {
-        fetch(`${base_url}/get_shopify_user_data/${app}/${from}/${to}`).then((r) => {
+    function fetch_quaterly_data(app, from, to) {
+        fetch(`${base_url}/get_quaterly/${app}/${from}/${to}`).then((r) => {
             r.text().then((d) => {
-                shopify_user_data = JSON.parse(d)
+                revenue_data = JSON.parse(d)
+                $('#revenue_chart').empty()
+                drawLine('revenue_chart', revenue_data, revenue_keys, revenue_labels, revenue_colors)
             })
         })
     }
 
-
     jQuery(document).ready(function($) {
-        drawLine('revenue_chart', revenue_data, revenue_keys, revenue_labels, revenue_colors)
-        drawBar('users_chart', user_data, user_keys, user_labels, user_colors)
-        drawLine('installs_chart', installs_data, revenue_keys, install_labels, install_colors)
-        drawLine('uninstalls_chart', uninstalls_data, revenue_keys, uninstall_labels, uninstall_colors)
-        drawPercentLine('churn_chart', churn_data, revenue_keys, churn_labels, churn_colors)
+        $('#reviews_chart').empty()
         drawBar('reviews_chart', reviews_data, reviews_keys, reviews_labels, reviews_colors)
     })
+
+
+    fetch_shopify_data('<?php echo $app_id ?>', 0, 30)
+
+    function fetch_shopify_data(app, from, to) {
+        fetch(`${base_url}/get_shopify_user_data/${app}/${from}/${to}`).then((r) => {
+            r.text().then((d) => {
+                shopify_user_data = JSON.parse(d)
+
+                $('#users_chart').empty()
+                drawBar('users_chart', shopify_user_data.total_users, user_keys, user_labels, user_colors)
+                $('#installs_chart').empty()
+                drawLine('installs_chart', shopify_user_data.installs, revenue_keys, install_labels, install_colors)
+                $('#uninstalls_chart').empty()
+                drawLine('uninstalls_chart', shopify_user_data.uninstalls, revenue_keys, uninstall_labels, uninstall_colors)
+                $('#churn_chart').empty()
+                drawPercentLine('churn_chart', shopify_user_data.total_users, revenue_keys, churn_labels, churn_colors)
+            })
+        })
+    }
 </script>

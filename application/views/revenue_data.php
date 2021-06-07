@@ -1,29 +1,21 @@
 <script>
+    $('.morrischart').html(`<img src="<?php echo base_url('assets/images/loader.gif'); ?>" />`)
     let revenue_keys = ['a']
     let revenue_labels = ['Revenue']
     let revenue_colors = ['#D05421']
+    let revenue_data;
 
-    let revenue_data = [<?php for ($m = 30; $m > -1; $m--) :
-                            $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
-                            $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
-                y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
-                a: <?php
-                            $where = "`app_id` = $app_id AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                            $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
-                            if ($shown == '') {
-                                echo '0';
-                            } else {
-                                echo $shown;
-                            }
-                    ?>
-            },
-        <?php endfor; ?>
-    ];
+    fetch_quaterly_data('<?php echo $app_id ?>', 0, 30)
 
-    jQuery(document).ready(function($) {
-        drawLine('revenue_line', revenue_data, revenue_keys, revenue_labels, revenue_colors)
-        drawArea('revenue_area', revenue_data, revenue_keys, revenue_labels, revenue_colors)
-        drawBar('revenue_bar', revenue_data, revenue_keys, revenue_labels, revenue_colors)
-        // drawPie('revenue_pie', revenue_data, revenue_keys, revenue_labels, revenue_colors)
-    })
+    function fetch_quaterly_data(app, from, to) {
+        fetch(`${base_url}/get_quaterly/${app}/${from}/${to}`).then((r) => {
+            r.text().then((d) => {
+                revenue_data = JSON.parse(d)
+                $('#revenue_chart').empty()
+                drawLine('revenue_line', revenue_data, revenue_keys, revenue_labels, revenue_colors)
+                drawArea('revenue_area', revenue_data, revenue_keys, revenue_labels, revenue_colors)
+                drawBar('revenue_bar', revenue_data, revenue_keys, revenue_labels, revenue_colors)
+            })
+        })
+    }
 </script>

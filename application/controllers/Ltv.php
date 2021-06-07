@@ -470,6 +470,22 @@ class Ltv extends CI_Controller
         return $response;
     }
 
+    public function get_quaterly($app_id, $from, $to)
+    {
+        $nowmonth = strtotime(date('d-M-Y', strtotime("-$to days")));
+        $lastmonth = strtotime(date('d-M-Y', strtotime("-$from days")));
+
+        $where = "`app_id` = $app_id AND `recorded` <= '" . $lastmonth . "' AND `recorded` >='" . $nowmonth . "'";
+
+        // $this->db->where($where)->get('shopify_data')->result_array();
+
+        $fetched_data = $this->db->select('date_format(from_unixtime(recorded), "%Y-%m-%d") as y, last_30_days as a')->where($where)->order_by('recorded', 'ASC')->group_by('date_format(from_unixtime(recorded), "%d%m%Y")')->get('quaterly')->result_array();
+
+        // echo $this->db->last_query();
+
+        echo json_encode($fetched_data);
+    }
+
     public function get_shopify_user_data($app_id, $from, $to)
     {
         $nowmonth = strtotime(date('d-M-Y', strtotime("-$to days")));
@@ -477,9 +493,21 @@ class Ltv extends CI_Controller
 
         $where = "`app_id` = $app_id AND `date` <= '" . $lastmonth . "' AND `date` >='" . $nowmonth . "'";
 
-        $fetched_data = $this->db->where($where)->get('shopify_data')->result_array();
+        // $this->db->where($where)->get('shopify_data')->result_array();
 
-        echo json_encode($fetched_data);
+        $data['installs'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")->where($where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('shopify_data')->result_array();
+        $data['uninstalls'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, (COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) a")->where($where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('shopify_data')->result_array();
+
+        $count = "COUNT(IF(`event` = 'installed', 1, NULL)) installed, 
+        COUNT(IF(`event` = 'uninstalled', 1, NULL)) uninstalled, 
+        COUNT(IF(`event` = 'reactivated', 1, NULL)) reactivated, 
+        COUNT(IF(`event` = 'deactivated', 1, NULL)) deactivated";
+
+        $data['total_users'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y,
+            (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a
+        ")->where($where)->order_by('date', 'ASC')->group_by('date_format(from_unixtime(date), "%d%m%Y")')->get('shopify_data')->result_array();
+
+        echo json_encode($data);
     }
 
     function logout()

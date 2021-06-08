@@ -206,7 +206,7 @@ class Ltv extends CI_Controller
         header('Content-Type: application/json');
         $this->load->model('Importer');
 
-        $last_entry = $this->db->where('app', $app_id)->order_by('date', 'DESC')->limit(1)->get('shopify_data');
+        $last_entry = $this->db->where('app_id', $app_id)->order_by('date', 'DESC')->limit(1)->get('shopify_data');
 
         $time_start = strtotime('-3000 days');
 
@@ -216,7 +216,7 @@ class Ltv extends CI_Controller
 
         $time_end = time();
 
-        echo json_encode($this->Importer->init_importer($app_id, $data_set, $cursor, $time_start, $time_end));
+        echo json_encode($this->Importer->init_importer($app_id, $data_set,  $time_start, $time_end, $cursor));
     }
 
     public function import_shopify_users($app_id, $cursor = '')
@@ -330,26 +330,6 @@ class Ltv extends CI_Controller
         //         'message' => $data['errors']
         //     ));
         // }
-    }
-
-    public function update_subscription($app_id, $cursor = '')
-    {
-        $app = $this->db->where('app_id', $app_id)->get('apps')->row();
-
-        $app_code = $app->app_code;
-        $time_start = strtotime('-30 days');
-        $time_end = time();
-
-        $response = json_decode($this->api_subscriptions_data($app_code, $time_start, $time_end, $cursor), TRUE);
-
-        header('Content-Type: application/json');
-        $data = json_encode($response);
-        // echo $data;
-
-        if (!isset($data['errors']) && $data !== null) {
-            $events = $response;
-            echo json_encode($events['data']);
-        }
     }
 
     public function get_quaterly($app_id, $from, $to)

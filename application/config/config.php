@@ -555,7 +555,7 @@ $config['tfx_app_id'] = 838114;
 
 $config['wod_access'] = 'prtapi_f61edc0cbf5f5a79fd242f2fd8109f58';
 $config['wod_secondary_access'] = 'prtapi_cae598b313738493a199f9d447c101df';
-$config['wod_partner_id'] = 1322274;
+$config['wod_partner_id'] = 490420;
 $config['pon_app_id'] = 1635023;
 $config['bdn_app_id'] = 1967466;
 $config['wpn_app_id'] = 1883190;

@@ -3,17 +3,32 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Importer extends CI_Model
 {
-    function init_importer($app_id, $data_set, $cursor = '')
+    function init_importer($app_id, $data_set, $time_start, $time_end, $cursor = '')
     {
         $app = $this->db->where('app_id', $app_id)->get('apps')->row();
 
         $app_code = $app->app_code;
+
         $partner_id = $this->config->item($app_code . '_partner_id');
         $app_shopify_id = $this->config->item($app_code . '_app_id');
+        $token_primary = $this->config->item($app_code . '_access');
+        $token_secondary = $this->config->item($app_code . '_secondary_access');
 
         if ($app_id == 3 || $app_id == 4 || $app_id == 5) {
             $app_code = 'wod';
             $partner_id = $this->config->item('wod_partner_id');
+            $token_primary = $this->config->item($app_code . '_access');
+            $token_secondary = $this->config->item($app_code . '_secondary_access');
+        }
+
+        $extra_data = array();
+
+        if ($data_set == 'users') {
+            $extra_data = $this->api_users_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
+        }
+
+        if ($data_set == 'financials') {
+            $extra_data = $this->api_financial_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
         }
 
         return array(
@@ -21,7 +36,12 @@ class Importer extends CI_Model
             'App ID' => $app_id,
             'App Code' => $app_code,
             'Partner' => $partner_id,
-            'Shopify ID' => $app_shopify_id
+            'Shopify ID' => $app_shopify_id,
+            'Primary Token' => $token_primary,
+            'Secondary Token' => $token_secondary,
+            'From' => date('c', $time_start),
+            'To' => date('c', $time_end),
+            'Fetched Data' => json_decode($extra_data, TRUE)
         );
     }
 
@@ -29,7 +49,7 @@ class Importer extends CI_Model
     {
     }
 
-    private function api_users_data($partner_id, $app_id, $time_start, $time_end, $cursor)
+    private function api_users_data($partner_id, $token, $app_id, $time_start, $time_end, $cursor = '')
     {
 
         $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";
@@ -44,7 +64,7 @@ class Importer extends CI_Model
                     name
                     events(
                         first: 100,
-                        after: "' . $cursor . '"
+                        after: "' . $cursor . '",
                         types: [RELATIONSHIP_REACTIVATED RELATIONSHIP_DEACTIVATED RELATIONSHIP_INSTALLED RELATIONSHIP_UNINSTALLED],
                         occurredAtMin: "' . $time_start . '",
                         occurredAtMax: "' . $time_end . '"
@@ -81,7 +101,7 @@ class Importer extends CI_Model
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/graphql',
-                'X-Shopify-Access-Token: ' . $this->config->item('icu_access')
+                'X-Shopify-Access-Token: ' . $token
             ),
             CURLOPT_POSTFIELDS => $requestBody
         ));
@@ -93,10 +113,8 @@ class Importer extends CI_Model
         return $response;
     }
 
-    private function api_subscriptions_data($app, $time_start, $time_end, $cursor)
+    private function api_financial_data($partner_id, $token_primary, $app_id, $time_start, $time_end, $cursor)
     {
-        $partner_id = $this->config->item($app . '_partner_id');
-        $app_id = $this->config->item($app . '_app_id');
 
         $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";
 
@@ -152,7 +170,7 @@ class Importer extends CI_Model
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/graphql',
-                'X-Shopify-Access-Token: ' . $this->config->item('icu_access')
+                'X-Shopify-Access-Token: ' . $token_primary
             ),
             CURLOPT_POSTFIELDS => $requestBody
         ));

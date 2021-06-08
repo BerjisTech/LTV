@@ -542,3 +542,20 @@ $config['icu_access'] = 'prtapi_dd62c28de4c131ac15ba31fe520882cb';
 $config['icu_secondary_access'] = 'prtapi_271c5ca57fdfdfc47af8992a64834512';
 $config['icu_partner_id'] = 1322274;
 $config['icu_app_id'] = 767045;
+
+$config['pc_access'] = 'prtapi_9f02250c591d3459d04bf8b4e4f54f17';
+$config['pc_secondary_access'] = 'prtapi_966b950694196e67deecaf9f1cfa05b2';
+$config['pc_partner_id'] = 839642;
+$config['pc_app_id'] = 133976;
+
+$config['tfx_access'] = 'prtapi_1b8766951a73aed29c128832f56fc1e8';
+$config['tfx_secondary_access'] = 'prtapi_1f38c4743453aa4816c758668d90ccb0';
+$config['tfx_partner_id'] = 332808;
+$config['tfx_app_id'] = 838114;
+
+$config['wod_access'] = 'prtapi_f61edc0cbf5f5a79fd242f2fd8109f58';
+$config['wod_secondary_access'] = 'prtapi_cae598b313738493a199f9d447c101df';
+$config['wod_partner_id'] = 1322274;
+$config['pon_app_id'] = 1635023;
+$config['bdn_app_id'] = 1967466;
+$config['wpn_app_id'] = 1883190;

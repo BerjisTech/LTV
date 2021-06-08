@@ -201,116 +201,135 @@ class Ltv extends CI_Controller
         $this->db->insert('reviews', $data);
     }
 
-    public function import_shopify_users($app_id, $cursor = '')
+    public function run_importer($app_id, $data_set, $cursor = '')
     {
-        $app = $this->db->where('app_id', $app_id)->get('apps')->row();
+        header('Content-Type: application/json');
+        $this->load->model('Importer');
 
-        $app_code = $app->app_code;
-
-        $last_counter = $this->db->order_by('date', 'DESC')->limit(1)->get('shopify_data');
+        $last_entry = $this->db->where('app', $app_id)->order_by('date', 'DESC')->limit(1)->get('shopify_data');
 
         $time_start = strtotime('-3000 days');
 
-        if ($last_counter->num_rows() == 1 && isset($last_counter->row()->date)) {
-            $time_start = $last_counter->row()->date;
+        if ($last_entry->num_rows() == 1 && isset($last_entry->row()->date)) {
+            $time_start = $last_entry->row()->date;
         }
 
         $time_end = time();
 
-        $response = json_decode($this->api_users_data($app_code, $time_start, $time_end, $cursor), TRUE);
+        echo json_encode($this->Importer->init_importer($app_id, $data_set, $cursor, $time_start, $time_end));
+    }
 
-        // header('Content-Type: application/json');
-        $data = json_encode($response);
-        // echo $data;
+    public function import_shopify_users($app_id, $cursor = '')
+    {
 
-        if (!isset($response['data'])) {
-            echo json_encode(array(
-                'status' => '500',
-                'app' => $app_id,
-                'cursor' => 'DONE',
-                'message' => 'No data received'
-            ));
-            die();
-        }
+        // $app = $this->db->where('app_id', $app_id)->get('apps')->row();
 
-        if (!isset($data['errors']) && $data !== null) {
-            // echo json_encode($response['data']);
-            $user_nodes = $response['data']['app']['events']['edges'];
-            $next_page = $response['data']['app']['events']['pageInfo']['hasNextPage'];
-            $previous_page = $response['data']['app']['events']['pageInfo']['hasPreviousPage'];
-            $previous_cursor = '';
-            $next_cursor = '';
+        // $app_code = $app->app_code;
 
-            if ($previous_page != '') {
-                $previous_cursor = $user_nodes[0]['cursor'];
-            }
-            if ($next_page != '') {
-                $next_cursor = $user_nodes[count($user_nodes) - 1]['cursor'];
-            }
+        // $last_counter = $this->db->order_by('date', 'DESC')->limit(1)->get('shopify_data');
 
-            $values = '';
+        // $time_start = strtotime('-3000 days');
 
-            foreach ($user_nodes as $user) {
-                $date = strtotime($user['node']['occurredAt']);
-                $event = strtolower(str_replace('RELATIONSHIP_', '', $user['node']['type']));
-                $shop = str_replace('gid://partners/Shop/', '', $user['node']['shop']['id']);
-                $domain = $user['node']['shop']['myshopifyDomain'];
-                $cursor = $user['cursor'];
-                $reason = '';
+        // if ($last_counter->num_rows() == 1 && isset($last_counter->row()->date)) {
+        //     $time_start = $last_counter->row()->date;
+        // }
 
-                if (isset($user['node']['reason'])) {
-                    $reason = str_replace("'", '%27', strtolower($user['node']['reason']));
-                }
+        // $time_end = time();
 
-                $check_existence = $this->db
-                    ->where('app_id', $app_id)
-                    ->where('date', $date)
-                    ->where('event', $event)
-                    ->where('details', $reason)
-                    ->where('shop', $shop)
-                    ->where('domain', $domain)
-                    ->get('shopify_data');
+        // $response = "json_decode($this->api_users_data($app_code, $time_start, $time_end, $cursor), TRUE);"
 
-                if ($check_existence->num_rows() == 0) {
-                    $values .= " ('','$app_id','$date','$event','$reason','','$shop','','','$domain'),";
-                }
-            }
+        // // header('Content-Type: application/json');
+        // $data = json_encode($response);
+        // // echo $data;
 
-            if (isset($values) && !empty($values)) {
-                $query = "INSERT INTO `shopify_data` (`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`) VALUES " . substr_replace($values, "", -1);
+        // if (!isset($response['data'])) {
+        //     echo json_encode(array(
+        //         'status' => '500',
+        //         'app' => $app_id,
+        //         'cursor' => 'DONE',
+        //         'message' => 'No data received'
+        //     ));
+        //     die();
+        // }
 
-                if ($this->db->query($query) && $next_cursor != '') {
-                    echo json_encode(array(
-                        'status' => '200',
-                        'app' => $app_id,
-                        'cursor' => $next_cursor,
-                        'total_data' => count($user_nodes)
-                    ));
-                }
-                if ($next_cursor == '') {
-                    echo json_encode(array(
-                        'status' => '200',
-                        'app' => $app_id,
-                        'cursor' => 'DONE',
-                        'total_data' => count($user_nodes)
-                    ));
-                }
-            } else {
-                echo json_encode(array(
-                    'status' => '500',
-                    'app' => $app_id,
-                    'cursor' => 'DONE',
-                    'message' => $values
-                ));
-            }
-        } else {
-            echo json_encode(array(
-                'status' => '500',
-                'app' => $app_id,
-                'cursor' => 'DONE',
-                'message' => $data['errors']
-            ));
-        }
+        // if (!isset($data['errors']) && $data !== null) {
+        //     // echo json_encode($response['data']);
+        //     $user_nodes = $response['data']['app']['events']['edges'];
+        //     $next_page = $response['data']['app']['events']['pageInfo']['hasNextPage'];
+        //     $previous_page = $response['data']['app']['events']['pageInfo']['hasPreviousPage'];
+        //     $previous_cursor = '';
+        //     $next_cursor = '';
+
+        //     if ($previous_page != '') {
+        //         $previous_cursor = $user_nodes[0]['cursor'];
+        //     }
+        //     if ($next_page != '') {
+        //         $next_cursor = $user_nodes[count($user_nodes) - 1]['cursor'];
+        //     }
+
+        //     $values = '';
+
+        //     foreach ($user_nodes as $user) {
+        //         $date = strtotime($user['node']['occurredAt']);
+        //         $event = strtolower(str_replace('RELATIONSHIP_', '', $user['node']['type']));
+        //         $shop = str_replace('gid://partners/Shop/', '', $user['node']['shop']['id']);
+        //         $domain = $user['node']['shop']['myshopifyDomain'];
+        //         $cursor = $user['cursor'];
+        //         $reason = '';
+
+        //         if (isset($user['node']['reason'])) {
+        //             $reason = str_replace("'", '%27', strtolower($user['node']['reason']));
+        //         }
+
+        //         $check_existence = $this->db
+        //             ->where('app_id', $app_id)
+        //             ->where('date', $date)
+        //             ->where('event', $event)
+        //             ->where('details', $reason)
+        //             ->where('shop', $shop)
+        //             ->where('domain', $domain)
+        //             ->get('shopify_data');
+
+        //         if ($check_existence->num_rows() == 0) {
+        //             $values .= " ('','$app_id','$date','$event','$reason','','$shop','','','$domain'),";
+        //         }
+        //     }
+
+        //     if (isset($values) && !empty($values)) {
+        //         $query = "INSERT INTO `shopify_data` (`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`) VALUES " . substr_replace($values, "", -1);
+
+        //         if ($this->db->query($query) && $next_cursor != '') {
+        //             echo json_encode(array(
+        //                 'status' => '200',
+        //                 'app' => $app_id,
+        //                 'cursor' => $next_cursor,
+        //                 'total_data' => count($user_nodes)
+        //             ));
+        //         }
+        //         if ($next_cursor == '') {
+        //             echo json_encode(array(
+        //                 'status' => '200',
+        //                 'app' => $app_id,
+        //                 'cursor' => 'DONE',
+        //                 'total_data' => count($user_nodes)
+        //             ));
+        //         }
+        //     } else {
+        //         echo json_encode(array(
+        //             'status' => '500',
+        //             'app' => $app_id,
+        //             'cursor' => 'DONE',
+        //             'message' => $values
+        //         ));
+        //     }
+        // } else {
+        //     echo json_encode(array(
+        //         'status' => '500',
+        //         'app' => $app_id,
+        //         'cursor' => 'DONE',
+        //         'message' => $data['errors']
+        //     ));
+        // }
     }
 
     public function update_subscription($app_id, $cursor = '')
@@ -331,143 +350,6 @@ class Ltv extends CI_Controller
             $events = $response;
             echo json_encode($events['data']);
         }
-    }
-
-    private function api_users_data($app, $time_start, $time_end, $cursor)
-    {
-        $partner_id = $this->config->item($app . '_partner_id');
-        $app_id = $this->config->item($app . '_app_id');
-
-        $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";
-
-        $time_start = date('c', $time_start);
-        $time_end = date('c', $time_end);
-
-        $postData = '
-            {
-                app(id: "gid://partners/App/' . $app_id . '") {
-                    id
-                    name
-                    events(
-                        first: 100,
-                        after: "' . $cursor . '"
-                        types: [RELATIONSHIP_REACTIVATED RELATIONSHIP_DEACTIVATED RELATIONSHIP_INSTALLED RELATIONSHIP_UNINSTALLED],
-                        occurredAtMin: "' . $time_start . '",
-                        occurredAtMax: "' . $time_end . '"
-                        ) {
-                            edges {
-                                cursor 
-                                node {
-                                    type
-                                    occurredAt
-                                    shop {
-                                        id,
-                                        myshopifyDomain
-                                    }
-                                    ... on RelationshipUninstalled {
-                                        reason
-                                        description
-                                    }
-                                }
-                            }
-                            pageInfo { 
-                                hasPreviousPage 
-                                hasNextPage 
-                            } 
-                        }
-                    }
-                }';
-
-        $requestBody = $postData; // json_encode($postData);
-        $ch = curl_init($app_url);
-        curl_setopt_array($ch, array(
-            CURLOPT_POST => TRUE,
-            CURLOPT_SSL_VERIFYPEER => FALSE,
-            CURLOPT_SSL_VERIFYHOST => FALSE,
-            CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/graphql',
-                'X-Shopify-Access-Token: ' . $this->config->item('icu_access')
-            ),
-            CURLOPT_POSTFIELDS => $requestBody
-        ));
-
-        // Send the request
-        $response = curl_exec($ch);
-
-        // echo '<script> console.log(' . $response . ')</script>';
-        return $response;
-    }
-
-    private function api_subscriptions_data($app, $time_start, $time_end, $cursor)
-    {
-        $partner_id = $this->config->item($app . '_partner_id');
-        $app_id = $this->config->item($app . '_app_id');
-
-        $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";
-
-        $time_start = date('c', $time_start);
-        $time_end = date('c', $time_end);
-        $postData = '
-            {
-                transactions (
-                    types: [APP_SUBSCRIPTION_SALE ], 
-                    after: "' . $cursor . '", 
-                    createdAtMin: "' . $time_start . '", 
-                    createdAtMax:"' . $time_end . '", 
-                    first: 100) { 
-                        edges { 
-                            cursor 
-                            node { 
-                                id, 
-                                createdAt, 
-                                ... on AppSubscriptionSale { 
-                                    netAmount { 
-                                        amount 
-                                    }, 
-                                    app { 
-                                        name 
-                                    }, 
-                                    shop {  
-                                        myshopifyDomain 
-                                    } 
-                                }, 
-                                ... on ServiceSale { 
-                                    netAmount {  
-                                        amount 
-                                    }, 
-                                    shop {  
-                                        myshopifyDomain 
-                                    } 
-                                } 
-                            } 
-                        }, 
-                        pageInfo { 
-                            hasPreviousPage 
-                            hasNextPage 
-                        } 
-                    } 
-                }';
-
-        $requestBody = $postData; // json_encode($postData);
-        $ch = curl_init($app_url);
-        curl_setopt_array($ch, array(
-            CURLOPT_POST => TRUE,
-            CURLOPT_SSL_VERIFYPEER => FALSE,
-            CURLOPT_SSL_VERIFYHOST => FALSE,
-            CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/graphql',
-                'X-Shopify-Access-Token: ' . $this->config->item('icu_access')
-            ),
-            CURLOPT_POSTFIELDS => $requestBody
-        ));
-
-        // Send the request
-        $response = curl_exec($ch);
-
-        // echo '<script> console.log(' . $response . ')</script>';
-        return $response;
     }
 
     public function get_quaterly($app_id, $from, $to)

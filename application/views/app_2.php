@@ -1,6 +1,6 @@
 <div class="row mwili_ya_mkuu">
     <div class="col-sm-12">
-        <button class="btn btn-info pull-right importButtonShowHideClass" onclick="startImport('')">Import <?php echo $app->app_code; ?> Data</button>
+        <button class="btn btn-lg btn-info pull-right importButtonShowHideClass" onclick="startImport('users','')">Import <?php echo strtoupper($app->app_code); ?> User Data</button>
     </div>
     <div class="col-sm-12">
         <br />
@@ -13,6 +13,7 @@
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
+                        <li class=""><a href="<?php echo base_url("revenue/$app_id"); ?>" target="_BLANK" style="background: #21A9E1; color: #ffffff;" class="importButtonShowHideClass" onclick="startImport('financial','')">Import <?php echo strtoupper($app->app_code); ?> Financial Data</a></li>
                         <li class=""><a href="<?php echo base_url("revenue/$app_id"); ?>" target="_BLANK" style="background: #00A651; color: #ffffff;"><span class="entypo-plus"></span> Add Records</a></li>
                     </ul>
                 </div>
@@ -147,15 +148,15 @@
 <script>
     let imported_data = 0;
 
-    function startImport(cursor) {
+    function startImport(data_set, cursor) {
         $('.importButtonShowHideClass').hide()
         $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-info imports"><strong>Importing...</strong> </div></div>`))
-        importUsers(cursor)
+        importUsers('')
     }
 
-    function importUsers(cursor) {
+    function importDaily(data_set, cursor) {
         $.ajax({
-            url: `<?php echo base_url("import_shopify_users/$app_id/"); ?>${cursor}`,
+            url: `<?php echo base_url("import_shopify_users/$app_id/"); ?>${data_set}/${cursor}`,
             success: (r) => {
                 r = JSON.parse(r)
                 console.log(r)
@@ -164,7 +165,54 @@
                     setTimeout(() => {
                         $('.imports').html(`<strong>Importing...</strong> ${imported_data} user data imported so far : (${r.cursor})`)
                         if (r.cursor != '' && r.cursor != 'DONE') {
-                            importUsers(r.cursor)
+                            importDaily(data_set, r.cursor)
+                        } else {
+                            $('.alert-info').remove()
+                        }
+                    }, 1000)
+                    if (r.cursor == 'DONE') {
+                        $('.alert-info').remove()
+                        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success fullImport"><strong>SUCCESS</strong> All ${imported_data} ${data_set} data succesfully imported <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
+                    }
+                }
+                if (r.status == '500') {
+                    if (r.cursor == 'DONE') {
+                        $('.alert-info').remove()
+                        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success 500Error"><strong>Oh Snap!</strong> Something went wrong when importing the data <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
+                    }
+                }
+                $('.importButtonShowHideClass').show()
+            },
+            error: (e) => {
+                console.log(e)
+                e = JSON.parse(e)
+                $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-danger"><strong>Oh snap!</strong> ${e} </div></div>`))
+                setTimeout(() => {
+                    $('.alert-danger').remove()
+                }, 1000)
+                $('.importButtonShowHideClass').show()
+            }
+        })
+    }
+
+    function startFullImport(data_set, cursor) {
+        $('.importButtonShowHideClass').hide()
+        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-info imports"><strong>Importing...</strong> </div></div>`))
+        importUsers(data_set, '')
+    }
+
+    function importFull(data_set, cursor) {
+        $.ajax({
+            url: `<?php echo base_url("run_full_importer/$app_id/"); ?>${data_set}/${cursor}`,
+            success: (r) => {
+                r = JSON.parse(r)
+                console.log(r)
+                if (r.status == '200') {
+                    imported_data += r.total_data
+                    setTimeout(() => {
+                        $('.imports').html(`<strong>Importing...</strong> ${imported_data} user data imported so far : (${r.cursor})`)
+                        if (r.cursor != '' && r.cursor != 'DONE') {
+                            importFull(data_set, r.cursor)
                         } else {
                             $('.alert-info').remove()
                         }

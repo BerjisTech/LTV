@@ -203,133 +203,46 @@ class Ltv extends CI_Controller
 
     public function run_importer($app_id, $data_set, $cursor = '')
     {
-        header('Content-Type: application/json');
+        // header('Content-Type: application/json');
         $this->load->model('Importer');
 
-        $last_entry = $this->db->where('app_id', $app_id)->order_by('date', 'DESC')->limit(1)->get('shopify_data');
+        if ($data_set == 'users') {
+            $last_entry = $this->db->where('app_id', $app_id)->order_by('date', 'DESC')->limit(1)->get('shopify_data');
+        }
+
+        if ($data_set == 'financial') {
+            $last_entry = $this->db->where('app_id', $app_id)->order_by('date', 'DESC')->limit(1)->get('app_financials');
+        }
 
         $time_start = strtotime('-3000 days');
 
         if ($last_entry->num_rows() == 1 && isset($last_entry->row()->date)) {
-            $time_start = $last_entry->row()->date;
+            $time_start = ($last_entry->row()->date + 0);
         }
 
         $time_end = time();
 
-        echo json_encode($this->Importer->init_importer($app_id, $data_set,  $time_start, $time_end, $cursor));
+        $message = $this->Importer->init_importer($app_id, $data_set,  $time_start, $time_end, $cursor);
+
+        $user_message = $message["Processed Data"]["DB Stage"]["message"];
+
+        echo json_encode($user_message);
     }
 
-    public function import_shopify_users($app_id, $cursor = '')
+    public function run_full_importer($app_id, $data_set, $cursor = '')
     {
+        header('Content-Type: application/json');
+        $this->load->model('Importer');
 
-        // $app = $this->db->where('app_id', $app_id)->get('apps')->row();
+        $time_start = strtotime('-3000 days');
 
-        // $app_code = $app->app_code;
+        $time_end = time();
 
-        // $last_counter = $this->db->order_by('date', 'DESC')->limit(1)->get('shopify_data');
+        $message = $this->Importer->init_importer($app_id, $data_set,  $time_start, $time_end, $cursor);
 
-        // $time_start = strtotime('-3000 days');
+        $user_message = $message["Processed Data"]["DB Stage"]["message"];
 
-        // if ($last_counter->num_rows() == 1 && isset($last_counter->row()->date)) {
-        //     $time_start = $last_counter->row()->date;
-        // }
-
-        // $time_end = time();
-
-        // $response = "json_decode($this->api_users_data($app_code, $time_start, $time_end, $cursor), TRUE);"
-
-        // // header('Content-Type: application/json');
-        // $data = json_encode($response);
-        // // echo $data;
-
-        // if (!isset($response['data'])) {
-        //     echo json_encode(array(
-        //         'status' => '500',
-        //         'app' => $app_id,
-        //         'cursor' => 'DONE',
-        //         'message' => 'No data received'
-        //     ));
-        //     die();
-        // }
-
-        // if (!isset($data['errors']) && $data !== null) {
-        //     // echo json_encode($response['data']);
-        //     $user_nodes = $response['data']['app']['events']['edges'];
-        //     $next_page = $response['data']['app']['events']['pageInfo']['hasNextPage'];
-        //     $previous_page = $response['data']['app']['events']['pageInfo']['hasPreviousPage'];
-        //     $previous_cursor = '';
-        //     $next_cursor = '';
-
-        //     if ($previous_page != '') {
-        //         $previous_cursor = $user_nodes[0]['cursor'];
-        //     }
-        //     if ($next_page != '') {
-        //         $next_cursor = $user_nodes[count($user_nodes) - 1]['cursor'];
-        //     }
-
-        //     $values = '';
-
-        //     foreach ($user_nodes as $user) {
-        //         $date = strtotime($user['node']['occurredAt']);
-        //         $event = strtolower(str_replace('RELATIONSHIP_', '', $user['node']['type']));
-        //         $shop = str_replace('gid://partners/Shop/', '', $user['node']['shop']['id']);
-        //         $domain = $user['node']['shop']['myshopifyDomain'];
-        //         $cursor = $user['cursor'];
-        //         $reason = '';
-
-        //         if (isset($user['node']['reason'])) {
-        //             $reason = str_replace("'", '%27', strtolower($user['node']['reason']));
-        //         }
-
-        //         $check_existence = $this->db
-        //             ->where('app_id', $app_id)
-        //             ->where('date', $date)
-        //             ->where('event', $event)
-        //             ->where('details', $reason)
-        //             ->where('shop', $shop)
-        //             ->where('domain', $domain)
-        //             ->get('shopify_data');
-
-        //         if ($check_existence->num_rows() == 0) {
-        //             $values .= " ('','$app_id','$date','$event','$reason','','$shop','','','$domain'),";
-        //         }
-        //     }
-
-        //     if (isset($values) && !empty($values)) {
-        //         $query = "INSERT INTO `shopify_data` (`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`) VALUES " . substr_replace($values, "", -1);
-
-        //         if ($this->db->query($query) && $next_cursor != '') {
-        //             echo json_encode(array(
-        //                 'status' => '200',
-        //                 'app' => $app_id,
-        //                 'cursor' => $next_cursor,
-        //                 'total_data' => count($user_nodes)
-        //             ));
-        //         }
-        //         if ($next_cursor == '') {
-        //             echo json_encode(array(
-        //                 'status' => '200',
-        //                 'app' => $app_id,
-        //                 'cursor' => 'DONE',
-        //                 'total_data' => count($user_nodes)
-        //             ));
-        //         }
-        //     } else {
-        //         echo json_encode(array(
-        //             'status' => '500',
-        //             'app' => $app_id,
-        //             'cursor' => 'DONE',
-        //             'message' => $values
-        //         ));
-        //     }
-        // } else {
-        //     echo json_encode(array(
-        //         'status' => '500',
-        //         'app' => $app_id,
-        //         'cursor' => 'DONE',
-        //         'message' => $data['errors']
-        //     ));
-        // }
+        echo json_encode($user_message);
     }
 
     public function get_quaterly($app_id, $from, $to)

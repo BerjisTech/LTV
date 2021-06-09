@@ -13,7 +13,7 @@
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-                        <li class=""><a href="<?php echo base_url("revenue/$app_id"); ?>" target="_BLANK" style="background: #21A9E1; color: #ffffff;" class="importButtonShowHideClass" onclick="startImport('financials','')">Import <?php echo strtoupper($app->app_code); ?> Financial Data</a></li>
+                        <li class=""><a href="" style="background: #21A9E1; color: #ffffff;" class="importButtonShowHideClass" onclick="startImport('financials','')">Import <?php echo strtoupper($app->app_code); ?> Financial Data</a></li>
                         <li class=""><a href="<?php echo base_url("revenue/$app_id"); ?>" target="_BLANK" style="background: #00A651; color: #ffffff;"><span class="entypo-plus"></span> Add Records</a></li>
                     </ul>
                 </div>
@@ -168,11 +168,16 @@
                             importDaily(data_set, r.cursor)
                         } else {
                             $('.alert-info').remove()
+                            fetch_revenue_data('<?php echo $app_id ?>', 0, 30)
+                            fetch_user_data('<?php echo $app_id ?>', 0, 30)
                         }
                     }, 1000)
+
                     if (r.cursor == 'DONE') {
                         $('.alert-info').remove()
                         $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success fullImport"><strong>SUCCESS</strong> All ${imported_data} ${data_set} data succesfully imported <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
+                        fetch_revenue_data('<?php echo $app_id ?>', 0, 30)
+                        fetch_user_data('<?php echo $app_id ?>', 0, 30)
                     }
                 }
                 if (r.status == '500') {

@@ -27,18 +27,6 @@ class Ltv extends CI_Controller
         $this->load->view('index', $data);
     }
 
-    public function manageapps()
-    {
-    }
-
-    public function addapp()
-    {
-    }
-
-    public function updateapp()
-    {
-    }
-
     public function app($app_id)
     {
         $app = $this->db->where('app_id', $app_id)->get('apps')->row();
@@ -100,6 +88,7 @@ class Ltv extends CI_Controller
             $existence_check = $this->db->where('date_format(from_unixtime(quaterly.recorded), "%d%m%Y") =', date('dmY', strtotime($recorded)))->where('app_id', $this->input->post('app_id'))->get('quaterly');
             // echo $this->db->last_query();
             echo $existence_check->num_rows();
+
             if ($existence_check->num_rows() > 0) {
                 $existsing_data = $existence_check->row();
                 die('A record on ' . date('j\<\s\u\p\>S\<\/\s\u\p\> M, Y', strtotime($recorded)) . ' already exists.
@@ -110,6 +99,7 @@ class Ltv extends CI_Controller
             <br />
             Net Sales: $ ' . number_format(floatval($existsing_data->net_sales)));
             }
+
             $_POST['recorded'] = strtotime($this->input->post('recorded'));
             // echo json_encode($this->input->post());
             $data = $this->security->xss_clean($this->input->post());
@@ -123,8 +113,6 @@ class Ltv extends CI_Controller
     {
         $app = $this->db->where('app_id', $app_id)->get('apps')->row();
 
-        $app_code = $app->app_code;
-
         $data['app'] = $app;
         $data['app_id'] = $app_id;
         $data['all_apps'] = $this->db->get('apps')->result_array();
@@ -132,51 +120,6 @@ class Ltv extends CI_Controller
         $data['page_name'] = 'users';
         $data['page_title'] = 'Users';
         $this->load->view('index', $data);
-    }
-
-    public function csv()
-    {
-        $csv_file = fopen(base_url('data/history.csv'), 'r');
-        $csv_array = array();
-        while ($csv_data = fgetcsv($csv_file, NULL, ",")) :
-            $csv_array[] = $csv_data;
-        endwhile;
-
-        $data['countries'] = $this->db->get('countries')->result_array();
-        $data['continents'] = $this->db->get('continents')->result_array();
-
-        foreach ($csv_array as $key => $row) {
-            if ($key > 0) {
-                if ($row[0] != '') {
-                    $row[0] = strtotime($row[0]);
-                }
-                if ($row[3] != '') {
-                    $row[3] = strtotime($row[3]);
-                }
-
-                if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
-                    echo "('', '2' ,'$row[0]','$row[1]','$row[2]','$row[3]','$row[4]','$row[5]','$row[6]','$row[7]'),<br />";
-
-                // $db_data = array(
-                //     'icu_id' => '',
-                //     'date' => $row[0],
-                //     'event' => $row[1],
-                //     'details' => $row[2],
-                //     'billing_date' => $row[3],
-                //     'shop' => $row[4],
-                //     'country' => $row[5],
-                //     'email' => $row[6],
-                //     'domain' => $row[7]
-                // );
-
-                // $this->db->insert('icu_daily', $db_data);
-            }
-        }
-
-        // $data['csv_data'] = $csv_array;
-        // $data['page_name'] = 'csv';
-        // $data['page_title'] = 'CSV';
-        // $this->load->view('index', $data);
     }
 
     public function add_plan()
@@ -252,35 +195,66 @@ class Ltv extends CI_Controller
 
         $where = "`app_id` = $app_id AND `recorded` <= '" . $lastmonth . "' AND `recorded` >='" . $nowmonth . "'";
 
-        // $this->db->where($where)->get('shopify_data')->result_array();
-
         $fetched_data = $this->db->select('date_format(from_unixtime(recorded), "%Y-%m-%d") as y, last_30_days as a')->where($where)->order_by('recorded', 'ASC')->group_by('date_format(from_unixtime(recorded), "%d%m%Y")')->get('quaterly')->result_array();
-
-        // echo $this->db->last_query();
 
         echo json_encode($fetched_data);
     }
 
-    public function get_shopify_user_data($app_id, $from, $to)
+    public function get_shopify_user_data($data_set, $app_id, $from, $to)
     {
-        $nowmonth = strtotime(date('d-M-Y', strtotime("-$to days")));
-        $lastmonth = strtotime(date('d-M-Y', strtotime("-$from days")));
+        header('Content-Type: application/json');
 
-        $where = "`app_id` = $app_id AND `date` <= '" . $lastmonth . "' AND `date` >='" . $nowmonth . "'";
+        $this->load->model('Graphdata');
 
-        // $this->db->where($where)->get('shopify_data')->result_array();
+        if ($data_set == 'user') {
+            if ($from <= 30) {
+                $data = $this->Graphdata->users_month_or_less($app_id, $from, $to);
+            }
+            if ($from > 30) {
+                $data = $this->Graphdata->users_month_or_more($app_id, $from, $to);
+            }
+        }
+        if ($data_set == 'finance') {
+            if ($from <= 30) {
+                $data = $this->Graphdata->revenue_month_or_less($app_id, $from, $to);
+            }
+            if ($from > 30) {
+                $data = $this->Graphdata->revenue_month_or_more($app_id, $from, $to);
+            }
+        }
 
-        $data['installs'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")->where($where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('shopify_data')->result_array();
-        $data['uninstalls'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, (COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) a")->where($where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('shopify_data')->result_array();
+        echo json_encode($data);
+    }
 
-        $count = "COUNT(IF(`event` = 'installed', 1, NULL)) installed, 
-        COUNT(IF(`event` = 'uninstalled', 1, NULL)) uninstalled, 
-        COUNT(IF(`event` = 'reactivated', 1, NULL)) reactivated, 
-        COUNT(IF(`event` = 'deactivated', 1, NULL)) deactivated";
+    public function get_full_shopify_user_data($data_set, $from, $to)
+    {
+        header('Content-Type: application/json');
 
-        $data['total_users'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y,
-            (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a
-        ")->where($where)->order_by('date', 'ASC')->group_by('date_format(from_unixtime(date), "%d%m%Y")')->get('shopify_data')->result_array();
+        $this->load->model('Graphdata');
+
+        if ($data_set == 'user') {
+            if ($from <= 30) {
+                $data = $this->Graphdata->all_users_month_or_less($from, $to);
+            }
+            if ($from > 30) {
+                $data = $this->Graphdata->all_users_month_or_more($from, $to);
+            }
+        }
+        if ($data_set == 'finance') {
+            if ($from <= 30) {
+                $data = $this->Graphdata->all_revenue_month_or_less($from, $to);
+            }
+            if ($from > 30) {
+                $data = $this->Graphdata->all_revenue_month_or_more($from, $to);
+            }
+        }
+        if ($data_set == 'compare') {
+            $data = $this->Graphdata->all_revenue_month_pie($from, $to);
+        }
+
+        $data['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
+        $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
+        $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
 
         echo json_encode($data);
     }
@@ -291,11 +265,58 @@ class Ltv extends CI_Controller
         $this->db->query($query);
     }
 
+    public function filter_app_financials()
+    {
+        $query = "delete from `app_financials` where `finance_id` not in (select min(`finance_id`) from (select * from `app_financials`) as x group by `date`)";
+        $this->db->query($query);
+    }
+
+    public function get_csv($app_id, $data_set, $cursor = '')
+    {
+        header('Content-Type: application/json');
+        $this->load->model('Csvgen');
+
+        $time_start = strtotime('-3500 days');
+
+        $time_end = time();
+
+        $message = $this->Csvgen->init_importer($app_id, $data_set,  $time_start, $time_end, $cursor);
+
+        echo json_encode($message);
+    }
+
     function logout()
     {
         $this->session->sess_destroy();
         $this->session->set_flashdata('logout_notification', 'logged_out');
         redirect(base_url() . 'login', 'refresh');
+    }
+
+
+    public function csv()
+    {
+        $csv_file = fopen(base_url('data/history.csv'), 'r');
+        $csv_array = array();
+        while ($csv_data = fgetcsv($csv_file, NULL, ",")) :
+            $csv_array[] = $csv_data;
+        endwhile;
+
+        $data['countries'] = $this->db->get('countries')->result_array();
+        $data['continents'] = $this->db->get('continents')->result_array();
+
+        foreach ($csv_array as $key => $row) {
+            if ($key > 0) {
+                if ($row[0] != '') {
+                    $row[0] = strtotime($row[0]);
+                }
+                if ($row[3] != '') {
+                    $row[3] = strtotime($row[3]);
+                }
+
+                if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
+                    echo "('', '2' ,'$row[0]','$row[1]','$row[2]','$row[3]','$row[4]','$row[5]','$row[6]','$row[7]'),<br />";
+            }
+        }
     }
 
     /*public function csv($days)

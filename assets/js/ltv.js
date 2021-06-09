@@ -113,6 +113,30 @@ const drawArea = (area_chart_pane, graph_data, graph_keys, graph_labels, graph_c
     });
     $('#' + area_chart_pane).parent().attr('style', 'width: 100% !important;');
 }
+const drawLongArea = (area_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
+    $('#' + area_chart_pane).parent().show()
+    var area_chart = Morris.Area({
+        element: area_chart_pane,
+        data: graph_data,
+        xkey: 'y',
+        ykeys: graph_keys,
+        labels: graph_labels,
+        lineColors: graph_colors,
+        xLabelFormat: function (x) {
+            return x.getDate() + ' ' + months[x.getMonth()] + ' ' + x.getFullYear();
+        },
+        dateFormat: function (x) {
+            let d = new Date(x);
+            var douche = d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+            return douche;
+        },
+        resize: true,
+        smooth: true,
+        pointSize: 0,
+        redraw: true
+    });
+    $('#' + area_chart_pane).parent().attr('style', 'width: 100% !important;');
+}
 
 const drawBar = (bar_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
     Morris.Bar({
@@ -135,7 +159,7 @@ const drawPie = (pie_chart_pane, graph_data, graph_keys, graph_labels, graph_col
         colors: graph_colors
     });
     donut_chart_demo.parent().attr('style', 'width: 100% !important;');
-} 
+}
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;

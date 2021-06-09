@@ -78,7 +78,7 @@
                         <div id="line-chart-demo" class="morrischart" style="height: 500px"></div>
                     </div>
                     <div class="tab-pane" id="pie-chart">
-                        <div id="donut-chart-demo" class="morrischart" style="height: 500px;"></div>
+                        <div id="comparison_chart" class="morrischart" style="height: 500px;"></div>
                     </div>
                 </div>
             </div>

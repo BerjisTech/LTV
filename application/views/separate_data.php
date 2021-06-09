@@ -5,24 +5,8 @@
     let user_data = []
     let installs_data = []
     let uninstalls_data = []
+    let revenue_data = []
     let churn_data = []
-
-    let revenue_data = [<?php for ($m = 30; $m > -1; $m--) :
-                            $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
-                            $lastmonth = strtotime(date('d-M-Y', strtotime('-' . ($m - 1) . ' days'))); ?> {
-                y: '<?php echo date('Y-m-d', strtotime('-' . $m . ' days')); ?>',
-                a: <?php
-                            $where = "`app_id` = $app_id AND `recorded` BETWEEN '" . $nowmonth . "' AND '" . $lastmonth . "'";
-                            $shown = $this->db->where($where)->get('quaterly')->row()->last_30_days;
-                            if ($shown == '') {
-                                echo '0';
-                            } else {
-                                echo $shown;
-                            }
-                    ?>
-            },
-        <?php endfor; ?>
-    ];
 
     let reviews_data = [<?php for ($m = 7; $m > 0; $m--) :
                             $nowmonth = strtotime(date('d-M-Y', strtotime('-' . $m . ' days')));
@@ -92,15 +76,14 @@
         $('#reviews_chart').empty()
         drawBar('reviews_chart', reviews_data, reviews_keys, reviews_labels, reviews_colors)
 
-        fetch_quaterly_data('<?php echo $app_id ?>', 0, 30)
-        fetch_shopify_data('<?php echo $app_id ?>', 0, 30)
+        fetch_revenue_data('<?php echo $app_id ?>', 0, 30)
+        fetch_user_data('<?php echo $app_id ?>', 0, 30)
     })
 
-    function fetch_shopify_data(app, from, to) {
-        fetch(`${base_url}/get_shopify_user_data/${app}/${from}/${to}`).then((r) => {
-            r.text().then((d) => {
-                shopify_user_data = JSON.parse(d)
-
+    function fetch_user_data(app, from, to) {
+        $.ajax({
+            url: `${base_url}/get_shopify_user_data/user/${app}/${from}/${to}`,
+            success: (shopify_user_data) => {
                 $('#users_chart').empty()
                 drawBar('users_chart', shopify_user_data.total_users, user_keys, user_labels, user_colors)
                 $('#installs_chart').empty()
@@ -109,7 +92,17 @@
                 drawLine('uninstalls_chart', shopify_user_data.uninstalls, revenue_keys, uninstall_labels, uninstall_colors)
                 $('#churn_chart').empty()
                 drawPercentLine('churn_chart', shopify_user_data.total_users, revenue_keys, churn_labels, churn_colors)
-            })
+            }
+        })
+    }
+
+    function fetch_revenue_data(app, from, to) {
+        $.ajax({
+            url: `${base_url}/get_shopify_user_data/finance/${app}/${from}/${to}`,
+            success: (revenue_data) => {
+                $('#revenue_chart').empty()
+                drawLine('revenue_chart', revenue_data.net_sales, revenue_keys, revenue_labels, revenue_colors)
+            }
         })
     }
 </script>

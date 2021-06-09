@@ -234,7 +234,7 @@ class Ltv extends CI_Controller
         header('Content-Type: application/json');
         $this->load->model('Importer');
 
-        $time_start = strtotime('-3000 days');
+        $time_start = strtotime('-3500 days');
 
         $time_end = time();
 
@@ -242,7 +242,7 @@ class Ltv extends CI_Controller
 
         $user_message = $message["Processed Data"]["DB Stage"]["message"];
 
-        echo json_encode($message); 
+        echo json_encode($message);
     }
 
     public function get_quaterly($app_id, $from, $to)
@@ -283,6 +283,12 @@ class Ltv extends CI_Controller
         ")->where($where)->order_by('date', 'ASC')->group_by('date_format(from_unixtime(date), "%d%m%Y")')->get('shopify_data')->result_array();
 
         echo json_encode($data);
+    }
+
+    public function filter_shopify_data()
+    {
+        $query = "delete from `shopify_data` where `data_id` not in (select min(`data_id`) from (select * from `shopify_data`) as x group by `date`)";
+        $this->db->query($query);
     }
 
     function logout()

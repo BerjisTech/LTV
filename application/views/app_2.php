@@ -148,11 +148,11 @@
 <script>
     let imported_data = 0;
 
-    // function startImport(data_set, cursor) {
-    //     $('.importButtonShowHideClass').hide()
-    //     $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-info imports"><strong>Importing...</strong> </div></div>`))
-    //     importDaily(data_set, '')
-    // }
+    function startImport(data_set, cursor) {
+        $('.importButtonShowHideClass').hide()
+        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-info imports"><strong>Importing...</strong> </div></div>`))
+        importDaily(data_set, '')
+    }
 
     function importDaily(data_set, cursor) {
         $.ajax({

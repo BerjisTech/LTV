@@ -157,10 +157,9 @@
     function importDaily(data_set, cursor) {
         $.ajax({
             url: `<?php echo base_url("run_importer/$app_id/"); ?>${data_set}/${cursor}`,
-            success: (response) => {
+            success: (r) => {
                 // r = JSON.parse(r)
-                console.log(response)
-                r = response["Processed Data"]["DB Stage"]["message"];
+                console.log(r)
                 if (r.status == '200') {
                     imported_data += r.total_data
                     setTimeout(() => {
@@ -205,10 +204,9 @@
     function importFull(data_set, cursor) {
         $.ajax({
             url: `<?php echo base_url("run_full_importer/$app_id/"); ?>${data_set}/${cursor}`,
-            success: (response) => {
+            success: (r) => {
                 // r = JSON.parse(r)
-                console.log(response)
-                r = response["Processed Data"]["DB Stage"]["message"];
+                console.log(r)
                 if (r.status == '200') {
                     imported_data += r.total_data
                     setTimeout(() => {

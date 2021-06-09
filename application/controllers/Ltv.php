@@ -203,14 +203,14 @@ class Ltv extends CI_Controller
 
     public function run_importer($app_id, $data_set, $cursor = '')
     {
-        // header('Content-Type: application/json');
+        header('Content-Type: application/json');
         $this->load->model('Importer');
 
         if ($data_set == 'users') {
             $last_entry = $this->db->where('app_id', $app_id)->order_by('date', 'DESC')->limit(1)->get('shopify_data');
         }
 
-        if ($data_set == 'financial') {
+        if ($data_set == 'financials') {
             $last_entry = $this->db->where('app_id', $app_id)->order_by('date', 'DESC')->limit(1)->get('app_financials');
         }
 

@@ -30,7 +30,7 @@ class Importer extends CI_Model
             $data_table = 'shopify_data';
         }
 
-        if ($data_set == 'financial') {
+        if ($data_set == 'financials') {
             $extra_data = $this->api_financial_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
             $data_table = 'app_financials';
         }
@@ -108,15 +108,17 @@ class Importer extends CI_Model
 
         if ($table == 'shopify_data') {
             $rows = $this->get_user_rows($app_id, $data, $time_start, $time_end);
+            $table_rows = "`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`";
         }
         if ($table == 'app_financials') {
             $rows = $this->get_finance_rows($app_id, $data, $time_start, $time_end);
+            $table_rows = "`finance_id`, `app_id`, `date`, `app_version`, `amount`, `shop`, `domain`";
         }
 
         $values = $rows['value'];
 
         if (isset($values) && !empty($values)) {
-            $query = "INSERT INTO `$table` (`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`) VALUES " . substr_replace($values, "", -1);
+            $query = "INSERT INTO `$table` ($table_rows) VALUES " . $values;
 
             if ($this->db->query($query) && $next_cursor != '') {
                 $user_message = array(

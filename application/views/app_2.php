@@ -13,7 +13,7 @@
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-                        <li class=""><a href="<?php echo base_url("revenue/$app_id"); ?>" target="_BLANK" style="background: #21A9E1; color: #ffffff;" class="importButtonShowHideClass" onclick="startImport('financial','')">Import <?php echo strtoupper($app->app_code); ?> Financial Data</a></li>
+                        <li class=""><a href="<?php echo base_url("revenue/$app_id"); ?>" target="_BLANK" style="background: #21A9E1; color: #ffffff;" class="importButtonShowHideClass" onclick="startImport('financials','')">Import <?php echo strtoupper($app->app_code); ?> Financial Data</a></li>
                         <li class=""><a href="<?php echo base_url("revenue/$app_id"); ?>" target="_BLANK" style="background: #00A651; color: #ffffff;"><span class="entypo-plus"></span> Add Records</a></li>
                     </ul>
                 </div>
@@ -156,9 +156,9 @@
 
     function importDaily(data_set, cursor) {
         $.ajax({
-            url: `<?php echo base_url("import_shopify_users/$app_id/"); ?>${data_set}/${cursor}`,
+            url: `<?php echo base_url("run_importer/$app_id/"); ?>${data_set}/${cursor}`,
             success: (r) => {
-                r = JSON.parse(r)
+                // r = JSON.parse(r)
                 console.log(r)
                 if (r.status == '200') {
                     imported_data += r.total_data
@@ -205,7 +205,7 @@
         $.ajax({
             url: `<?php echo base_url("run_full_importer/$app_id/"); ?>${data_set}/${cursor}`,
             success: (r) => {
-                r = JSON.parse(r)
+                // r = JSON.parse(r)
                 console.log(r)
                 if (r.status == '200') {
                     imported_data += r.total_data

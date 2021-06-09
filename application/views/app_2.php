@@ -151,7 +151,7 @@
     function startImport(data_set, cursor) {
         $('.importButtonShowHideClass').hide()
         $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-info imports"><strong>Importing...</strong> </div></div>`))
-        importUsers('')
+        importDaily(data_set, '')
     }
 
     function importDaily(data_set, cursor) {
@@ -163,7 +163,7 @@
                 if (r.status == '200') {
                     imported_data += r.total_data
                     setTimeout(() => {
-                        $('.imports').html(`<strong>Importing...</strong> ${imported_data} user data imported so far : (${r.cursor})`)
+                        $('.imports').html(`<strong>Importing...</strong> ${imported_data} ${data_set} data imported so far : (${r.cursor})`)
                         if (r.cursor != '' && r.cursor != 'DONE') {
                             importDaily(data_set, r.cursor)
                         } else {
@@ -198,7 +198,7 @@
     function startFullImport(data_set, cursor) {
         $('.importButtonShowHideClass').hide()
         $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-info imports"><strong>Importing...</strong> </div></div>`))
-        importUsers(data_set, '')
+        importFull(data_set, '')
     }
 
     function importFull(data_set, cursor) {
@@ -210,7 +210,7 @@
                 if (r.status == '200') {
                     imported_data += r.total_data
                     setTimeout(() => {
-                        $('.imports').html(`<strong>Importing...</strong> ${imported_data} user data imported so far : (${r.cursor})`)
+                        $('.imports').html(`<strong>Importing...</strong> ${imported_data} ${data_set} data imported so far : (${r.cursor})`)
                         if (r.cursor != '' && r.cursor != 'DONE') {
                             importFull(data_set, r.cursor)
                         } else {
@@ -219,7 +219,7 @@
                     }, 1000)
                     if (r.cursor == 'DONE') {
                         $('.alert-info').remove()
-                        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success fullImport"><strong>SUCCESS</strong> All ${imported_data} user data succesfully imported <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
+                        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success fullImport"><strong>SUCCESS</strong> All ${imported_data} ${data_set} data succesfully imported <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
                     }
                 }
                 if (r.status == '500') {

@@ -242,7 +242,7 @@ class Ltv extends CI_Controller
 
         $user_message = $message["Processed Data"]["DB Stage"]["message"];
 
-        echo json_encode($message);
+        echo json_encode($message); 
     }
 
     public function get_quaterly($app_id, $from, $to)

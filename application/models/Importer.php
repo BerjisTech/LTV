@@ -157,8 +157,8 @@ class Importer extends CI_Model
         $indices = array();
         $founds = array();
 
-        $where = "`app_id` = $app_id AND `date` >= '" . $time_start . "' AND `date` <='" . $time_end . "'";
-        $check_existence = $this->db->select('app_id, date, event, details, shop, domain')->where($where)->get('shopify_data')->result_array();
+        // $where = "`app_id` = $app_id AND `date` >= '" . $time_start . "' AND `date` <='" . $time_end . "'";
+        $check_existence = $this->db->select('app_id, date, event, details, shop, domain')->where('app_id', $app_id)->get('shopify_data')->result_array();
 
         foreach ($data as $user) {
             $date = strtotime($user['node']['occurredAt']);
@@ -205,8 +205,8 @@ class Importer extends CI_Model
         $values = '';
         $indices = array();
 
-        $where = "`app_id` = $app_id AND `date` >= '" . $time_start . "' AND `date` <='" . $time_end . "'";
-        $check_existence = $this->db->select('app_id, date, app_version, amount, shop, domain')->where($where)->get('app_financials')->result_array();
+        // $where = "`app_id` = $app_id AND `date` >= '" . $time_start . "' AND `date` <='" . $time_end . "'";
+        $check_existence = $this->db->select('app_id, date, app_version, amount, shop, domain')->where('app_id', $app_id)->get('app_financials')->result_array();
 
         foreach ($data as $finance) {
             $date = strtotime($finance['node']['createdAt']);

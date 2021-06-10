@@ -71,12 +71,12 @@
             </div>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div class="tab-pane" id="area-chart">
-                        <div id="area-chart-demo" class="morrischart" style="height: 500px"></div>
+                    <!-- <div class="tab-pane" id="area-chart">
+                        <div id="revenue_chart" class="morrischart" style="height: 500px"></div>
                     </div>
                     <div class="tab-pane active" id="line-chart">
-                        <div id="line-chart-demo" class="morrischart" style="height: 500px"></div>
-                    </div>
+                        <div id="users_chart" class="morrischart" style="height: 500px"></div>
+                    </div> -->
                     <div class="tab-pane" id="pie-chart">
                         <div id="comparison_chart" class="morrischart" style="height: 500px;"></div>
                     </div>

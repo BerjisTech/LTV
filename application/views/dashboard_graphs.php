@@ -187,19 +187,6 @@ $begin = strtotime('05-05-2021');
             barSpacing: 3
         });
 
-        // JVector Maps
-        var map = $("#map");
-        map.vectorMap({
-            map: 'europe_merc_en',
-            zoomMin: '3',
-            backgroundColor: '#383f47',
-            focusOn: {
-                x: 0.5,
-                y: 0.8,
-                scale: 3
-            }
-        });
-
         $('.adjust-stats').change(function() {
             $(".morrischart").empty();
             if ($(this).val() == "0") {
@@ -254,49 +241,50 @@ $begin = strtotime('05-05-2021');
             }
         });
 
-        function fetch_user_data(from, to) {
-            $.ajax({
-                url: `${base_url}/get_full_shopify_user_data/user/${from}/${to}`,
-                success: (shopify_user_data) => {
-                    $('#users_chart').empty()
-                    if ($to > 30) {
-                        drawLongLine('installs_chart', revenue_data.net_sales, revenue_keys, revenue_labels, revenue_colors)
-                    }
-                    if ($to <= 30) {
-                        drawLine('installs_chart', revenue_data.net_sales, revenue_keys, revenue_labels, revenue_colors)
-                    }
-                }
-            })
-        }
-
-        function fetch_revenue_data(from, to) {
-            $.ajax({
-                url: `${base_url}/get_full_shopify_user_data/finance/${from}/${to}`,
-                success: (revenue_data) => {
-                    $('#revenue_chart').empty()
-                    if ($to > 30) {
-                        drawLongLine('revenue_chart', revenue_data.net_sales, revenue_keys, revenue_labels, revenue_colors)
-                    }
-                    if ($to <= 30) {
-                        drawLine('revenue_chart', revenue_data.net_sales, revenue_keys, revenue_labels, revenue_colors)
-                    }
-                }
-            })
-        }
-
-        function fetch_compare_data(from, to) {
-            $.ajax({
-                url: `${base_url}/get_full_shopify_user_data/compare/${from}/${to}`,
-                success: (revenue_data) => {
-                    $('#comparison_chart').empty()
-                    drawPie('comparison_chart', revenue_data.net_sales, revenue_keys, revenue_labels, revenue_colors)
-                }
-            })
-        }
-
     });
 
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function fetch_user_data(from, to) {
+        $.ajax({
+            url: `${base_url}/get_full_shopify_user_data/user/${from}/${to}`,
+            success: (revenue_data) => {
+                $('#users_chart').empty()
+                if (to > 30) {
+                    drawLongLine('users_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
+                }
+                if (to <= 30) {
+                    drawLine('users_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
+                }
+            }
+        })
+    }
+
+    function fetch_revenue_data(from, to) {
+        $.ajax({
+            url: `${base_url}/get_full_shopify_user_data/finance/${from}/${to}`,
+            success: (revenue_data) => {
+                $('#revenue_chart').empty()
+                if (to > 30) {
+                    drawLongLine('revenue_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
+                }
+                if (to <= 30) {
+                    drawLine('revenue_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
+                }
+            }
+        })
+    }
+
+    function fetch_compare_data(from, to) {
+        $.ajax({
+            url: `${base_url}/get_full_shopify_user_data/compare/${from}/${to}`,
+            success: (revenue_data) => {
+                console.log(revenue_data)
+                $('#comparison_chart').empty()
+                drawPie('comparison_chart', revenue_data.net_sales, revenue_data.revenue_colors)
+            }
+        })
     }
 </script>

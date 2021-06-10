@@ -150,7 +150,7 @@ const drawBar = (bar_chart_pane, graph_data, graph_keys, graph_labels, graph_col
     });
 }
 
-const drawPie = (pie_chart_pane, graph_data, graph_keys, graph_labels, graph_colors) => {
+const drawPie = (pie_chart_pane, graph_data, graph_colors) => {
     var donut_chart_demo = $("#" + pie_chart_pane);
     donut_chart_demo.parent().show();
     var donut_chart = Morris.Donut({

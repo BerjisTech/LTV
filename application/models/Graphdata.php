@@ -46,44 +46,54 @@ class Graphdata extends CI_Model
 
     function all_users_month_or_more($from, $to)
     {
-        $data['installs'] = $this
+        $data['y'] = $this->getYs($from, $to);
+        $As = $this
             ->db
-            ->select("date_format(from_unixtime(date), '%Y-%m') as y, (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")
+            ->select("(COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")
             ->where($this->all_app_speficics($from, $to)->where)
             ->order_by('date', 'ASC')
             ->group_by("date_format(from_unixtime(date), '%m%Y')")
             ->get('shopify_data')
             ->result_array();
+
+        array_push($data, $As);
         return $data;
     }
 
     function all_users_month_or_less($from, $to)
     {
-        $data['installs'] = $this
+        $data['y'] = $this->getYs($from, $to);
+        $As = $this
             ->db
-            ->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")
+            ->select("
+                (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")
             ->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')
             ->group_by("date_format(from_unixtime(date), '%d%m%Y')")
             ->get('shopify_data')
             ->result_array();
+
+        array_push($data, $As);
         return $data;
     }
 
     function all_revenue_month_or_more($from, $to)
     {
-        $data['net_sales'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, SUM(`amount`) a")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('app_financials')->result_array();
+        $data['y'] = $this->getYs($from, $to);
+        $As = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, SUM(`amount`) a")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('app_financials')->result_array();
         return $data;
     }
 
     function all_revenue_month_or_less($from, $to)
     {
-        $data['net_sales'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, SUM(`amount`) a")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_financials')->result_array();
+        $data['y'] = $this->getYs($from, $to);
+        $As = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, SUM(`amount`) a")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_financials')->result_array();
         return $data;
     }
 
     function all_revenue_month_pie($from, $to)
     {
         $total_apps = $this->db->get('apps')->result_array();
+        $data['revenue_colors'] = ['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB'];
 
         for ($app = 0; $app <= count($total_apps) - 1; $app++) :
             $app_name = $total_apps[$app]['app_name'];
@@ -94,7 +104,7 @@ class Graphdata extends CI_Model
                 $value['a'] = 0;
             }
             $value['a'] = $value['a'] + 0;
-            $data[] = $value;
+            $data['net_sales'][] = $value;
         endfor;
 
         return $data;
@@ -158,5 +168,28 @@ class Graphdata extends CI_Model
             'to' => $lastmonth,
             'where' => $where
         );
+    }
+
+    private function getYs($from, $to)
+    {
+
+        $y['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
+        $y['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
+        $y['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
+
+        $y = array();
+        $range = ($to - $from);
+        if ($to <= 90) {
+            for ($m = $from; $m >= $to; $m--) {
+                array_push($y, date('Y-m-d', strtotime('-' . $m . ' days')));
+            }
+        }
+        if ($to > 90) {
+            for ($m = ($range / 30); $m >= $to; $m--) {
+                array_push($y, date('Y-m', strtotime('-' . $m . ' months')));
+            }
+        }
+
+        return $y;
     }
 }

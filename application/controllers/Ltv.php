@@ -231,30 +231,27 @@ class Ltv extends CI_Controller
         header('Content-Type: application/json');
 
         $this->load->model('Graphdata');
+        $data['net_sales'] = array();
 
         if ($data_set == 'user') {
-            if ($from <= 30) {
+            if ($from <= 90) {
                 $data = $this->Graphdata->all_users_month_or_less($from, $to);
             }
-            if ($from > 30) {
+            if ($from > 90) {
                 $data = $this->Graphdata->all_users_month_or_more($from, $to);
             }
         }
         if ($data_set == 'finance') {
-            if ($from <= 30) {
+            if ($from <= 90) {
                 $data = $this->Graphdata->all_revenue_month_or_less($from, $to);
             }
-            if ($from > 30) {
+            if ($from > 90) {
                 $data = $this->Graphdata->all_revenue_month_or_more($from, $to);
             }
         }
         if ($data_set == 'compare') {
             $data = $this->Graphdata->all_revenue_month_pie($from, $to);
         }
-
-        $data['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
-        $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
-        $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
 
         echo json_encode($data);
     }

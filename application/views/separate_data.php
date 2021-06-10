@@ -85,7 +85,7 @@
             url: `${base_url}/get_shopify_user_data/user/${app}/${from}/${to}`,
             success: (shopify_user_data) => {
                 $('#users_chart').empty()
-                drawBar('users_chart', shopify_user_data.total_users, user_keys, user_labels, user_colors)
+                drawLine('users_chart', shopify_user_data.total_users, user_keys, user_labels, user_colors)
                 $('#installs_chart').empty()
                 drawLine('installs_chart', shopify_user_data.installs, revenue_keys, install_labels, install_colors)
                 $('#uninstalls_chart').empty()

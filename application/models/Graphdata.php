@@ -89,7 +89,7 @@ class Graphdata extends CI_Model
 
         $As = $this
             ->db
-            ->select("date_format(from_unixtime(date), '%Y-%m-%d') as y,
+            ->select("date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y,
             (COUNT(IF(`event` = 'installed' AND `app_id` = 1, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 1, 1, NULL))) a,
             (COUNT(IF(`event` = 'installed' AND `app_id` = 2, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 2, 1, NULL))) b,
             (COUNT(IF(`event` = 'installed' AND `app_id` = 3, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 3, 1, NULL))) c,
@@ -163,12 +163,17 @@ class Graphdata extends CI_Model
         $total_apps = $this->db->get('apps')->result_array();
         $data['revenue_colors'] = ['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB'];
 
-        $value = $this->db->select("SUM(`amount`) value")->where($this->all_app_speficics($from, $to)->where)->get('app_financials')->result_array()[0];
-        if ($value['value'] == null) {
-            $value['value'] = 0;
-        }
-        $value['value'] = $value['value'] + 0;
-        $data['net_sales'][] = $value;
+        for ($app = 0; $app <= count($total_apps) - 1; $app++) :
+            $app_name = $total_apps[$app]['app_name'];
+            $app_id = $total_apps[$app]['app_id'];
+
+            $value = $this->db->select("'$app_name' as label, SUM(`amount`) value")->where($this->full_speficics($app_id, $from, $to)->where)->get('app_financials')->result_array()[0];
+            if ($value['value'] == null) {
+                $value['value'] = 0;
+            }
+            $value['value'] = $value['value'] + 0;
+            $data['net_sales'][] = $value;
+        endfor;
 
         return $data;
     }

@@ -63,26 +63,26 @@
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-                        <li class=""><a href="#area-chart" data-toggle="tab">Revenue</a></li>
-                        <li class="active"><a href="#line-chart" data-toggle="tab">User Growth</a></li>
-                        <li class=""><a href="#pie-chart" data-toggle="tab">App Comparison by Revenue</a></li>
+                        <li class=""><a href="#revenue-chart" data-toggle="tab">Revenue</a></li>
+                        <li class="active"><a href="#users-chart" data-toggle="tab">User Growth</a></li>
+                        <li class=""><a href="#comparison-chart" data-toggle="tab">App Comparison by Revenue</a></li>
                     </ul>
                 </div>
             </div>
             <div class="panel-body">
                 <div class="tab-content">
-                    <div class="tab-pane" id="area-chart">
-                        <div id="revenue_chart" class="morrischart" style="height: 500px">
+                    <div class=" tab-pane" id="comparison-chart">
+                        <div id="comparison_chart" class="morrischart" style="height: 500px;">
                             <img src="<?php echo base_url('assets/images/loader.gif'); ?>" />
                         </div>
                     </div>
-                    <div class=" tab-pane active" id="line-chart">
+                    <div class="tab-pane active" id="users-chart">
                         <div id="users_chart" class="morrischart" style="height: 500px">
                             <img src="<?php echo base_url('assets/images/loader.gif'); ?>" />
                         </div>
                     </div>
-                    <div class=" tab-pane" id="pie-chart">
-                        <div id="comparison_chart" class="morrischart" style="height: 500px;">
+                    <div class="tab-pane" id="revenue-chart">
+                        <div id="revenue_chart" class="morrischart" style="height: 500px">
                             <img src="<?php echo base_url('assets/images/loader.gif'); ?>" />
                         </div>
                     </div>

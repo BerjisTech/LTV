@@ -256,7 +256,7 @@ class Ltv extends CI_Controller
             $data = $this->Graphdata->all_revenue_month_pie($from, $to);
         }
 
-        echo json_encode($data);
+        echo json_encode((object) $data);
     }
 
     public function filter_shopify_data()

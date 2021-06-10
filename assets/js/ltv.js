@@ -13,7 +13,7 @@ const drawLine = (line_chart_pane, graph_data, graph_keys, graph_labels, graph_c
     var line_chart = Morris.Line({
         element: line_chart_pane,
         data: graph_data,
-        xkey: 'y',
+        xkey: "y",
         ykeys: graph_keys,
         labels: graph_labels,
         lineColors: graph_colors,
@@ -38,7 +38,7 @@ const drawShortLine = (line_chart_pane, graph_data, graph_keys, graph_labels, gr
     var line_chart = Morris.Line({
         element: line_chart_pane,
         data: graph_data,
-        xkey: 'y',
+        xkey: "y",
         ykeys: graph_keys,
         labels: graph_labels,
         lineColors: graph_colors,
@@ -82,7 +82,7 @@ const drawLongLine = (line_chart_pane, graph_data, graph_keys, graph_labels, gra
     var line_chart = Morris.Line({
         element: line_chart_pane,
         data: graph_data,
-        xkey: 'y',
+        xkey: "y",
         ykeys: graph_keys,
         labels: graph_labels,
         lineColors: graph_colors,
@@ -107,7 +107,7 @@ const drawPercentLine = (line_chart_pane, graph_data, graph_keys, graph_labels, 
     var line_chart = Morris.Line({
         element: line_chart_pane,
         data: graph_data,
-        xkey: 'y',
+        xkey: "y",
         ykeys: graph_keys,
         labels: graph_labels,
         lineColors: graph_colors,
@@ -138,7 +138,7 @@ const drawArea = (area_chart_pane, graph_data, graph_keys, graph_labels, graph_c
     var area_chart = Morris.Area({
         element: area_chart_pane,
         data: graph_data,
-        xkey: 'y',
+        xkey: "y",
         ykeys: graph_keys,
         labels: graph_labels,
         lineColors: graph_colors,
@@ -162,7 +162,7 @@ const drawShortArea = (area_chart_pane, graph_data, graph_keys, graph_labels, gr
     var area_chart = Morris.Area({
         element: area_chart_pane,
         data: graph_data,
-        xkey: 'y',
+        xkey: "y",
         ykeys: graph_keys,
         labels: graph_labels,
         lineColors: graph_colors,
@@ -205,7 +205,7 @@ const drawLongArea = (area_chart_pane, graph_data, graph_keys, graph_labels, gra
     var area_chart = Morris.Area({
         element: area_chart_pane,
         data: graph_data,
-        xkey: 'y',
+        xkey: "y",
         ykeys: graph_keys,
         labels: graph_labels,
         lineColors: graph_colors,
@@ -230,7 +230,7 @@ const drawBar = (bar_chart_pane, graph_data, graph_keys, graph_labels, graph_col
         element: bar_chart_pane,
         axes: true,
         data: graph_data,
-        xkey: 'y',
+        xkey: "y",
         ykeys: graph_keys,
         labels: graph_labels,
         barColors: graph_colors

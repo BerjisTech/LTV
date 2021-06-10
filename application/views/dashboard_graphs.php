@@ -10,6 +10,7 @@ $begin = strtotime('05-05-2021');
 // }
 ?>
 <script type="text/javascript">
+    $('.morrischart').html(`<img src="<?php echo base_url('assets/images/loader.gif'); ?>" />`)
     let user_data = []
     let revenue_data = []
     let compare_data = []
@@ -191,7 +192,7 @@ $begin = strtotime('05-05-2021');
             barSpacing: 3
         });
 
-        loadGraphs(0, 30)
+        loadGraphs(0, 366)
 
         $('.adjust-stats').change(function() {
             $(".morrischart").empty();

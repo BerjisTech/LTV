@@ -8,29 +8,79 @@ class Graphdata extends CI_Model
 
     function users_month_or_more($app_id, $from, $to)
     {
-        $data['installs'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")->where($this->user_speficics($app_id, $from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('shopify_data')->result_array();
-        $data['uninstalls'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, (COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) a")->where($this->user_speficics($app_id, $from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('shopify_data')->result_array();
+        $where = $this->user_speficics($app_id, $from, $to)->where;
 
+        $sql_install = "SELECT date_format(from_unixtime(date), '%Y-%m') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a
+                      FROM `shopify_data`
+                      JOIN(select @users:=0) as a 
+                      WHERE $where
+                      GROUP BY date_format(from_unixtime(date), 'm%Y')
+                      ORDER BY `date` ASC";
 
-        $data['total_users'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a")->where($this->user_speficics($app_id, $from, $to)->where)->order_by('date', 'ASC')->group_by('date_format(from_unixtime(date), "%m%Y")')->get('shopify_data')->result_array();
+        $sql_uninstall = "SELECT date_format(from_unixtime(date), '%Y-%m') as y, @users:=@users + (COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) a
+                      FROM `shopify_data`
+                      JOIN(select @users:=0) as a 
+                      WHERE $where
+                      GROUP BY date_format(from_unixtime(date), 'm%Y')
+                      ORDER BY `date` ASC";
+
+        $sql_churn = "SELECT date_format(from_unixtime(date), '%Y-%m') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a
+                      FROM `shopify_data`
+                      JOIN(select @users:=0) as a 
+                      WHERE $where
+                      GROUP BY date_format(from_unixtime(date), 'm%Y')
+                      ORDER BY `date` ASC";
+
+        $data['installs'] = $this->db->query($sql_install)->result_array();
+        $data['uninstalls'] = $this->db->query($sql_uninstall)->result_array();
+        $data['total_users'] = $this->db->query($sql_churn)->result_array();
 
         return $data;
     }
 
     function users_month_or_less($app_id, $from, $to)
     {
-        $data['installs'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")->where($this->user_speficics($app_id, $from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('shopify_data')->result_array();
-        $data['uninstalls'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, (COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) a")->where($this->user_speficics($app_id, $from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('shopify_data')->result_array();
+        $where = $this->user_speficics($app_id, $from, $to)->where;
 
+        $sql_install = "SELECT date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a
+                      FROM `shopify_data`
+                      JOIN(select @users:=0) as a 
+                      WHERE $where
+                      GROUP BY date_format(from_unixtime(date), '%dm%Y')
+                      ORDER BY `date` ASC";
 
-        $data['total_users'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a")->where($this->user_speficics($app_id, $from, $to)->where)->order_by('date', 'ASC')->group_by('date_format(from_unixtime(date), "%d%m%Y")')->get('shopify_data')->result_array();
+        $sql_uninstall = "SELECT date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y, @users:=@users + (COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) a
+                      FROM `shopify_data`
+                      JOIN(select @users:=0) as a 
+                      WHERE $where
+                      GROUP BY date_format(from_unixtime(date), '%dm%Y')
+                      ORDER BY `date` ASC";
 
+        $sql_churn = "SELECT date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a
+                      FROM `shopify_data`
+                      JOIN(select @users:=0) as a 
+                      WHERE $where
+                      GROUP BY date_format(from_unixtime(date), '%dm%Y')
+                      ORDER BY `date` ASC";
+
+        $data['installs'] = $this->db->query($sql_install)->result_array();
+        $data['uninstalls'] = $this->db->query($sql_uninstall)->result_array();
+        $data['total_users'] = $this->db->query($sql_churn)->result_array();
         return $data;
     }
 
     function revenue_month_or_more($app_id, $from, $to)
     {
-        $data['net_sales'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, SUM(`amount`) a")->where($this->finance_speficics($app_id, $from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('app_financials')->result_array();
+        $where = $this->finance_speficics($app_id, $from, $to)->where;
+
+        $sql_sales = "SELECT date_format(from_unixtime(date), '%Y-%m') as y, @amount:=@amount + SUM(`amount`) as a
+                      FROM `app_financials`
+                      JOIN(select @amount:=0) as a 
+                      WHERE $where
+                      GROUP BY date_format(from_unixtime(date), 'm%Y')
+                      ORDER BY `date` ASC";
+
+        $data['net_sales'] = $this->db->query($sql_sales)->result_array();
         $data['refunds'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, SUM(`amount`*-1) a")->where($this->finance_speficics($app_id, $from, $to)->where)->where('amount <', 0)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('app_financials')->result_array();
 
         return $data;
@@ -38,8 +88,16 @@ class Graphdata extends CI_Model
 
     function revenue_month_or_less($app_id, $from, $to)
     {
-        $data['net_sales'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, SUM(`amount`) a")->where($this->finance_speficics($app_id, $from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_financials')->result_array();
-        $data['refunds'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, SUM(`amount`*-1) a")->where($this->finance_speficics($app_id, $from, $to)->where)->where('amount <', 0)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_financials')->result_array();
+        $where = $this->finance_speficics($app_id, $from, $to)->where;
+        $sql_sales = "SELECT date_format(from_unixtime(date), '%Y-%m-%d') as y, @amount:=@amount + SUM(`amount`) as a
+                      FROM `app_financials`
+                      JOIN(select @amount:=0) as a 
+                      WHERE $where
+                      GROUP BY date_format(from_unixtime(date), '%d%m%Y')
+                      ORDER BY `date` ASC";
+
+        $data['net_sales'] = $this->db->query($sql_sales)->result_array();
+        $data['refunds'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, SUM(`amount`*-1) a")->where($where)->where('amount <', 0)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_financials')->result_array();
 
         return $data;
     }
@@ -54,24 +112,30 @@ class Graphdata extends CI_Model
 
         $data['net_sales'] = array();
 
-        $As = $this
-            ->db
-            ->select("
-                date_format(from_unixtime(date), '%Y-%m') as y, 
-                (COUNT(IF(`event` = 'installed' AND `app_id` = 1, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 1, 1, NULL))) a,
-                (COUNT(IF(`event` = 'installed' AND `app_id` = 2, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 2, 1, NULL))) b,
-                (COUNT(IF(`event` = 'installed' AND `app_id` = 3, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 3, 1, NULL))) c,
-                (COUNT(IF(`event` = 'installed' AND `app_id` = 4, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 4, 1, NULL))) d,
-                (COUNT(IF(`event` = 'installed' AND `app_id` = 5, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 5, 1, NULL))) e,
-                (COUNT(IF(`event` = 'installed' AND `app_id` = 6, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 6, 1, NULL))) f,
-                (COUNT(IF(`event` = 'installed' AND `app_id` = 7, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 7, 1, NULL))) g,
-                (COUNT(IF(`event` = 'installed' AND `app_id` = 8, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 8, 1, NULL))) h
-                ")
-            ->where($this->all_app_speficics($from, $to)->where)
-            ->order_by('date', 'ASC')
-            ->group_by("date_format(from_unixtime(date), '%m%Y')")
-            ->get('shopify_data')
-            ->result_array();
+        $sql_user = "SELECT 
+                                date_format(from_unixtime(date), '%Y-%m') as y, 
+                                @users_a:=@users_a + (COUNT(IF(`event` = 'installed' AND `app_id` = 1, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 1, 1, NULL))) a, 
+                                @users_b:=@users_b + (COUNT(IF(`event` = 'installed' AND `app_id` = 2, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 2, 1, NULL))) b, 
+                                @users_c:=@users_c + (COUNT(IF(`event` = 'installed' AND `app_id` = 3, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 3, 1, NULL))) c, 
+                                @users_d:=@users_d + (COUNT(IF(`event` = 'installed' AND `app_id` = 4, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 4, 1, NULL))) d, 
+                                @users_e:=@users_e + (COUNT(IF(`event` = 'installed' AND `app_id` = 5, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 5, 1, NULL))) e, 
+                                @users_f:=@users_f + (COUNT(IF(`event` = 'installed' AND `app_id` = 6, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 6, 1, NULL))) f, 
+                                @users_g:=@users_g + (COUNT(IF(`event` = 'installed' AND `app_id` = 7, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 7, 1, NULL))) g, 
+                                @users_h:=@users_h + (COUNT(IF(`event` = 'installed' AND `app_id` = 8, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 8, 1, NULL))) h
+                        FROM `shopify_data`
+                        JOIN(select @users_a:=0) as a 
+                        JOIN(select @users_b:=0) as b 
+                        JOIN(select @users_c:=0) as c 
+                        JOIN(select @users_d:=0) as d 
+                        JOIN(select @users_e:=0) as e 
+                        JOIN(select @users_f:=0) as f 
+                        JOIN(select @users_g:=0) as g 
+                        JOIN(select @users_h:=0) as h 
+                        WHERE " . $this->all_app_speficics($from, $to)->where . "
+                        GROUP BY date_format(from_unixtime(date), '%m%Y')
+                        ORDER BY `date` ASC";
+
+        $As = $this->db->query($sql_user)->result_array();
 
         $data['net_sales'] = $As;
         return $data;
@@ -87,24 +151,33 @@ class Graphdata extends CI_Model
 
         $data['net_sales'] = array();
 
-        $As = $this
-            ->db
-            ->select("date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y,
-            (COUNT(IF(`event` = 'installed' AND `app_id` = 1, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 1, 1, NULL))) a,
-            (COUNT(IF(`event` = 'installed' AND `app_id` = 2, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 2, 1, NULL))) b,
-            (COUNT(IF(`event` = 'installed' AND `app_id` = 3, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 3, 1, NULL))) c,
-            (COUNT(IF(`event` = 'installed' AND `app_id` = 4, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 4, 1, NULL))) d,
-            (COUNT(IF(`event` = 'installed' AND `app_id` = 5, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 5, 1, NULL))) e,
-            (COUNT(IF(`event` = 'installed' AND `app_id` = 6, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 6, 1, NULL))) f,
-            (COUNT(IF(`event` = 'installed' AND `app_id` = 7, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 7, 1, NULL))) g,
-            (COUNT(IF(`event` = 'installed' AND `app_id` = 8, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 8, 1, NULL))) h
-            ")
-            ->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')
-            ->group_by("date_format(from_unixtime(date), '%d%m%Y')")
-            ->get('shopify_data')
-            ->result_array();
 
-        $data['net_sales'][] = $As;
+        $sql_user = "SELECT 
+                            date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y, 
+                                @users_a:=@users_a + (COUNT(IF(`event` = 'installed' AND `app_id` = 1, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 1, 1, NULL))) a, 
+                                @users_b:=@users_b + (COUNT(IF(`event` = 'installed' AND `app_id` = 2, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 2, 1, NULL))) b, 
+                                @users_c:=@users_c + (COUNT(IF(`event` = 'installed' AND `app_id` = 3, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 3, 1, NULL))) c, 
+                                @users_d:=@users_d + (COUNT(IF(`event` = 'installed' AND `app_id` = 4, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 4, 1, NULL))) d, 
+                                @users_e:=@users_e + (COUNT(IF(`event` = 'installed' AND `app_id` = 5, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 5, 1, NULL))) e, 
+                                @users_f:=@users_f + (COUNT(IF(`event` = 'installed' AND `app_id` = 6, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 6, 1, NULL))) f, 
+                                @users_g:=@users_g + (COUNT(IF(`event` = 'installed' AND `app_id` = 7, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 7, 1, NULL))) g, 
+                                @users_h:=@users_h + (COUNT(IF(`event` = 'installed' AND `app_id` = 8, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 8, 1, NULL))) h
+                        FROM `shopify_data`
+                        JOIN(select @users_a:=0) as a 
+                        JOIN(select @users_b:=0) as b 
+                        JOIN(select @users_c:=0) as c 
+                        JOIN(select @users_d:=0) as d 
+                        JOIN(select @users_e:=0) as e 
+                        JOIN(select @users_f:=0) as f 
+                        JOIN(select @users_g:=0) as g 
+                        JOIN(select @users_h:=0) as h 
+                      WHERE " . $this->all_app_speficics($from, $to)->where . "
+                      GROUP BY date_format(from_unixtime(date), '%d%m%Y')
+                      ORDER BY `date` ASC";
+
+        $As = $this->db->query($sql_user)->result_array();
+
+        $data['net_sales'] = $As;
         return $data;
     }
 
@@ -118,18 +191,31 @@ class Graphdata extends CI_Model
 
         $data['net_sales'] = array();
 
-        $As = $this->db->select("
-            date_format(from_unixtime(date), '%Y-%m') as y, 
-            SUM(IF(`app_id` = 1, `amount`, FALSE)) a, 
-            SUM(IF(`app_id` = 2, `amount`, FALSE)) b, 
-            SUM(IF(`app_id` = 3, `amount`, FALSE)) c, 
-            SUM(IF(`app_id` = 4, `amount`, FALSE)) d, 
-            SUM(IF(`app_id` = 5, `amount`, FALSE)) e, 
-            SUM(IF(`app_id` = 6, `amount`, FALSE)) f, 
-            SUM(IF(`app_id` = 7, `amount`, FALSE)) g, 
-            SUM(IF(`app_id` = 8, `amount`, FALSE)) h
-            ")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('app_financials')->result_array();
-        $data['net_sales'][] = $As;
+        $sql_sales = "SELECT 
+                            date_format(from_unixtime(date), '%Y-%m') as y, 
+                            @amount_a:=@amount_a + SUM(IF(`app_id` = 1, `amount`, FALSE)) a, 
+                            @amount_b:=@amount_b + SUM(IF(`app_id` = 2, `amount`, FALSE)) b, 
+                            @amount_c:=@amount_c + SUM(IF(`app_id` = 3, `amount`, FALSE)) c, 
+                            @amount_d:=@amount_d + SUM(IF(`app_id` = 4, `amount`, FALSE)) d, 
+                            @amount_e:=@amount_e + SUM(IF(`app_id` = 5, `amount`, FALSE)) e, 
+                            @amount_f:=@amount_f + SUM(IF(`app_id` = 6, `amount`, FALSE)) f, 
+                            @amount_g:=@amount_g + SUM(IF(`app_id` = 7, `amount`, FALSE)) g, 
+                            @amount_h:=@amount_h + SUM(IF(`app_id` = 8, `amount`, FALSE)) h
+                      FROM `app_financials`
+                      JOIN(select @amount_a:=0) as a 
+                      JOIN(select @amount_b:=0) as b 
+                      JOIN(select @amount_c:=0) as c 
+                      JOIN(select @amount_d:=0) as d 
+                      JOIN(select @amount_e:=0) as e 
+                      JOIN(select @amount_f:=0) as f 
+                      JOIN(select @amount_g:=0) as g 
+                      JOIN(select @amount_h:=0) as h 
+                      WHERE " . $this->all_app_speficics($from, $to)->where . "
+                      GROUP BY date_format(from_unixtime(date), '%m%Y')
+                      ORDER BY `date` ASC";
+
+        $As = $this->db->query($sql_sales)->result_array();
+        $data['net_sales'] = $As;
         return $data;
     }
 
@@ -143,18 +229,31 @@ class Graphdata extends CI_Model
 
         $data['net_sales'] = array();
 
-        $As = $this->db->select("
-            date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y,
-            SUM(IF(`app_id` = 1, `amount`, FALSE)) a, 
-            SUM(IF(`app_id` = 2, `amount`, FALSE)) b, 
-            SUM(IF(`app_id` = 3, `amount`, FALSE)) c, 
-            SUM(IF(`app_id` = 4, `amount`, FALSE)) d, 
-            SUM(IF(`app_id` = 5, `amount`, FALSE)) e, 
-            SUM(IF(`app_id` = 6, `amount`, FALSE)) f, 
-            SUM(IF(`app_id` = 7, `amount`, FALSE)) g, 
-            SUM(IF(`app_id` = 8, `amount`, FALSE)) h
-            ")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_financials')->result_array();
-        $data['net_sales'][] = $As;
+        $sql_sales = "SELECT 
+                            date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y, 
+                            @amount_a:=@amount_a + SUM(IF(`app_id` = 1, `amount`, FALSE)) a, 
+                            @amount_b:=@amount_b + SUM(IF(`app_id` = 2, `amount`, FALSE)) b, 
+                            @amount_c:=@amount_c + SUM(IF(`app_id` = 3, `amount`, FALSE)) c, 
+                            @amount_d:=@amount_d + SUM(IF(`app_id` = 4, `amount`, FALSE)) d, 
+                            @amount_e:=@amount_e + SUM(IF(`app_id` = 5, `amount`, FALSE)) e, 
+                            @amount_f:=@amount_f + SUM(IF(`app_id` = 6, `amount`, FALSE)) f, 
+                            @amount_g:=@amount_g + SUM(IF(`app_id` = 7, `amount`, FALSE)) g, 
+                            @amount_h:=@amount_h + SUM(IF(`app_id` = 8, `amount`, FALSE)) h
+                      FROM `app_financials`
+                      JOIN(select @amount_a:=0) as a 
+                      JOIN(select @amount_b:=0) as b 
+                      JOIN(select @amount_c:=0) as c 
+                      JOIN(select @amount_d:=0) as d 
+                      JOIN(select @amount_e:=0) as e 
+                      JOIN(select @amount_f:=0) as f 
+                      JOIN(select @amount_g:=0) as g 
+                      JOIN(select @amount_h:=0) as h 
+                      WHERE " . $this->all_app_speficics($from, $to)->where . "
+                      GROUP BY date_format(from_unixtime(date), '%d%m%Y')
+                      ORDER BY `date` ASC";
+
+        $As = $this->db->query($sql_sales)->result_array();
+        $data['net_sales'] = $As;
         return $data;
     }
 
@@ -270,3 +369,9 @@ class Graphdata extends CI_Model
         return $y;
     }
 }
+
+
+// SELECT `amount`, 
+//  @amount:=@amount + SUM(IF(`app_id` = 1, `amount`, TRUE)) net_sales
+// FROM `app_financials`
+// join ( select @amount:=0 ) as mrr 

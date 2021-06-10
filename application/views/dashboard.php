@@ -1,4 +1,3 @@
-<?php include('dashboard_graphs.php'); ?>
 <div class="row">
     <div class="col-md-3 col-sm-6">
         <div class="tile-stats tile-white stat-tile">
@@ -63,8 +62,8 @@
                 </div>
                 <div class="panel-options">
                     <ul class="nav nav-tabs">
-                        <li class=""><a href="#revenue-chart" data-toggle="tab">Revenue</a></li>
-                        <li class="active"><a href="#users-chart" data-toggle="tab">User Growth</a></li>
+                        <li class=""><a href="#users-chart" data-toggle="tab">User Growth</a></li>
+                        <li class="active"><a href="#revenue-chart" data-toggle="tab">Revenue</a></li>
                         <li class=""><a href="#comparison-chart" data-toggle="tab">App Comparison by Revenue</a></li>
                     </ul>
                 </div>
@@ -72,19 +71,13 @@
             <div class="panel-body">
                 <div class="tab-content">
                     <div class=" tab-pane" id="comparison-chart">
-                        <div id="comparison_chart" class="morrischart" style="height: 500px;">
-                            <img src="<?php echo base_url('assets/images/loader.gif'); ?>" />
-                        </div>
+                        <div id="comparison_chart" class="morrischart" style="height: 500px;"></div>
                     </div>
-                    <div class="tab-pane active" id="users-chart">
-                        <div id="users_chart" class="morrischart" style="height: 500px">
-                            <img src="<?php echo base_url('assets/images/loader.gif'); ?>" />
-                        </div>
+                    <div class="tab-pane active" id="revenue-chart">
+                        <div id="revenue_chart" class="morrischart" style="height: 500px"></div>
                     </div>
-                    <div class="tab-pane" id="revenue-chart">
-                        <div id="revenue_chart" class="morrischart" style="height: 500px">
-                            <img src="<?php echo base_url('assets/images/loader.gif'); ?>" />
-                        </div>
+                    <div class="tab-pane" id="users-chart">
+                        <div id="users_chart" class="morrischart" style="height: 500px"></div>
                     </div>
                 </div>
             </div>
@@ -143,3 +136,4 @@
         </div>
     </div>
 </div> <br />
+<?php include('dashboard_graphs.php'); ?>

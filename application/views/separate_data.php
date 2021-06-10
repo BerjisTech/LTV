@@ -76,8 +76,8 @@
         $('#reviews_chart').empty()
         drawBar('reviews_chart', reviews_data, reviews_keys, reviews_labels, reviews_colors)
 
-        fetch_revenue_data('<?php echo $app_id ?>', 0, 30)
-        fetch_user_data('<?php echo $app_id ?>', 0, 30)
+        fetch_revenue_data('<?php echo $app_id ?>', 0, 365)
+        fetch_user_data('<?php echo $app_id ?>', 0, 365)
     })
 
     function fetch_user_data(app, from, to) {

@@ -168,16 +168,12 @@
                             importDaily(data_set, r.cursor)
                         } else {
                             $('.alert-info').remove()
-                            fetch_revenue_data('<?php echo $app_id ?>', 0, 30)
-                            fetch_user_data('<?php echo $app_id ?>', 0, 30)
                         }
                     }, 1000)
 
                     if (r.cursor == 'DONE') {
                         $('.alert-info').remove()
                         $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success fullImport"><strong>SUCCESS</strong> All ${imported_data} ${data_set} data succesfully imported <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
-                        fetch_revenue_data('<?php echo $app_id ?>', 0, 30)
-                        fetch_user_data('<?php echo $app_id ?>', 0, 30)
                     }
                 }
                 if (r.status == '500') {
@@ -187,6 +183,8 @@
                     }
                 }
                 $('.importButtonShowHideClass').show()
+                fetch_revenue_data('<?php echo $app_id ?>', 0, 366)
+                fetch_user_data('<?php echo $app_id ?>', 0, 366)
             },
             error: (e) => {
                 console.log(e)
@@ -230,7 +228,7 @@
                 if (r.status == '500') {
                     if (r.cursor == 'DONE') {
                         $('.alert-info').remove()
-                        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success 500Error"><strong>Oh Snap!</strong> Something went wrong when importing the data <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
+                        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success 500Error"><strong>Taran!</strong> You're good. There's no new data to import at the moment <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
                     }
                 }
                 $('.importButtonShowHideClass').show()

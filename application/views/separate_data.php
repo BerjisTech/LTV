@@ -84,14 +84,14 @@
         $.ajax({
             url: `${base_url}/get_shopify_user_data/user/${app}/${from}/${to}`,
             success: (shopify_user_data) => {
-                $('#users_chart').empty()
-                drawLongLine('users_chart', shopify_user_data.total_users, user_keys, user_labels, user_colors)
+                // $('#users_chart').empty()
+                // drawLongLine('users_chart', shopify_user_data.total_users, user_keys, user_labels, user_colors)
                 $('#installs_chart').empty()
                 drawLongLine('installs_chart', shopify_user_data.installs, revenue_keys, install_labels, install_colors)
                 $('#uninstalls_chart').empty()
                 drawLongLine('uninstalls_chart', shopify_user_data.uninstalls, revenue_keys, uninstall_labels, uninstall_colors)
-                $('#churn_chart').empty()
-                drawPercentLine('churn_chart', shopify_user_data.total_users, revenue_keys, churn_labels, churn_colors)
+                // $('#churn_chart').empty()
+                // drawPercentLine('churn_chart', shopify_user_data.total_users, revenue_keys, churn_labels, churn_colors)
             }
         })
     }

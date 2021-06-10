@@ -24,7 +24,7 @@ class Graphdata extends CI_Model
                       GROUP BY date_format(from_unixtime(date), 'm%Y')
                       ORDER BY `date` ASC";
 
-        $sql_churn = "SELECT date_format(from_unixtime(date), '%Y-%m') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a
+        $sql_total = "SELECT date_format(from_unixtime(date), '%Y-%m') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a
                       FROM `shopify_data`
                       JOIN(select @users:=0) as a 
                       WHERE $where
@@ -33,7 +33,7 @@ class Graphdata extends CI_Model
 
         $data['installs'] = $this->db->query($sql_install)->result_array();
         $data['uninstalls'] = $this->db->query($sql_uninstall)->result_array();
-        $data['total_users'] = $this->db->query($sql_churn)->result_array();
+        $data['total_users'] = $this->db->query($sql_total)->result_array();
 
         return $data;
     }
@@ -56,7 +56,7 @@ class Graphdata extends CI_Model
                       GROUP BY date_format(from_unixtime(date), '%dm%Y')
                       ORDER BY `date` ASC";
 
-        $sql_churn = "SELECT date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a
+        $sql_total = "SELECT date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a
                       FROM `shopify_data`
                       JOIN(select @users:=0) as a 
                       WHERE $where
@@ -65,7 +65,7 @@ class Graphdata extends CI_Model
 
         $data['installs'] = $this->db->query($sql_install)->result_array();
         $data['uninstalls'] = $this->db->query($sql_uninstall)->result_array();
-        $data['total_users'] = $this->db->query($sql_churn)->result_array();
+        $data['total_users'] = $this->db->query($sql_total)->result_array();
         return $data;
     }
 

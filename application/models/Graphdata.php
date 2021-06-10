@@ -144,7 +144,7 @@ class Graphdata extends CI_Model
         $data['net_sales'] = array();
 
         $As = $this->db->select("
-            date_format(from_unixtime(date), '%Y-%m-%d') as y,
+            date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y,
             SUM(IF(`app_id` = 1, `amount`, FALSE)) a, 
             SUM(IF(`app_id` = 2, `amount`, FALSE)) b, 
             SUM(IF(`app_id` = 3, `amount`, FALSE)) c, 

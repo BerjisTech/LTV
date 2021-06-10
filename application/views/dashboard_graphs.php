@@ -10,7 +10,6 @@ $begin = strtotime('05-05-2021');
 // }
 ?>
 <script type="text/javascript">
-
     let user_data = []
     let revenue_data = []
     let compare_data = []
@@ -252,7 +251,11 @@ $begin = strtotime('05-05-2021');
                     drawLongLine('users_chart', user_data.net_sales, user_data.revenue_keys, user_data.revenue_labels, user_data.revenue_colors)
                 }
                 if (month_count <= 3) {
-                    drawLine('users_chart', user_data.net_sales, user_data.revenue_keys, user_data.revenue_labels, user_data.revenue_colors)
+                    if (range < 7) {
+                        drawShortLine('users_chart', user_data.net_sales, user_data.revenue_keys, user_data.revenue_labels, user_data.revenue_colors)
+                    } else {
+                        drawLine('users_chart', user_data.net_sales, user_data.revenue_keys, user_data.revenue_labels, user_data.revenue_colors)
+                    }
                 }
             }
         })
@@ -270,7 +273,11 @@ $begin = strtotime('05-05-2021');
                     drawLongLine('revenue_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
                 }
                 if (month_count <= 3) {
-                    drawLine('revenue_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
+                    if (range < 7) {
+                        drawShortLine('revenue_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
+                    } else {
+                        drawLine('revenue_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
+                    }
                 }
             }
         })

@@ -10,6 +10,10 @@ $begin = strtotime('05-05-2021');
 // }
 ?>
 <script type="text/javascript">
+    let user_data = []
+    let revenue_data = []
+    let compare_data = []
+
     jQuery(document).ready(function($) {
         // Sample Toastr Notification
         setTimeout(function() {
@@ -187,61 +191,49 @@ $begin = strtotime('05-05-2021');
             barSpacing: 3
         });
 
+        loadGraphs(0, 30)
+
         $('.adjust-stats').change(function() {
             $(".morrischart").empty();
             if ($(this).val() == "0") {
-                fetch_user_data(0, 1);
-                fetch_revenue_data(0, 1);
-                fetch_compare_data(0, 1);
+                loadGraphs(0, 1)
             }
             if ($(this).val() == "1") {
-                fetch_user_data(0, 2);
-                fetch_revenue_data(0, 2);
-                fetch_compare_data(0, 2);
+                loadGraphs(0, 2)
             }
             if ($(this).val() == "7") {
-                fetch_user_data(0, 7);
-                fetch_revenue_data(0, 7);
-                fetch_compare_data(0, 7);
+                loadGraphs(0, 7)
             }
             if ($(this).val() == "30") {
-                fetch_user_data(0, 30);
-                fetch_revenue_data(0, 30);
-                fetch_compare_data(0, 30);
+                loadGraphs(0, 30)
             }
             if ($(this).val() == "90") {
-                fetch_user_data(0, 90);
-                fetch_revenue_data(0, 90);
-                fetch_compare_data(0, 90);
+                loadGraphs(0, 90)
             }
             if ($(this).val() == "365") {
-                fetch_user_data(0, 366);
-                fetch_revenue_data(0, 366);
-                fetch_compare_data(0, 366);
+                loadGraphs(0, 366)
             }
             if ($(this).val() == "31") {
-                fetch_user_data(30, 60);
-                fetch_revenue_data(30, 60);
-                fetch_compare_data(30, 60);
+                loadGraphs(30, 60)
             }
             if ($(this).val() == "366") {
-                fetch_user_data(365, 732);
-                fetch_revenue_data(365, 732);
-                fetch_compare_data(365, 732);
+                loadGraphs(365, 732)
             }
             if ($(this).val() == "all") {
-                fetch_user_data(0, 3000);
-                fetch_revenue_data(0, 3000);
-                fetch_compare_data(0, 3000);
+                loadGraphs(0, 3000)
             }
             if ($(this).val() == "") {
-                fetch_user_data(0, 30);
-                fetch_revenue_data(0, 30);
-                fetch_compare_data(0, 30);
+                loadGraphs(0, 30)
             }
         });
 
     });
+
+    function loadGraphs(from, to) {
+        fetch_user_data(from, to);
+        fetch_revenue_data(from, to);
+        fetch_compare_data(from, to);
+    }
 
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -250,13 +242,14 @@ $begin = strtotime('05-05-2021');
     function fetch_user_data(from, to) {
         $.ajax({
             url: `${base_url}/get_full_shopify_user_data/user/${from}/${to}`,
-            success: (revenue_data) => {
+            success: (r) => {
+                user_data = r
                 $('#users_chart').empty()
                 if (to > 30) {
-                    drawLongLine('users_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
+                    drawLongLine('users_chart', user_data.net_sales, user_data.revenue_keys, user_data.revenue_labels, user_data.revenue_colors)
                 }
                 if (to <= 30) {
-                    drawLine('users_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
+                    drawLine('users_chart', user_data.net_sales, user_data.revenue_keys, user_data.revenue_labels, user_data.revenue_colors)
                 }
             }
         })
@@ -265,7 +258,8 @@ $begin = strtotime('05-05-2021');
     function fetch_revenue_data(from, to) {
         $.ajax({
             url: `${base_url}/get_full_shopify_user_data/finance/${from}/${to}`,
-            success: (revenue_data) => {
+            success: (r) => {
+                revenue_data = r
                 $('#revenue_chart').empty()
                 if (to > 30) {
                     drawLongLine('revenue_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
@@ -280,10 +274,10 @@ $begin = strtotime('05-05-2021');
     function fetch_compare_data(from, to) {
         $.ajax({
             url: `${base_url}/get_full_shopify_user_data/compare/${from}/${to}`,
-            success: (revenue_data) => {
-                console.log(revenue_data)
+            success: (r) => {
+                compare_data = r
                 $('#comparison_chart').empty()
-                drawPie('comparison_chart', revenue_data.net_sales, revenue_data.revenue_colors)
+                drawPie('comparison_chart', compare_data.net_sales, compare_data.revenue_colors)
             }
         })
     }

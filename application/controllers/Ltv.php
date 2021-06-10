@@ -233,19 +233,22 @@ class Ltv extends CI_Controller
         $this->load->model('Graphdata');
         $data['net_sales'] = array();
 
+        $range = ($to - $from);
+        $month_count = number_format(($range / 30));
+
         if ($data_set == 'user') {
-            if ($from <= 90) {
+            if ($month_count < 3) {
                 $data = $this->Graphdata->all_users_month_or_less($from, $to);
             }
-            if ($from > 90) {
+            if ($month_count >= 3) {
                 $data = $this->Graphdata->all_users_month_or_more($from, $to);
             }
         }
         if ($data_set == 'finance') {
-            if ($from <= 90) {
+            if ($month_count < 3) {
                 $data = $this->Graphdata->all_revenue_month_or_less($from, $to);
             }
-            if ($from > 90) {
+            if ($month_count >= 3) {
                 $data = $this->Graphdata->all_revenue_month_or_more($from, $to);
             }
         }

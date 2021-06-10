@@ -46,7 +46,13 @@ class Graphdata extends CI_Model
 
     function all_users_month_or_more($from, $to)
     {
-        $data['y'] = $this->getYs($from, $to);
+        $data = array();
+
+        $data['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
+        $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
+        $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
+
+        $data['net_sales']['y'] = $this->getYs($from, $to);
         $As = $this
             ->db
             ->select("(COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")
@@ -56,13 +62,19 @@ class Graphdata extends CI_Model
             ->get('shopify_data')
             ->result_array();
 
-        array_push($data, $As);
+        $data['net_sales'] = $As;
         return $data;
     }
 
     function all_users_month_or_less($from, $to)
     {
-        $data['y'] = $this->getYs($from, $to);
+        $data = array();
+
+        $data['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
+        $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
+        $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
+
+        $data['net_sales']['y'] = $this->getYs($from, $to);
         $As = $this
             ->db
             ->select("
@@ -72,21 +84,35 @@ class Graphdata extends CI_Model
             ->get('shopify_data')
             ->result_array();
 
-        array_push($data, $As);
+        $data['net_sales'][] = $As;
         return $data;
     }
 
     function all_revenue_month_or_more($from, $to)
     {
-        $data['y'] = $this->getYs($from, $to);
+        $data = array();
+
+        $data['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
+        $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
+        $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
+
+        $data['net_sales']['y'] = $this->getYs($from, $to);
         $As = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, SUM(`amount`) a")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('app_financials')->result_array();
+        $data['net_sales'][] = $As;
         return $data;
     }
 
     function all_revenue_month_or_less($from, $to)
     {
-        $data['y'] = $this->getYs($from, $to);
+        $data = array();
+
+        $data['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
+        $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
+        $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
+
+        $data['net_sales']['y'] = $this->getYs($from, $to);
         $As = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, SUM(`amount`) a")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_financials')->result_array();
+        $data['net_sales'][] = $As;
         return $data;
     }
 
@@ -99,11 +125,11 @@ class Graphdata extends CI_Model
             $app_name = $total_apps[$app]['app_name'];
             $app_id = $total_apps[$app]['app_id'];
 
-            $value = $this->db->select("'$app_name' as y, SUM(`amount`) a")->where($this->full_speficics($app_id, $from, $to)->where)->get('app_financials')->result_array()[0];
-            if ($value['a'] == null) {
-                $value['a'] = 0;
+            $value = $this->db->select("'$app_name' as label, SUM(`amount`) value")->where($this->full_speficics($app_id, $from, $to)->where)->get('app_financials')->result_array()[0];
+            if ($value['value'] == null) {
+                $value['value'] = 0;
             }
-            $value['a'] = $value['a'] + 0;
+            $value['value'] = $value['value'] + 0;
             $data['net_sales'][] = $value;
         endfor;
 
@@ -170,23 +196,32 @@ class Graphdata extends CI_Model
         );
     }
 
+    private function getKeys_and_Labels()
+    {
+        $data['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
+        $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
+        $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
+
+        return $data;
+    }
+
     private function getYs($from, $to)
     {
-
-        $y['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
-        $y['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
-        $y['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
-
         $y = array();
+
         $range = ($to - $from);
-        if ($to <= 90) {
+        $month_count = number_format(($range / 30));
+
+        echo $from . ' ' . $to . ' ' . $range . ' ' . $month_count;
+
+        if ($month_count < 3) {
             for ($m = $from; $m >= $to; $m--) {
-                array_push($y, date('Y-m-d', strtotime('-' . $m . ' days')));
+                $y[] = date('Y-m-d', strtotime('-' . $m . ' days'));
             }
         }
-        if ($to > 90) {
-            for ($m = ($range / 30); $m >= $to; $m--) {
-                array_push($y, date('Y-m', strtotime('-' . $m . ' months')));
+        if ($month_count >= 3) {
+            for ($m = $month_count; $m >= $to; $m--) {
+                $y[] = date('Y-m', strtotime('-' . $m . ' months'));
             }
         }
 

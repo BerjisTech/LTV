@@ -179,7 +179,7 @@
                 if (r.status == '500') {
                     if (r.cursor == 'DONE') {
                         $('.alert-info').remove()
-                        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success 500Error"><strong>Oh Snap!</strong> Something went wrong when importing the data <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
+                        $('.mwili_ya_mkuu').prepend($(`<div class="col-sm-12"><div class="alert alert-success 500Error"><strong>All Good</strong> There's no new data to import at the moment  <span class="entypo-cancel pull-right" onclick="$('.fullImport').remove()" style="cursor: pointer; margin-right: 20px;"></span></div></div>`))
                     }
                 }
                 $('.importButtonShowHideClass').show()

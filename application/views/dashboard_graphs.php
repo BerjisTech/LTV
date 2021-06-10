@@ -10,6 +10,7 @@ $begin = strtotime('05-05-2021');
 // }
 ?>
 <script type="text/javascript">
+
     let user_data = []
     let revenue_data = []
     let compare_data = []
@@ -244,7 +245,6 @@ $begin = strtotime('05-05-2021');
             url: `${base_url}/get_full_shopify_user_data/user/${from}/${to}`,
             success: (r) => {
                 user_data = r
-                console.log(user_data)
                 $('#users_chart').empty()
                 let range = (to - from);
                 let month_count = Math.round((range / 30));

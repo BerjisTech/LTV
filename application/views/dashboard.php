@@ -72,20 +72,26 @@
             <div class="panel-body">
                 <div class="tab-content">
                     <div class="tab-pane" id="area-chart">
-                        <!-- <div id="revenue_chart" class="morrischart" style="height: 500px"></div> -->
+                        <div id="revenue_chart" class="morrischart" style="height: 500px">
+                            <img src="<?php echo base_url('assets/images/loader.gif'); ?>" />
+                        </div>
                     </div>
-                    <div class="tab-pane active" id="line-chart">
-                        <div id="users_chart" class="morrischart" style="height: 500px"></div>
+                    <div class=" tab-pane active" id="line-chart">
+                        <div id="users_chart" class="morrischart" style="height: 500px">
+                            <img src="<?php echo base_url('assets/images/loader.gif'); ?>" />
+                        </div>
                     </div>
-                    <div class="tab-pane" id="pie-chart">
-                        <div id="comparison_chart" class="morrischart" style="height: 500px;"></div>
+                    <div class=" tab-pane" id="pie-chart">
+                        <div id="comparison_chart" class="morrischart" style="height: 500px;">
+                            <img src="<?php echo base_url('assets/images/loader.gif'); ?>" />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div> <br />
-<div class="row">
+<div class=" row">
     <div class="col-sm-6">
         <div class="panel panel-primary">
             <table class="table table-bordered table-responsive">

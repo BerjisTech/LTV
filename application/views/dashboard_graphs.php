@@ -244,11 +244,14 @@ $begin = strtotime('05-05-2021');
             url: `${base_url}/get_full_shopify_user_data/user/${from}/${to}`,
             success: (r) => {
                 user_data = r
+                console.log(user_data)
                 $('#users_chart').empty()
-                if (to > 30) {
+                let range = (to - from);
+                let month_count = Math.round((range / 30));
+                if (month_count > 3) {
                     drawLongLine('users_chart', user_data.net_sales, user_data.revenue_keys, user_data.revenue_labels, user_data.revenue_colors)
                 }
-                if (to <= 30) {
+                if (month_count <= 3) {
                     drawLine('users_chart', user_data.net_sales, user_data.revenue_keys, user_data.revenue_labels, user_data.revenue_colors)
                 }
             }
@@ -261,10 +264,12 @@ $begin = strtotime('05-05-2021');
             success: (r) => {
                 revenue_data = r
                 $('#revenue_chart').empty()
-                if (to > 30) {
+                let range = (to - from);
+                let month_count = Math.round((range / 30));
+                if (month_count > 3) {
                     drawLongLine('revenue_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
                 }
-                if (to <= 30) {
+                if (month_count <= 3) {
                     drawLine('revenue_chart', revenue_data.net_sales, revenue_data.revenue_keys, revenue_data.revenue_labels, revenue_data.revenue_colors)
                 }
             }

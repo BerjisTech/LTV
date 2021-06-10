@@ -48,14 +48,25 @@ class Graphdata extends CI_Model
     {
         $data = array();
 
-        $data['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
-        $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
-        $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
+        $data['revenue_keys'] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        $data['revenue_labels'] = ['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK'];
+        $data['revenue_colors'] = ['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB'];
 
-        $data['net_sales']['y'] = $this->getYs($from, $to);
+        $data['net_sales'] = array();
+
         $As = $this
             ->db
-            ->select("(COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")
+            ->select("
+                date_format(from_unixtime(date), '%Y-%m') as y, 
+                (COUNT(IF(`event` = 'installed' AND `app_id` = 1, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 1, 1, NULL))) a,
+                (COUNT(IF(`event` = 'installed' AND `app_id` = 2, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 2, 1, NULL))) b,
+                (COUNT(IF(`event` = 'installed' AND `app_id` = 3, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 3, 1, NULL))) c,
+                (COUNT(IF(`event` = 'installed' AND `app_id` = 4, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 4, 1, NULL))) d,
+                (COUNT(IF(`event` = 'installed' AND `app_id` = 5, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 5, 1, NULL))) e,
+                (COUNT(IF(`event` = 'installed' AND `app_id` = 6, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 6, 1, NULL))) f,
+                (COUNT(IF(`event` = 'installed' AND `app_id` = 7, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 7, 1, NULL))) g,
+                (COUNT(IF(`event` = 'installed' AND `app_id` = 8, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 8, 1, NULL))) h
+                ")
             ->where($this->all_app_speficics($from, $to)->where)
             ->order_by('date', 'ASC')
             ->group_by("date_format(from_unixtime(date), '%m%Y')")
@@ -70,15 +81,24 @@ class Graphdata extends CI_Model
     {
         $data = array();
 
-        $data['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
-        $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
-        $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
+        $data['revenue_keys'] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        $data['revenue_labels'] = ['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK'];
+        $data['revenue_colors'] = ['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB'];
 
-        $data['net_sales']['y'] = $this->getYs($from, $to);
+        $data['net_sales'] = array();
+
         $As = $this
             ->db
-            ->select("
-                (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a")
+            ->select("date_format(from_unixtime(date), '%Y-%m-%d') as y,
+            (COUNT(IF(`event` = 'installed' AND `app_id` = 1, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 1, 1, NULL))) a,
+            (COUNT(IF(`event` = 'installed' AND `app_id` = 2, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 2, 1, NULL))) b,
+            (COUNT(IF(`event` = 'installed' AND `app_id` = 3, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 3, 1, NULL))) c,
+            (COUNT(IF(`event` = 'installed' AND `app_id` = 4, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 4, 1, NULL))) d,
+            (COUNT(IF(`event` = 'installed' AND `app_id` = 5, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 5, 1, NULL))) e,
+            (COUNT(IF(`event` = 'installed' AND `app_id` = 6, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 6, 1, NULL))) f,
+            (COUNT(IF(`event` = 'installed' AND `app_id` = 7, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 7, 1, NULL))) g,
+            (COUNT(IF(`event` = 'installed' AND `app_id` = 8, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 8, 1, NULL))) h
+            ")
             ->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')
             ->group_by("date_format(from_unixtime(date), '%d%m%Y')")
             ->get('shopify_data')
@@ -96,8 +116,19 @@ class Graphdata extends CI_Model
         $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
         $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
 
-        $data['net_sales']['y'] = $this->getYs($from, $to);
-        $As = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, SUM(`amount`) a")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('app_financials')->result_array();
+        $data['net_sales'] = array();
+
+        $As = $this->db->select("
+            date_format(from_unixtime(date), '%Y-%m') as y, 
+            SUM(IF(`amount` != NULL AND `app_id` = 1, 0, FALSE)) a, 
+            SUM(IF(`amount` != NULL AND `app_id` = 2, 0, FALSE)) b, 
+            SUM(IF(`amount` != NULL AND `app_id` = 3, 0, FALSE)) c, 
+            SUM(IF(`amount` != NULL AND `app_id` = 4, 0, FALSE)) d, 
+            SUM(IF(`amount` != NULL AND `app_id` = 5, 0, FALSE)) e, 
+            SUM(IF(`amount` != NULL AND `app_id` = 6, 0, FALSE)) f, 
+            SUM(IF(`amount` != NULL AND `app_id` = 7, 0, FALSE)) g, 
+            SUM(IF(`amount` != NULL AND `app_id` = 8, 0, FALSE)) h
+            ")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('app_financials')->result_array();
         $data['net_sales'][] = $As;
         return $data;
     }
@@ -106,12 +137,23 @@ class Graphdata extends CI_Model
     {
         $data = array();
 
-        $data['revenue_keys'] = "['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']";
-        $data['revenue_labels'] = "['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK']";
-        $data['revenue_colors'] = "['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']";
+        $data['revenue_keys'] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        $data['revenue_labels'] = ['PC', 'ICU', 'PON', 'BDN', 'WPN', 'TFX', 'T2G', 'SK'];
+        $data['revenue_colors'] = ['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB'];
 
-        $data['net_sales']['y'] = $this->getYs($from, $to);
-        $As = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, SUM(`amount`) a")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_financials')->result_array();
+        $data['net_sales'] = array();
+
+        $As = $this->db->select("
+            date_format(from_unixtime(date), '%Y-%m-%d') as y,
+            SUM(IF(`amount` != NULL AND `app_id` = 1, 0, FALSE)) a, 
+            SUM(IF(`amount` != NULL AND `app_id` = 2, 0, FALSE)) b, 
+            SUM(IF(`amount` != NULL AND `app_id` = 3, 0, FALSE)) c, 
+            SUM(IF(`amount` != NULL AND `app_id` = 4, 0, FALSE)) d, 
+            SUM(IF(`amount` != NULL AND `app_id` = 5, 0, FALSE)) e, 
+            SUM(IF(`amount` != NULL AND `app_id` = 6, 0, FALSE)) f, 
+            SUM(IF(`amount` != NULL AND `app_id` = 7, 0, FALSE)) g, 
+            SUM(IF(`amount` != NULL AND `app_id` = 8, 0, FALSE)) h
+            ")->where($this->all_app_speficics($from, $to)->where)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_financials')->result_array();
         $data['net_sales'][] = $As;
         return $data;
     }

@@ -108,11 +108,11 @@ class Importer extends CI_Model
 
         if ($table == 'shopify_data') {
             $rows = $this->get_user_rows($app_id, $data, $time_start, $time_end);
-            $table_rows = "`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`";
+            $table_rows = "`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`, `cursor`";
         }
         if ($table == 'app_financials') {
             $rows = $this->get_finance_rows($app_id, $data, $time_start, $time_end);
-            $table_rows = "`finance_id`, `app_id`, `date`, `app_version`, `amount`, `shop`, `domain`";
+            $table_rows = "`finance_id`, `app_id`, `date`, `app_version`, `amount`, `shop`, `domain`, `cursor`";
         }
 
         $values = $rows['value'];
@@ -161,6 +161,7 @@ class Importer extends CI_Model
         $check_existence = $this->db->select('app_id, date, event, details, shop, domain')->where('app_id', $app_id)->get('shopify_data')->result_array();
 
         foreach ($data as $user) {
+            $cursor = $user['cursor'];
             $date = strtotime($user['node']['occurredAt']);
             $event = strtolower(str_replace('RELATIONSHIP_', '', $user['node']['type']));
             $shop = str_replace('gid://partners/Shop/', '', $user['node']['shop']['id']);
@@ -178,13 +179,14 @@ class Importer extends CI_Model
                 'event' => $event,
                 'details' => $reason,
                 'shop' => $shop,
-                'domain' => $domain
+                'domain' => $domain,
+                'cursor' => $cursor
             );
 
             $index = in_array($row_array, $check_existence, TRUE);
 
             if ($index == false) {
-                $values .= " ('','$app_id','$date','$event','$reason','','$shop','','','$domain'),";
+                $values .= " ('','$app_id','$date','$event','$reason','','$shop','','','$domain','$cursor'),";
             } else {
                 echo "Hii ya $shop already iko";
             }
@@ -209,6 +211,7 @@ class Importer extends CI_Model
         $check_existence = $this->db->select('app_id, date, app_version, amount, shop, domain')->where('app_id', $app_id)->get('app_financials')->result_array();
 
         foreach ($data as $finance) {
+            $cursor = $finance['cursor'];
             $date = strtotime($finance['node']['createdAt']);
             $app_version = $finance['node']['app']['name'];
             $amount = $finance['node']['netAmount']['amount'];
@@ -221,13 +224,14 @@ class Importer extends CI_Model
                 'app_version' => $app_version,
                 'amount' => $amount,
                 'shop' => $shop,
-                'domain' => $domain
+                'domain' => $domain,
+                'cursor' => $cursor
             );
 
             $index = in_array($row_array, $check_existence, TRUE);
 
             if ($index == false) {
-                $values .= " ('','$app_id','$date','$app_version','$amount','$shop','$domain'),";
+                $values .= " ('','$app_id','$date','$app_version','$amount','$shop','$domain','$cursor'),";
             }
 
             $indices[] = $index;

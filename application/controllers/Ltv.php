@@ -177,6 +177,18 @@ class Ltv extends CI_Controller
         header('Content-Type: application/json');
         $this->load->model('Importer');
 
+        if ($data_set == 'users') {
+            $last_cursor = $this->db->where('app_id', $app_id)->order_by('date', 'ASC')->limit(1)->get('shopify_data');
+        }
+
+        if ($data_set == 'financials') {
+            $last_cursor = $this->db->where('app_id', $app_id)->order_by('date', 'ASC')->limit(1)->get('app_financials');
+        }
+
+        if ($last_cursor->num_rows() == 1 && isset($last_cursor->row()->cursor)) {
+            $cursor = $last_cursor->row()->cursor;
+        }
+
         $time_start = strtotime('-3500 days');
 
         $time_end = time();

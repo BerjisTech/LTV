@@ -189,7 +189,7 @@ class Ltv extends CI_Controller
             $cursor = $last_cursor->row()->cursor;
         }
 
-        $time_start = strtotime('-3500 days');
+        $time_start = 1350311010; // strtotime('-3500 days');
 
         $time_end = time();
 

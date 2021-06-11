@@ -158,7 +158,7 @@ class Importer extends CI_Model
         $founds = array();
 
         // $where = "`app_id` = $app_id AND `date` >= '" . $time_start . "' AND `date` <='" . $time_end . "'";
-        $check_existence = $this->db->select('app_id, date, event, details, shop, domain')->where('app_id', $app_id)->get('shopify_data')->result_array();
+        $check_existence = $this->db->select('app_id, date, event, details, shop, domain, cursor')->where('app_id', $app_id)->get('shopify_data')->result_array();
 
         foreach ($data as $user) {
             $cursor = $user['cursor'];
@@ -208,7 +208,7 @@ class Importer extends CI_Model
         $indices = array();
 
         // $where = "`app_id` = $app_id AND `date` >= '" . $time_start . "' AND `date` <='" . $time_end . "'";
-        $check_existence = $this->db->select('app_id, date, app_version, amount, shop, domain')->where('app_id', $app_id)->get('app_financials')->result_array();
+        $check_existence = $this->db->select('app_id, date, app_version, amount, shop, domain, cursor')->where('app_id', $app_id)->get('app_financials')->result_array();
 
         foreach ($data as $finance) {
             $cursor = $finance['cursor'];

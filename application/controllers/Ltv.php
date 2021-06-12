@@ -247,24 +247,28 @@ class Ltv extends CI_Controller
                     JOIN(select @amount:=0) as a
                     LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
                     WHERE `app_fund` = 5
-                    GROUP BY date_format(from_unixtime(date), '%m%Y')";
+                    GROUP BY date_format(from_unixtime(date), '%m%Y')
+                    ORDER BY `date` ASC";
         $query_6 = "SELECT @amount:=@amount + sum(amount) as a 
                     FROM `app_financials`
                     JOIN(select @amount:=0) as a
                     LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
                     WHERE `app_fund` = 6
-                    GROUP BY date_format(from_unixtime(date), '%m%Y')";
+                    GROUP BY date_format(from_unixtime(date), '%m%Y')
+                    ORDER BY `date` ASC";
         $query_7 = "SELECT @amount:=@amount + sum(amount) as a 
                     FROM `app_financials`
                     JOIN(select @amount:=0) as a
                     LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
                     WHERE `app_fund` = 7
-                    GROUP BY date_format(from_unixtime(date), '%m%Y')";
+                    GROUP BY date_format(from_unixtime(date), '%m%Y')
+                    ORDER BY `date` ASC";
         $all = "SELECT @amount:=@amount + sum(amount) as a 
                     FROM `app_financials`
                     JOIN(select @amount:=0) as a
                     LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
-                    GROUP BY date_format(from_unixtime(date), '%m%Y')";
+                    GROUP BY date_format(from_unixtime(date), '%m%Y')
+                    ORDER BY `date` ASC";
 
         $pie = "SELECT @amount_a:=@amount_a + SUM(IF(`app_id` = 1, `amount`, FALSE)) a, 
                        @amount_b:=@amount_b + SUM(IF(`app_id` = 2, `amount`, FALSE)) b, 
@@ -282,7 +286,8 @@ class Ltv extends CI_Controller
                     JOIN(select @amount_e:=0) as e 
                     JOIN(select @amount_f:=0) as f 
                     JOIN(select @amount_g:=0) as g 
-                    JOIN(select @amount_h:=0) as h ";
+                    JOIN(select @amount_h:=0) as h
+                    ORDER BY `date` ASC ";
 
         $separate = "SELECT @amount_a:=@amount_a + SUM(IF(`app_id` = 1, `amount`, FALSE)) pc, 
                        @amount_b:=@amount_b + SUM(IF(`app_id` = 2, `amount`, FALSE)) icu, 
@@ -301,7 +306,8 @@ class Ltv extends CI_Controller
                     JOIN(select @amount_f:=0) as tfx
                     JOIN(select @amount_g:=0) as t2g
                     JOIN(select @amount_h:=0) as sk
-                    GROUP BY date_format(from_unixtime(date), '%m%Y')";
+                    GROUP BY date_format(from_unixtime(date), '%m%Y')
+                    ORDER BY `date` ASC";
 
         $fund_5 = $this->db->query($query_5)->result_array();
         $fund_6 = $this->db->query($query_6)->result_array();

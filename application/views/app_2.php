@@ -157,8 +157,9 @@
     function importDaily(data_set, cursor) {
         $.ajax({
             url: `<?php echo base_url("run_importer/$app_id/"); ?>${data_set}/${cursor}`,
-            success: (r) => {
+            success: (full_data) => {
                 // r = JSON.parse(r)
+                r = full_data["Processed Data"]["DB Stage"]["message"]
                 console.log(r)
                 if (r.status == '200') {
                     imported_data += r.total_data
@@ -207,8 +208,9 @@
     function importFull(data_set, cursor) {
         $.ajax({
             url: `<?php echo base_url("run_full_importer/$app_id/"); ?>${data_set}/${cursor}`,
-            success: (r) => {
+            success: (full_data) => {
                 // r = JSON.parse(r)
+                r = full_data["Processed Data"]["DB Stage"]["message"]
                 console.log(r)
                 if (r.status == '200') {
                     imported_data += r.total_data

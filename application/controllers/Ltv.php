@@ -161,11 +161,12 @@ class Ltv extends CI_Controller
 
         if ($last_entry->num_rows() == 1 && isset($last_entry->row()->date)) {
             $time_start = ($last_entry->row()->date + 0);
+            $cursor = $last_entry->row()->cursor;
         }
 
         $time_end = time();
 
-        $message = $this->Importer->init_importer($app_id, $data_set,  $time_start, $time_end, $cursor);
+        $message = $this->Importer->init_importer($app_id, $data_set, 'before', $time_start, $time_end, $cursor);
 
         $user_message = $message["Processed Data"]["DB Stage"]["message"];
 
@@ -193,7 +194,7 @@ class Ltv extends CI_Controller
 
         $time_end = time();
 
-        $message = $this->Importer->init_importer($app_id, $data_set,  $time_start, $time_end, $cursor);
+        $message = $this->Importer->init_importer($app_id, $data_set, 'after', $time_start, $time_end, $cursor);
 
         $user_message = $message["Processed Data"]["DB Stage"]["message"];
 

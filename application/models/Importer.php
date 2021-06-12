@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Importer extends CI_Model
 {
-    function init_importer($app_id, $data_set, $time_start, $time_end, $cursor = '')
+    function init_importer($app_id, $data_set, $fetch_type, $time_start, $time_end, $cursor = '')
     {
         $app = $this->db->where('app_id', $app_id)->get('apps')->row();
 
@@ -25,15 +25,29 @@ class Importer extends CI_Model
         $extra_data = array();
         $data_table = '';
 
-        if ($data_set == 'users') {
-            $extra_data = $this->api_users_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
-            $data_table = 'shopify_data';
-        }
+        if ($fetch_type == 'before') :
+            if ($data_set == 'users') {
+                $extra_data = $this->api_users_before_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
+                $data_table = 'shopify_data';
+            }
 
-        if ($data_set == 'financials') {
-            $extra_data = $this->api_financial_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
-            $data_table = 'app_financials';
-        }
+            if ($data_set == 'financials') {
+                $extra_data = $this->api_financial_before_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
+                $data_table = 'app_financials';
+            }
+        endif;
+
+        if ($fetch_type == 'after') :
+            if ($data_set == 'users') {
+                $extra_data = $this->api_users_after_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
+                $data_table = 'shopify_data';
+            }
+
+            if ($data_set == 'financials') {
+                $extra_data = $this->api_financial_after_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
+                $data_table = 'app_financials';
+            }
+        endif;
 
         $processed_data = $this->process_user_data($extra_data, $data_table, $app_id, $time_start, $time_end);
 
@@ -264,7 +278,130 @@ class Importer extends CI_Model
         );
     }
 
-    private function api_users_data($partner_id, $token, $app_id, $time_start, $time_end, $cursor = '')
+    private function api_users_before_data($partner_id, $token, $app_id, $cursor)
+    {
+
+        $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";
+
+        $postData = '
+            {
+                app(id: "gid://partners/App/' . $app_id . '") {
+                    id
+                    name
+                    events(
+                        before: "' . $cursor . '",
+                        types: [RELATIONSHIP_REACTIVATED RELATIONSHIP_DEACTIVATED RELATIONSHIP_INSTALLED RELATIONSHIP_UNINSTALLED]
+                        ) {
+                            edges {
+                                cursor 
+                                node {
+                                    type
+                                    occurredAt
+                                    shop {
+                                        id,
+                                        myshopifyDomain
+                                    }
+                                    ... on RelationshipUninstalled {
+                                        reason
+                                        description
+                                    }
+                                }
+                            }
+                            pageInfo { 
+                                hasPreviousPage 
+                                hasNextPage 
+                            } 
+                        }
+                    }
+                }';
+
+        $requestBody = $postData; // json_encode($postData);
+        $ch = curl_init($app_url);
+        curl_setopt_array($ch, array(
+            CURLOPT_POST => TRUE,
+            CURLOPT_SSL_VERIFYPEER => FALSE,
+            CURLOPT_SSL_VERIFYHOST => FALSE,
+            CURLOPT_RETURNTRANSFER => TRUE,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/graphql',
+                'X-Shopify-Access-Token: ' . $token
+            ),
+            CURLOPT_POSTFIELDS => $requestBody
+        ));
+
+        // Send the request
+        $response = curl_exec($ch);
+
+        // echo '<script> console.log(' . $response . ')</script>';
+        return $response;
+    }
+
+    private function api_financial_before_data($partner_id, $token_primary, $cursor)
+    {
+
+        $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";
+
+        $postData = '
+            {
+                transactions (
+                    types: [APP_SUBSCRIPTION_SALE ], 
+                    before: "' . $cursor . '") { 
+                        edges { 
+                            cursor 
+                            node { 
+                                id, 
+                                createdAt, 
+                                ... on AppSubscriptionSale { 
+                                    netAmount { 
+                                        amount 
+                                    }, 
+                                    app { 
+                                        name 
+                                    }, 
+                                    shop {  
+                                        id,
+                                        myshopifyDomain 
+                                    } 
+                                }, 
+                                ... on ServiceSale { 
+                                    netAmount {  
+                                        amount 
+                                    }, 
+                                    shop {  
+                                        myshopifyDomain 
+                                    } 
+                                } 
+                            } 
+                        }, 
+                        pageInfo { 
+                            hasPreviousPage 
+                            hasNextPage 
+                        } 
+                    } 
+                }';
+
+        $requestBody = $postData; // json_encode($postData);
+        $ch = curl_init($app_url);
+        curl_setopt_array($ch, array(
+            CURLOPT_POST => TRUE,
+            CURLOPT_SSL_VERIFYPEER => FALSE,
+            CURLOPT_SSL_VERIFYHOST => FALSE,
+            CURLOPT_RETURNTRANSFER => TRUE,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/graphql',
+                'X-Shopify-Access-Token: ' . $token_primary
+            ),
+            CURLOPT_POSTFIELDS => $requestBody
+        ));
+
+        // Send the request
+        $response = curl_exec($ch);
+
+        // echo '<script> console.log(' . $response . ')</script>';
+        return $response;
+    }
+
+    private function api_users_after_data($partner_id, $token, $app_id, $time_start, $time_end, $cursor = '')
     {
 
         $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";
@@ -328,7 +465,7 @@ class Importer extends CI_Model
         return $response;
     }
 
-    private function api_financial_data($partner_id, $token_primary, $app_id, $time_start, $time_end, $cursor)
+    private function api_financial_after_data($partner_id, $token_primary, $app_id, $time_start, $time_end, $cursor)
     {
 
         $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";

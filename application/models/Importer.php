@@ -84,11 +84,30 @@ class Importer extends CI_Model
         $back_cursor = '';
         $next_cursor = '';
 
-        if ($next_page != '') {
-            $next_cursor = $required_data[count($required_data) - 1]['cursor'];
-        }
-        if ($back_page != '') {
-            $back_cursor = $required_data[0]['cursor'];
+        if (count($required_data) > 0) {
+            if ($next_page != '') {
+                $next_cursor = $required_data[count($required_data) - 1]['cursor'];
+            }
+            if ($back_page != '') {
+                $back_cursor = $required_data[0]['cursor'];
+            }
+        } else {
+            return array(
+                'Next Page' => $next_page,
+                'Next Cursor' => $next_cursor,
+                'Back Page' => $back_page,
+                'Back Cursor' => $back_cursor,
+                'DB Stage' => array(
+                    'rows' => 'none found',
+                    'message' => array(
+                        'status' => '500',
+                        'app' => $app_id,
+                        'cursor' => 'DONE',
+                        'message' => 'empty'
+                    )
+                )
+            );
+            die();
         }
 
         $db_stage = $this->send_to_db($app_id, $table, $required_data, $time_start, $time_end, $next_cursor);

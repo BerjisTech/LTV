@@ -161,7 +161,6 @@ class Ltv extends CI_Controller
 
         if ($last_entry->num_rows() == 1 && isset($last_entry->row()->date)) {
             $time_start = ($last_entry->row()->date + 0);
-            $cursor = $last_entry->row()->cursor;
         }
 
         $time_end = time();

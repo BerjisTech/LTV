@@ -19,24 +19,8 @@
     </div>
     <div class="col-md-3 col-sm-6">
         <div class="tile-stats tile-white stat-tile">
-            <p>
-                <?php $total = $this->db->where('app_id', 1)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days +
-                    $this->db->where('app_id', 2)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days +
-                    $this->db->where('app_id', 3)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days +
-                    $this->db->where('app_id', 4)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days +
-                    $this->db->where('app_id', 5)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days +
-                    $this->db->where('app_id', 6)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days +
-                    $this->db->where('app_id', 7)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days +
-                    $this->db->where('app_id', 8)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days; ?>
-                <span style="color: #ec3b83;">PC <?php echo number_format((($this->db->where('app_id', 1)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days * 100) / $total)); ?>%</span> <br />
-                <span style="color: #00acd6;">ICU <?php echo number_format((($this->db->where('app_id', 2)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days * 100) / $total)); ?>%</span> <br />
-                <span style="color: #e8b51b;">PON <?php echo number_format((($this->db->where('app_id', 3)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days * 100) / $total)); ?>%</span><br />
-                <span style="color: #e8b51b;">BDN <?php echo number_format((($this->db->where('app_id', 4)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days * 100) / $total)); ?>%</span><br />
-                <span style="color: #e8b51b;">WPN <?php echo number_format((($this->db->where('app_id', 5)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days * 100) / $total)); ?>%</span><br />
-                <span style="color: #e8b51b;">TFX <?php echo number_format((($this->db->where('app_id', 6)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days * 100) / $total)); ?>%</span><br />
-                <span style="color: #e8b51b;">T2G <?php echo number_format((($this->db->where('app_id', 7)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days * 100) / $total)); ?>%</span><br />
-                <span style="color: #e8b51b;">SK <?php echo number_format((($this->db->where('app_id', 8)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days * 100) / $total)); ?>%</span>
-            </p> <span class="pie-chart"></span>
+            <p>App Comparison by Revenue</p>
+            <span class="pie-chart"></span>
         </div>
     </div>
 </div> <br />
@@ -118,17 +102,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($this->db->get('apps')->result_array() as $fetch) : ?>
+                    <?php foreach ($apps as $fetch) : ?>
                         <tr>
                             <td><?php echo $fetch['app_id'] ?></td>
                             <td><?php echo $fetch['app_name'] ?></td>
-                            <td class="text-center"><span class="inlinebar">
-                                    <?php
-                                    foreach ($this->db->where('app_id', $fetch['app_id'])->get('quaterly')->result_array() as $fetch) {
-                                        echo $fetch['last_30_days'] . ',';
-                                    }
-                                    ?>
-                                </span></td>
+                            <td class="text-center"><span class="<?php echo $fetch['app_code'] ?>-bar inlinebar"></span></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

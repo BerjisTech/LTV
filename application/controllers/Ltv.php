@@ -237,6 +237,107 @@ class Ltv extends CI_Controller
 
         echo json_encode($data);
     }
+    public function get_line_data()
+    {
+        header('Content-Type: application/json');
+
+        $query_5 = "SELECT @amount:=@amount + sum(amount) as a 
+                    FROM `app_financials`
+                    JOIN(select @amount:=0) as a
+                    LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
+                    WHERE `app_fund` = 5
+                    GROUP BY date_format(from_unixtime(date), '%m%Y')";
+        $query_6 = "SELECT @amount:=@amount + sum(amount) as a 
+                    FROM `app_financials`
+                    JOIN(select @amount:=0) as a
+                    LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
+                    WHERE `app_fund` = 6
+                    GROUP BY date_format(from_unixtime(date), '%m%Y')";
+        $query_7 = "SELECT @amount:=@amount + sum(amount) as a 
+                    FROM `app_financials`
+                    JOIN(select @amount:=0) as a
+                    LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
+                    WHERE `app_fund` = 7
+                    GROUP BY date_format(from_unixtime(date), '%m%Y')";
+        $all = "SELECT @amount:=@amount + sum(amount) as a 
+                    FROM `app_financials`
+                    JOIN(select @amount:=0) as a
+                    LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
+                    GROUP BY date_format(from_unixtime(date), '%m%Y')";
+
+        $pie = "SELECT @amount_a:=@amount_a + SUM(IF(`app_id` = 1, `amount`, FALSE)) a, 
+                       @amount_b:=@amount_b + SUM(IF(`app_id` = 2, `amount`, FALSE)) b, 
+                       @amount_c:=@amount_c + SUM(IF(`app_id` = 3, `amount`, FALSE)) c, 
+                       @amount_d:=@amount_d + SUM(IF(`app_id` = 4, `amount`, FALSE)) d, 
+                       @amount_e:=@amount_e + SUM(IF(`app_id` = 5, `amount`, FALSE)) e, 
+                       @amount_f:=@amount_f + SUM(IF(`app_id` = 6, `amount`, FALSE)) f, 
+                       @amount_g:=@amount_g + SUM(IF(`app_id` = 7, `amount`, FALSE)) g, 
+                       @amount_h:=@amount_h + SUM(IF(`app_id` = 8, `amount`, FALSE)) h
+                    FROM `app_financials`
+                    JOIN(select @amount_a:=0) as a 
+                    JOIN(select @amount_b:=0) as b 
+                    JOIN(select @amount_c:=0) as c 
+                    JOIN(select @amount_d:=0) as d 
+                    JOIN(select @amount_e:=0) as e 
+                    JOIN(select @amount_f:=0) as f 
+                    JOIN(select @amount_g:=0) as g 
+                    JOIN(select @amount_h:=0) as h ";
+
+        $separate = "SELECT @amount_a:=@amount_a + SUM(IF(`app_id` = 1, `amount`, FALSE)) pc, 
+                       @amount_b:=@amount_b + SUM(IF(`app_id` = 2, `amount`, FALSE)) icu, 
+                       @amount_c:=@amount_c + SUM(IF(`app_id` = 3, `amount`, FALSE)) pon, 
+                       @amount_d:=@amount_d + SUM(IF(`app_id` = 4, `amount`, FALSE)) bdn, 
+                       @amount_e:=@amount_e + SUM(IF(`app_id` = 5, `amount`, FALSE)) wpn, 
+                       @amount_f:=@amount_f + SUM(IF(`app_id` = 6, `amount`, FALSE)) tfx, 
+                       @amount_g:=@amount_g + SUM(IF(`app_id` = 7, `amount`, FALSE)) t2g, 
+                       @amount_h:=@amount_h + SUM(IF(`app_id` = 8, `amount`, FALSE)) sk
+                    FROM `app_financials`
+                    JOIN(select @amount_a:=0) as pc
+                    JOIN(select @amount_b:=0) as icu
+                    JOIN(select @amount_c:=0) as pon
+                    JOIN(select @amount_d:=0) as bdn
+                    JOIN(select @amount_e:=0) as wpn
+                    JOIN(select @amount_f:=0) as tfx
+                    JOIN(select @amount_g:=0) as t2g
+                    JOIN(select @amount_h:=0) as sk
+                    GROUP BY date_format(from_unixtime(date), '%m%Y')";
+
+        $fund_5 = $this->db->query($query_5)->result_array();
+        $fund_6 = $this->db->query($query_6)->result_array();
+        $fund_7 = $this->db->query($query_7)->result_array();
+        $fund_all = $this->db->query($all)->result_array();
+        $line_data['pie'] = $this->db->query($pie)->row();
+        $separate = $this->db->query($separate)->result_array();
+
+        foreach ($fund_5 as $fund_5_data) {
+            $line_data['fund_5'][] = $fund_5_data['a'];
+        }
+
+        foreach ($fund_6 as $fund_6_data) {
+            $line_data['fund_6'][] = $fund_6_data['a'];
+        }
+
+        foreach ($fund_7 as $fund_7_data) {
+            $line_data['fund_7'][] = $fund_7_data['a'];
+        }
+
+        foreach ($fund_all as $all_data) {
+            $line_data['all'][] = $all_data['a'];
+        }
+
+        foreach ($separate as $separate_data) {
+            $line_data['separate']['pc'][] = $separate_data['pc'];
+            $line_data['separate']['icu'][] = $separate_data['icu'];
+            $line_data['separate']['pon'][] = $separate_data['pon'];
+            $line_data['separate']['bdn'][] = $separate_data['bdn'];
+            $line_data['separate']['wpn'][] = $separate_data['wpn'];
+            $line_data['separate']['tfx'][] = $separate_data['tfx'];
+            $line_data['separate']['t2g'][] = $separate_data['t2g'];
+            $line_data['separate']['sk'][] = $separate_data['sk'];
+        }
+
+        echo json_encode($line_data);
+    }
 
     public function get_full_shopify_user_data($data_set, $from, $to)
     {

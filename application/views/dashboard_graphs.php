@@ -14,6 +14,27 @@ $begin = strtotime('05-05-2021');
     let user_data = []
     let revenue_data = []
     let compare_data = []
+    let line_data = [];
+    let spark_line = {
+        type: 'line',
+        width: '100%',
+        height: '55',
+        lineColor: '#e8b51b',
+        fillColor: '',
+        lineWidth: 2,
+        spotColor: '#344e86',
+        minSpotColor: '#344e86',
+        maxSpotColor: '#344e86',
+        highlightSpotColor: '#344e86',
+        highlightLineColor: '#30487b',
+        spotRadius: 2,
+        drawNormalOnTop: true
+    };
+    let short_spark_bar = {
+        type: 'bar',
+        barColor: '#ff6264'
+    };
+    let apps = <?php echo json_encode($apps); ?>;
 
     jQuery(document).ready(function($) {
         // Sample Toastr Notification
@@ -36,160 +57,9 @@ $begin = strtotime('05-05-2021');
             toastr.success("Date: <?php echo date('d M, Y'); ?><br />Time: <?php echo date('H:i'); ?>", "Morning", opts);
         }, 3000);
 
-        // Sparkline Charts
-        $(".top-apps").sparkline('html', {
-            type: 'line',
-            width: '50px',
-            height: '15px',
-            lineColor: '#00acd6',
-            fillColor: '',
-            lineWidth: 2,
-            spotColor: '#344e86',
-            minSpotColor: '#344e86',
-            maxSpotColor: '#344e86',
-            highlightSpotColor: '#344e86',
-            highlightLineColor: '#30487b',
-            spotRadius: 2,
-            drawNormalOnTop: true
-        });
-        $(".fund-5").sparkline([
-            <?php
-            $fund_5_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%d%m%Y") as day,')->where('apps.app_fund', 5)->order_by('recorded', 'ASC')->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
-            foreach ($fund_5_mrr as $daily) {
-                echo $daily['mrr'] . ',';
-            }
-            ?>
-        ], {
-            type: 'line',
-            width: '100%',
-            height: '55',
-            lineColor: '#e8b51b',
-            fillColor: '',
-            lineWidth: 2,
-            spotColor: '#344e86',
-            minSpotColor: '#344e86',
-            maxSpotColor: '#344e86',
-            highlightSpotColor: '#344e86',
-            highlightLineColor: '#30487b',
-            spotRadius: 2,
-            drawNormalOnTop: true
-        });
-
-
-        $(".fund-6").sparkline([
-            <?php
-            $fund_5_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%d%m%Y") as day,')->where('apps.app_fund', 6)->order_by('recorded', 'ASC')->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
-            foreach ($fund_5_mrr as $daily) {
-                echo $daily['mrr'] . ',';
-            }
-            ?>
-        ], {
-            type: 'line',
-            width: '100%',
-            height: '55',
-            lineColor: '#ec3b83',
-            fillColor: '',
-            lineWidth: 2,
-            spotColor: '#344e86',
-            minSpotColor: '#344e86',
-            maxSpotColor: '#344e86',
-            highlightSpotColor: '#344e86',
-            highlightLineColor: '#30487b',
-            spotRadius: 2,
-            drawNormalOnTop: true
-        });
-
-        $(".fund-7").sparkline([
-            <?php
-            $fund_5_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%d%m%Y") as day,')->order_by('recorded', 'ASC')->where('apps.app_fund', 7)->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
-            foreach ($fund_5_mrr as $daily) {
-                echo $daily['mrr'] . ',';
-            }
-            ?>
-        ], {
-            type: 'line',
-            width: '100%',
-            height: '55',
-            lineColor: '#00acd6',
-            fillColor: '',
-            lineWidth: 2,
-            spotColor: '#344e86',
-            minSpotColor: '#344e86',
-            maxSpotColor: '#344e86',
-            highlightSpotColor: '#344e86',
-            highlightLineColor: '#30487b',
-            spotRadius: 2,
-            drawNormalOnTop: true
-        });
-
-        $(".pie-chart").sparkline([
-            <?php echo $this->db->where('app_id', 1)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days; ?>,
-            <?php echo $this->db->where('app_id', 2)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days; ?>,
-            <?php echo $this->db->where('app_id', 3)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days; ?>,
-            <?php echo $this->db->where('app_id', 4)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days; ?>,
-            <?php echo $this->db->where('app_id', 5)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days; ?>,
-            <?php echo $this->db->where('app_id', 6)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days; ?>,
-            <?php echo $this->db->where('app_id', 7)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days; ?>,
-            <?php echo $this->db->where('app_id', 8)->order_by('record_id', 'DESC')->limit(1)->get('quaterly')->row()->last_30_days; ?>
-        ], {
-            type: 'pie',
-            width: '95',
-            height: '95',
-            sliceColors: ['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']
-        });
-        // Sparkline Charts
         $('.inlinebar').sparkline('html', {
-            type: 'bar',
+            type: 'line',
             barColor: '#ff6264'
-        });
-        $('.inlinebar-2').sparkline('html', {
-            type: 'bar',
-            barColor: '#445982'
-        });
-        $('.inlinebar-3').sparkline('html', {
-            type: 'bar',
-            barColor: '#00b19d'
-        });
-        $('.bar').sparkline([
-            [1, 4],
-            [2, 3],
-            [3, 2],
-            [4, 1]
-        ], {
-            type: 'bar'
-        });
-        $('.pie').sparkline('html', {
-            type: 'pie',
-            borderWidth: 0,
-            sliceColors: ['#3d4554', '#ee4749', '#00b19d']
-        });
-        $('.linechart').sparkline();
-        $('.loanrequest').sparkline('html', {
-            type: 'bar',
-            height: '30px',
-            barColor: '#ff6264'
-        });
-        $('.approvedloans').sparkline('html', {
-            type: 'bar',
-            height: '30px',
-            barColor: '#00b19d'
-        });
-
-        $(".monthly-sales").sparkline([
-
-            <?php
-            $all_mrr = $this->db->select('sum(quaterly.last_30_days) as mrr, date_format(from_unixtime(quaterly.recorded), "%Y%m%d") as day,')->order_by('recorded', 'ASC')->where('date_format(from_unixtime(quaterly.recorded), "%Y%m%d") >=', date('Ymd', strtotime('-30 days')))->join('apps', 'quaterly.app_id = apps.app_id')->group_by('day')->get('quaterly')->result_array();
-            foreach ($all_mrr as $daily) {
-                echo $daily['mrr'] . ',';
-            }
-            ?>
-
-        ], {
-            type: 'bar',
-            barColor: '#485671',
-            height: '250px',
-            barWidth: 20,
-            barSpacing: 3
         });
 
         loadGraphs(0, 366)
@@ -229,6 +99,8 @@ $begin = strtotime('05-05-2021');
         });
 
     });
+
+    fetchLineData()
 
     function loadGraphs(from, to) {
         fetch_user_data(from, to);
@@ -291,6 +163,41 @@ $begin = strtotime('05-05-2021');
                 compare_data = r
                 $('#comparison_chart').empty()
                 drawPie('comparison_chart', compare_data.net_sales, compare_data.revenue_colors)
+            }
+        })
+    }
+
+    function fetchLineData() {
+        $.ajax({
+            url: `${base_url}/get_line_data`,
+            success: (data) => {
+                line_data = data
+
+                $(".fund-5").sparkline(line_data.fund_5, spark_line);
+                $(".fund-6").sparkline(line_data.fund_6, spark_line);
+                $(".fund-7").sparkline(line_data.fund_7, spark_line);
+                $(".monthly-sales").sparkline(line_data.all, {
+                    type: 'bar',
+                    barColor: '#485671',
+                    height: '250px',
+                    barWidth: 20,
+                    barSpacing: 3
+                });
+                $(".pie-chart").sparkline(line_data.pie, {
+                    type: 'pie',
+                    width: '95',
+                    height: '95',
+                    sliceColors: ['#D05421', '#21D1B1', '#C90100', '#C90100', '#C90100', '#E7C00B', '#1E1E1E', '#3CC2EB']
+                });
+
+                $(`.pc-bar`).sparkline(line_data.separate.pc, short_spark_bar)
+                $(`.icu-bar`).sparkline(line_data.separate.icu, short_spark_bar)
+                $(`.pon-bar`).sparkline(line_data.separate.pon, short_spark_bar)
+                $(`.bdn-bar`).sparkline(line_data.separate.bdn, short_spark_bar)
+                $(`.wpn-bar`).sparkline(line_data.separate.wpn, short_spark_bar)
+                $(`.tfx-bar`).sparkline(line_data.separate.tfx, short_spark_bar)
+                $(`.t2g-bar`).sparkline(line_data.separate.t2g, short_spark_bar)
+                $(`.sk-bar`).sparkline(line_data.separate.sk, short_spark_bar)
             }
         })
     }

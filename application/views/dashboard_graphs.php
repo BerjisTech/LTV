@@ -62,7 +62,7 @@ $begin = strtotime('05-05-2021');
             barColor: '#ff6264'
         });
 
-        loadGraphs(0, 366)
+        loadGraphs(0, 30)
 
         $('.adjust-stats').change(function() {
             $(".morrischart").empty();

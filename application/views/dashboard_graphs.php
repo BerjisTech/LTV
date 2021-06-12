@@ -103,6 +103,7 @@ $begin = strtotime('05-05-2021');
     fetchLineData()
 
     function loadGraphs(from, to) {
+        $('.morrischart').html(`<img src="<?php echo base_url('assets/images/loader.gif'); ?>" />`)
         fetch_user_data(from, to);
         fetch_revenue_data(from, to);
         fetch_compare_data(from, to);

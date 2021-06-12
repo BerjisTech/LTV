@@ -278,10 +278,12 @@ class Importer extends CI_Model
         );
     }
 
-    private function api_users_before_data($partner_id, $token, $app_id, $cursor)
+    private function api_users_before_data($partner_id, $token, $app_id, $time_start, $time_end, $cursor)
     {
-
         $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";
+
+        $time_start = date('c', $time_start);
+        $time_end = date('c', $time_end);
 
         $postData = '
             {
@@ -289,8 +291,11 @@ class Importer extends CI_Model
                     id
                     name
                     events(
-                        before: "' . $cursor . '",
-                        types: [RELATIONSHIP_REACTIVATED RELATIONSHIP_DEACTIVATED RELATIONSHIP_INSTALLED RELATIONSHIP_UNINSTALLED]
+                        first: 100,
+                        after: "' . $cursor . '",
+                        types: [RELATIONSHIP_REACTIVATED RELATIONSHIP_DEACTIVATED RELATIONSHIP_INSTALLED RELATIONSHIP_UNINSTALLED],
+                        occurredAtMin: "' . $time_start . '",
+                        occurredAtMax: "' . $time_end . '"
                         ) {
                             edges {
                                 cursor 
@@ -336,16 +341,21 @@ class Importer extends CI_Model
         return $response;
     }
 
-    private function api_financial_before_data($partner_id, $token_primary, $cursor)
+    private function api_financial_before_data($partner_id, $token_primary, $app_id, $time_start, $time_end, $cursor)
     {
-
         $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";
+
+        $time_start = date('c', $time_start);
+        $time_end = date('c', $time_end);
 
         $postData = '
             {
                 transactions (
+                    first: 100
                     types: [APP_SUBSCRIPTION_SALE ], 
-                    before: "' . $cursor . '") { 
+                    after: "' . $cursor . '", 
+                    createdAtMin: "' . $time_start . '", 
+                    createdAtMax:"' . $time_end . '", ) { 
                         edges { 
                             cursor 
                             node { 
@@ -401,7 +411,7 @@ class Importer extends CI_Model
         return $response;
     }
 
-    private function api_users_after_data($partner_id, $token, $app_id, $time_start, $time_end, $cursor = '')
+    private function api_users_after_data($partner_id, $token, $app_id, $time_start, $time_end, $cursor)
     {
 
         $app_url = "https://partners.shopify.com/$partner_id/api/2021-04/graphql.json";

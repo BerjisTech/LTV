@@ -91,7 +91,7 @@ $begin = strtotime('05-05-2021');
                 loadGraphs(365, 732)
             }
             if ($(this).val() == "all") {
-                loadGraphs(0, 3050)
+                loadGraphs(0, 3200)
             }
             if ($(this).val() == "") {
                 loadGraphs(0, 30)

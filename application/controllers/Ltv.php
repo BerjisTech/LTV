@@ -449,7 +449,7 @@ class Ltv extends CI_Controller
         INFILE '/var/www/ltv/data/$file.csv'
         INTO TABLE `app_users` 
         FIELDS TERMINATED BY ','
-        LINES TERMINATED BY '\n'";
+        LINES TERMINATED BY '\\n'";
 
         if ($this->db->query($sql)) {
             echo "$file.csv imported";

@@ -266,7 +266,7 @@ class Ltv extends CI_Controller
                     FROM `app_financials`
                     JOIN(select @amount:=0) as a
                     LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
-                    GROUP BY date_format(from_unixtime(date), '%m%Y')
+                    GROUP BY date_format(from_unixtime(date), '%Y')
                     ORDER BY `date` ASC";
 
         $pie = "SELECT @amount_a:=@amount_a + SUM(IF(`app_id` = 1, `amount`, FALSE)) a, 

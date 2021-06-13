@@ -452,7 +452,7 @@ class Ltv extends CI_Controller
         FIELDS TERMINATED BY ','
         LINES TERMINATED BY '\n'";
 
-        if ($this->db->sql($sql)) {
+        if ($this->db->query($sql)) {
             echo "$file.csv imported";
         } else {
             print_r($this->db->error());

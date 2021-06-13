@@ -11,21 +11,21 @@ class Graphdata extends CI_Model
         $where = $this->user_speficics($app_id, $from, $to)->where;
 
         $sql_install = "SELECT date_format(from_unixtime(date), '%Y-%m') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a
-                      FROM `shopify_data`
+                      FROM `app_users`
                       JOIN(select @users:=0) as a 
                       WHERE $where
                       GROUP BY date_format(from_unixtime(date), 'm%Y')
                       ORDER BY `date` ASC";
 
         $sql_uninstall = "SELECT date_format(from_unixtime(date), '%Y-%m') as y, @users:=@users + (COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) a
-                      FROM `shopify_data`
+                      FROM `app_users`
                       JOIN(select @users:=0) as a 
                       WHERE $where
                       GROUP BY date_format(from_unixtime(date), 'm%Y')
                       ORDER BY `date` ASC";
 
         $sql_total = "SELECT date_format(from_unixtime(date), '%Y-%m') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a
-                      FROM `shopify_data`
+                      FROM `app_users`
                       JOIN(select @users:=0) as a 
                       WHERE $where
                       GROUP BY date_format(from_unixtime(date), 'm%Y')
@@ -43,21 +43,21 @@ class Graphdata extends CI_Model
         $where = $this->user_speficics($app_id, $from, $to)->where;
 
         $sql_install = "SELECT date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL))) a
-                      FROM `shopify_data`
+                      FROM `app_users`
                       JOIN(select @users:=0) as a 
                       WHERE $where
                       GROUP BY date_format(from_unixtime(date), '%dm%Y')
                       ORDER BY `date` ASC";
 
         $sql_uninstall = "SELECT date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y, @users:=@users + (COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) a
-                      FROM `shopify_data`
+                      FROM `app_users`
                       JOIN(select @users:=0) as a 
                       WHERE $where
                       GROUP BY date_format(from_unixtime(date), '%dm%Y')
                       ORDER BY `date` ASC";
 
         $sql_total = "SELECT date_format(from_unixtime(date), '%Y-%m-%d %H:%m:%s') as y, @users:=@users + (COUNT(IF(`event` = 'installed', 1, NULL)) + COUNT(IF(`event` = 'reactivated', 1, NULL)))-(COUNT(IF(`event` = 'uninstalled', 1, NULL)) + COUNT(IF(`event` = 'deactivated', 1, NULL))) as a
-                      FROM `shopify_data`
+                      FROM `app_users`
                       JOIN(select @users:=0) as a 
                       WHERE $where
                       GROUP BY date_format(from_unixtime(date), '%dm%Y')
@@ -122,7 +122,7 @@ class Graphdata extends CI_Model
                                 @users_f:=@users_f + (COUNT(IF(`event` = 'installed' AND `app_id` = 6, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 6, 1, NULL))) f, 
                                 @users_g:=@users_g + (COUNT(IF(`event` = 'installed' AND `app_id` = 7, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 7, 1, NULL))) g, 
                                 @users_h:=@users_h + (COUNT(IF(`event` = 'installed' AND `app_id` = 8, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 8, 1, NULL))) h
-                        FROM `shopify_data`
+                        FROM `app_users`
                         JOIN(select @users_a:=0) as a 
                         JOIN(select @users_b:=0) as b 
                         JOIN(select @users_c:=0) as c 
@@ -162,7 +162,7 @@ class Graphdata extends CI_Model
                                 @users_f:=@users_f + (COUNT(IF(`event` = 'installed' AND `app_id` = 6, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 6, 1, NULL))) f, 
                                 @users_g:=@users_g + (COUNT(IF(`event` = 'installed' AND `app_id` = 7, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 7, 1, NULL))) g, 
                                 @users_h:=@users_h + (COUNT(IF(`event` = 'installed' AND `app_id` = 8, 1, NULL)) + COUNT(IF(`event` = 'reactivated' AND `app_id` = 8, 1, NULL))) h
-                        FROM `shopify_data`
+                        FROM `app_users`
                         JOIN(select @users_a:=0) as a 
                         JOIN(select @users_b:=0) as b 
                         JOIN(select @users_c:=0) as c 

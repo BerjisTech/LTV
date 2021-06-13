@@ -445,8 +445,7 @@ class Ltv extends CI_Controller
     public function kwengport_from_file($file)
     {
         $file = base_url("data/$file.csv");
-        $sql = "LOAD DATA LOCAL
-        LOW_PRIORITY 
+        $sql = "LOAD DATA LOCAL 
         INFILE '$file'
         INTO TABLE `app_users` 
         FIELDS TERMINATED BY ','

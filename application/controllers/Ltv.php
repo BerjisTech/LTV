@@ -446,7 +446,7 @@ class Ltv extends CI_Controller
     {
         $sql = "LOAD DATA 
         LOW_PRIORITY 
-        INFILE '/var/www/ltv/data/$file.csv'
+        INFILE '/var/lib/mysql-files/data/$file.csv'
         INTO TABLE `app_users` 
         FIELDS TERMINATED BY ','
         LINES TERMINATED BY '\\n'";

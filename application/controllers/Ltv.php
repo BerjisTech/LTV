@@ -414,7 +414,7 @@ class Ltv extends CI_Controller
 
     public function csv()
     {
-        $csv_file = fopen(base_url('data/history.csv'), 'r');
+        $csv_file = fopen(base_url('data/tfxUsers.csv'), 'r');
         $csv_array = array();
         while ($csv_data = fgetcsv($csv_file, NULL, ",")) :
             $csv_array[] = $csv_data;
@@ -424,17 +424,21 @@ class Ltv extends CI_Controller
         $data['continents'] = $this->db->get('continents')->result_array();
 
         foreach ($csv_array as $key => $row) {
-            if ($key > 0) {
-                if ($row[0] != '') {
-                    $row[0] = strtotime($row[0]);
-                }
-                if ($row[3] != '') {
-                    $row[3] = strtotime($row[3]);
-                }
-
-                if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
-                    echo "('', '2' ,'$row[0]','$row[1]','$row[2]','$row[3]','$row[4]','$row[5]','$row[6]','$row[7]'),<br />";
+            if ($row[0] != '') {
+                $row[0] = strtotime($row[0]);
             }
+            if ($row[3] != '') {
+                $row[3] = strtotime($row[3]);
+            }
+            if ($row[2] == '') {
+                $row[2] = 'NULL';
+            }
+            if ($row[3] == '') {
+                $row[3] = 'NULL';
+            }
+
+            if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
+                echo "NULL,6,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7]<br />";
         }
     }
 

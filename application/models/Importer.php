@@ -544,4 +544,16 @@ class Importer extends CI_Model
         // echo '<script> console.log(' . $response . ')</script>';
         return $response;
     }
+
+    private function import_from_file($file, $app_id)
+    {
+        $sql = "LOAD DATA 
+        LOW_PRIORITY 
+        INFILE 'C:/xampp/htdocs/ltv/data/icu_users.csv'
+        INTO TABLE `app_users` 
+        FIELDS TERMINATED BY ','
+        LINES TERMINATED BY '\n'";
+
+        $this->db->sql($sql);
+    }
 }

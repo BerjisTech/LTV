@@ -442,6 +442,23 @@ class Ltv extends CI_Controller
         }
     }
 
+    public function kwengport_from_file($file)
+    {
+        $file = base_url("data/$file.csv");
+        $sql = "LOAD DATA 
+        LOW_PRIORITY 
+        INFILE '$file'
+        INTO TABLE `app_users` 
+        FIELDS TERMINATED BY ','
+        LINES TERMINATED BY '\n'";
+
+        if ($this->db->sql($sql)) {
+            echo "$file.csv imported";
+        } else {
+            print_r($this->db->error());
+        }
+    }
+
     /*public function csv($days)
     {
         header('Content-Type: application/json');

@@ -423,12 +423,8 @@ class Ltv extends CI_Controller
 
         if ($data_set == 'users') :
             foreach ($csv_array as $key => $row) {
-                if ($row[0] != '') {
-                    $row[0] = strtotime($row[0]);
-                }
-                if ($row[3] != '') {
-                    $row[3] = strtotime($row[3]);
-                }
+                $row[0] = strtotime($row[0]);
+                $row[3] = strtotime($row[3]);
 
                 for ($point = 0; $point < count($row); $point++) {
                     if ($row[$point] == '') {

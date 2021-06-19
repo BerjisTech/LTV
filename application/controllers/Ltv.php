@@ -418,9 +418,9 @@ class Ltv extends CI_Controller
 
             $app_code = $this->db->where('app_id', $app_id)->get('apps')->row()->app_code;
             $file = $app_code . "_" . $data_set;
-            $folder = "processed_" . $data_set;
+            $folder = "processed";
 
-            $csv_file = fopen(base_url("data/$data_set/$file.csv"), "r");
+            $csv_file = fopen(base_url("data/raw/$file.csv"), "r");
             $csv_array = array();
             $file_output = array();
 
@@ -475,19 +475,20 @@ class Ltv extends CI_Controller
                     endif;
                 }
             endif;
+            fclose($csv_file);
 
             $path = str_replace("\application\controllers", "", __DIR__ . "\data\\$folder");
 
             echo $_SERVER['DOCUMENT_ROOT'];
 
-            // $fp = fopen("$path", "wb");
+        // $fp = fopen("$path", "wb");
 
-            // foreach ($file_output as $line) {
-            //     $val = explode(",", $line);
-            //     fputcsv($fp, $val);
-            // }
+        // foreach ($file_output as $line) {
+        //     $val = explode(",", $line);
+        //     fputcsv($fp, $val);
+        // }
 
-            // fclose($fp);
+        // fclose($fp);
 
         else :
             die('<script>window.location.href="' . base_url() . '"</script>');

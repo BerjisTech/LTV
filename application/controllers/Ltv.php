@@ -428,6 +428,8 @@ class Ltv extends CI_Controller
                 $csv_array[] = $csv_data;
             }
 
+            fclose($csv_file);
+
             echo "reached here";
 
         // if ($data_set == 'users') :
@@ -477,7 +479,7 @@ class Ltv extends CI_Controller
         //         endif;
         //     }
         // endif;
-        // fclose($csv_file);
+        // 
 
         // $path = $_SERVER['DOCUMENT_ROOT'] . "/data/$folder";
 

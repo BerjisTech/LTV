@@ -414,8 +414,12 @@ class Ltv extends CI_Controller
 
     public function csv($file, $data_set, $app_id)
     {
+        header("Content-Type: text/csv");
+        header("Content-Disposition: attachment; filename='data/processed_$data_set/$file.csv'");
+
         $csv_file = fopen(base_url("data/$data_set/$file.csv"), "r");
         $csv_array = array();
+        $file_output = array();
 
         while ($csv_data = fgetcsv($csv_file, NULL, ",")) :
             $csv_array[] = $csv_data;
@@ -435,7 +439,7 @@ class Ltv extends CI_Controller
                 }
 
                 if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
-                    echo "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7]<br />";
+                    $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7]<br />";
             }
         endif;
 
@@ -454,10 +458,19 @@ class Ltv extends CI_Controller
                         }
                     }
 
-                    echo "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]<br />";
+                    $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]<br />";
                 endif;
             }
         endif;
+
+        $fp = fopen('php://output', 'wb');
+
+        foreach ($file_output as $line) {
+            $val = explode(",", $line);
+            fputcsv($fp, $val);
+        }
+
+        fclose($fp);
     }
 
     public function kwengport_from_file($file)

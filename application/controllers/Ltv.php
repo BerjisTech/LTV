@@ -412,43 +412,31 @@ class Ltv extends CI_Controller
     }
 
 
-    public function csv($file, $data_set, $app_id)
+    public function csv($data_set, $app_id)
     {
-        header("Content-Type: text/csv");
-        header("Content-Disposition: attachment; filename='data/processed_$data_set/$file.csv'");
+        if (isset($data_set) && isset($app_id)) :
 
-        $csv_file = fopen(base_url("data/$data_set/$file.csv"), "r");
-        $csv_array = array();
-        $file_output = array();
+            $app_code = $this->db->where('app_id', $app_id)->get('apps')->row()->app_code;
+            $file = $app_code . "_" . $data_set;
+            $folder = "processed_" . $data_set;
 
-        while ($csv_data = fgetcsv($csv_file, NULL, ",")) :
-            $csv_array[] = $csv_data;
-        endwhile;
+            $csv_file = fopen(base_url("data/$data_set/$file.csv"), "r");
+            $csv_array = array();
+            $file_output = array();
 
-        if ($data_set == 'users') :
-            foreach ($csv_array as $key => $row) {
-                $row[0] = strtotime($row[0]);
-                $row[3] = strtotime($row[3]);
+            while ($csv_data = fgetcsv($csv_file, NULL, ",")) :
+                $csv_array[] = $csv_data;
+            endwhile;
 
-                for ($point = 0; $point < count($row); $point++) {
-                    if ($row[$point] == '') {
-                        $row[$point] = 'NULL';
-                    } else {
-                        $row[$point] = str_replace(',', '...', $row[$point]);
-                    }
+            if ($data_set == 'users') :
+
+                if (count($csv_array[0]) != 8) {
+                    die('<script>window.location.href="' . base_url() . '"</script>');
                 }
 
-                if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
-                    $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7]<br />";
-            }
-        endif;
-
-        if ($data_set == 'finance') :
-            foreach ($csv_array as $key => $row) {
-                if ($key > 0) :
+                foreach ($csv_array as $key => $row) {
                     $row[0] = strtotime($row[0]);
-                    $row[1] = strtotime($row[1]);
-                    $row[2] = strtotime($row[2]);
+                    $row[3] = strtotime($row[3]);
 
                     for ($point = 0; $point < count($row); $point++) {
                         if ($row[$point] == '') {
@@ -458,19 +446,52 @@ class Ltv extends CI_Controller
                         }
                     }
 
-                    $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]<br />";
-                endif;
-            }
+                    if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
+                        $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7]";
+                }
+            endif;
+
+            if ($data_set == 'finance') :
+
+                if (count($csv_array[0]) != 14) {
+                    die('<script>window.location.href="' . base_url() . '"</script>');
+                }
+
+                foreach ($csv_array as $key => $row) {
+                    if ($key > 0) :
+                        $row[0] = strtotime($row[0]);
+                        $row[1] = strtotime($row[1]);
+                        $row[2] = strtotime($row[2]);
+
+                        for ($point = 0; $point < count($row); $point++) {
+                            if ($row[$point] == '') {
+                                $row[$point] = 'NULL';
+                            } else {
+                                $row[$point] = str_replace(',', '...', $row[$point]);
+                            }
+                        }
+
+                        $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]";
+                    endif;
+                }
+            endif;
+
+            $path = str_replace("\application\controllers", "", __DIR__ . "\data\\$folder");
+
+            echo $_SERVER['DOCUMENT_ROOT'];
+
+            // $fp = fopen("$path", "wb");
+
+            // foreach ($file_output as $line) {
+            //     $val = explode(",", $line);
+            //     fputcsv($fp, $val);
+            // }
+
+            // fclose($fp);
+
+        else :
+            die('<script>window.location.href="' . base_url() . '"</script>');
         endif;
-
-        $fp = fopen('php://output', 'wb');
-
-        foreach ($file_output as $line) {
-            $val = explode(",", $line);
-            fputcsv($fp, $val);
-        }
-
-        fclose($fp);
     }
 
     public function kwengport_from_file($file)

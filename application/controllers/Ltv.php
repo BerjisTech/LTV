@@ -424,7 +424,7 @@ class Ltv extends CI_Controller
             $csv_array = array();
             $file_output = array();
 
-            while ($csv_data = fgetcsv($csv_file, NULL, ",")) {
+            while ($csv_data = fgetcsv($csv_file, 1000, ",")) {
                 $csv_array[] = $csv_data;
             }
 

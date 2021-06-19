@@ -477,18 +477,18 @@ class Ltv extends CI_Controller
             endif;
             fclose($csv_file);
 
-            $path = str_replace("\application\controllers", "", __DIR__ . "\data\\$folder");
+            $path = $_SERVER['DOCUMENT_ROOT'] . "\data\\$folder";
 
-            echo $_SERVER['DOCUMENT_ROOT'];
+            // echo $_SERVER['DOCUMENT_ROOT'];
 
-        // $fp = fopen("$path", "wb");
+            $fp = fopen("$path", "wb");
 
-        // foreach ($file_output as $line) {
-        //     $val = explode(",", $line);
-        //     fputcsv($fp, $val);
-        // }
+            foreach ($file_output as $line) {
+                $val = explode(",", $line);
+                fputcsv($fp, $val);
+            }
 
-        // fclose($fp);
+            fclose($fp);
 
         else :
             die('<script>window.location.href="' . base_url() . '"</script>');

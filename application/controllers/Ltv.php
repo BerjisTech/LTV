@@ -428,67 +428,69 @@ class Ltv extends CI_Controller
                 $csv_array[] = $csv_data;
             endwhile;
 
-            if ($data_set == 'users') :
+            echo "reached here";
 
-                if (count($csv_array[0]) != 8) {
-                    die('<script>window.location.href="' . base_url() . '"</script>');
-                }
+        // if ($data_set == 'users') :
 
-                foreach ($csv_array as $key => $row) {
-                    $row[0] = strtotime($row[0]);
-                    $row[3] = strtotime($row[3]);
+        //     if (count($csv_array[0]) != 8) {
+        //         die('<script>window.location.href="' . base_url() . '"</script>');
+        //     }
 
-                    for ($point = 0; $point < count($row); $point++) {
-                        if ($row[$point] == '') {
-                            $row[$point] = 'NULL';
-                        } else {
-                            $row[$point] = str_replace(',', '...', $row[$point]);
-                        }
-                    }
+        //     foreach ($csv_array as $key => $row) {
+        //         $row[0] = strtotime($row[0]);
+        //         $row[3] = strtotime($row[3]);
 
-                    if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
-                        $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7]";
-                }
-            endif;
+        //         for ($point = 0; $point < count($row); $point++) {
+        //             if ($row[$point] == '') {
+        //                 $row[$point] = 'NULL';
+        //             } else {
+        //                 $row[$point] = str_replace(',', '...', $row[$point]);
+        //             }
+        //         }
 
-            if ($data_set == 'finance') :
+        //         if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
+        //             $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7]";
+        //     }
+        // endif;
 
-                if (count($csv_array[0]) != 14) {
-                    die('<script>window.location.href="' . base_url() . '"</script>');
-                }
+        // if ($data_set == 'finance') :
 
-                foreach ($csv_array as $key => $row) {
-                    if ($key > 0) :
-                        $row[0] = strtotime($row[0]);
-                        $row[1] = strtotime($row[1]);
-                        $row[2] = strtotime($row[2]);
+        //     if (count($csv_array[0]) != 14) {
+        //         die('<script>window.location.href="' . base_url() . '"</script>');
+        //     }
 
-                        for ($point = 0; $point < count($row); $point++) {
-                            if ($row[$point] == '') {
-                                $row[$point] = 'NULL';
-                            } else {
-                                $row[$point] = str_replace(',', '...', $row[$point]);
-                            }
-                        }
+        //     foreach ($csv_array as $key => $row) {
+        //         if ($key > 0) :
+        //             $row[0] = strtotime($row[0]);
+        //             $row[1] = strtotime($row[1]);
+        //             $row[2] = strtotime($row[2]);
 
-                        $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]";
-                    endif;
-                }
-            endif;
-            fclose($csv_file);
+        //             for ($point = 0; $point < count($row); $point++) {
+        //                 if ($row[$point] == '') {
+        //                     $row[$point] = 'NULL';
+        //                 } else {
+        //                     $row[$point] = str_replace(',', '...', $row[$point]);
+        //                 }
+        //             }
 
-            $path = $_SERVER['DOCUMENT_ROOT'] . "\data\\$folder";
+        //             $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]";
+        //         endif;
+        //     }
+        // endif;
+        // fclose($csv_file);
 
-            // echo $_SERVER['DOCUMENT_ROOT'];
+        // $path = $_SERVER['DOCUMENT_ROOT'] . "/data/$folder";
 
-            $fp = fopen("$path", "wb");
+        // // echo $_SERVER['DOCUMENT_ROOT'];
 
-            foreach ($file_output as $line) {
-                $val = explode(",", $line);
-                fputcsv($fp, $val);
-            }
+        // $fp = fopen("$path", "wb");
 
-            fclose($fp);
+        // foreach ($file_output as $line) {
+        //     $val = explode(",", $line);
+        //     fputcsv($fp, $val);
+        // }
+
+        // fclose($fp);
 
         else :
             die('<script>window.location.href="' . base_url() . '"</script>');

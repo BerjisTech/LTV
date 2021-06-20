@@ -33,7 +33,7 @@ class Importer extends CI_Model
 
             if ($data_set == 'financials') {
                 $extra_data = $this->api_financial_before_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
-                $data_table = 'app_financials';
+                $data_table = 'app_finance';
             }
         endif;
 
@@ -45,7 +45,7 @@ class Importer extends CI_Model
 
             if ($data_set == 'financials') {
                 $extra_data = $this->api_financial_after_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
-                $data_table = 'app_financials';
+                $data_table = 'app_finance';
             }
         endif;
 
@@ -85,7 +85,7 @@ class Importer extends CI_Model
             if ($table == 'shopify_data') {
                 $processed_data = $received_data['data']['app']['events'];
             }
-            if ($table == 'app_financials') {
+            if ($table == 'app_finance') {
                 $processed_data = $received_data['data']['transactions'];
             }
         }
@@ -141,11 +141,11 @@ class Importer extends CI_Model
 
         if ($table == 'shopify_data') {
             $rows = $this->get_user_rows($app_id, $data, $time_start, $time_end);
-            $table_rows = "`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`, `cursor`";
+            $table_rows = "`data_id`, `app_id`, `date`, `event`, `details`, `billing_date`, `shop`, `country`, `email`, `domain`";
         }
-        if ($table == 'app_financials') {
+        if ($table == 'app_finance') {
             $rows = $this->get_finance_rows($app_id, $data, $time_start, $time_end);
-            $table_rows = "`finance_id`, `app_id`, `date`, `app_version`, `amount`, `shop`, `domain`, `cursor`";
+            $table_rows = "`finance_id`, `app_id`, `date`, `app_version`, `amount`, `shop`, `domain`";
         }
 
         $values = $rows['value'];
@@ -191,7 +191,7 @@ class Importer extends CI_Model
         $founds = array();
 
         // $where = "`app_id` = $app_id AND `date` >= '" . $time_start . "' AND `date` <='" . $time_end . "'";
-        $check_existence = $this->db->select('app_id, date, event, details, shop, domain, cursor')->where('app_id', $app_id)->get('shopify_data')->result_array();
+        $check_existence = $this->db->select('app_id, date, event, details, shop, domain')->where('app_id', $app_id)->get('shopify_data')->result_array();
 
         foreach ($data as $user) {
             $cursor = $user['cursor'];
@@ -212,14 +212,13 @@ class Importer extends CI_Model
                 'event' => $event,
                 'details' => $reason,
                 'shop' => $shop,
-                'domain' => $domain,
-                'cursor' => $cursor
+                'domain' => $domain
             );
 
             $index = in_array($row_array, $check_existence, TRUE);
 
             if ($index == false) {
-                $values .= " ('','$app_id','$date','$event','$reason','','$shop','','','$domain','$cursor'),";
+                $values .= " ('','$app_id','$date','$event','$reason','','$shop','','','$domain'),";
             } else {
                 echo "Hii ya $shop already iko";
             }
@@ -241,7 +240,7 @@ class Importer extends CI_Model
         $indices = array();
 
         // $where = "`app_id` = $app_id AND `date` >= '" . $time_start . "' AND `date` <='" . $time_end . "'";
-        $check_existence = $this->db->select('app_id, date, app_version, amount, shop, domain, cursor')->where('app_id', $app_id)->get('app_financials')->result_array();
+        $check_existence = $this->db->select('app_id, date, app_version, amount, shop, domain')->where('app_id', $app_id)->get('app_finance')->result_array();
 
         foreach ($data as $finance) {
             $cursor = $finance['cursor'];
@@ -257,14 +256,13 @@ class Importer extends CI_Model
                 'app_version' => $app_version,
                 'amount' => $amount,
                 'shop' => $shop,
-                'domain' => $domain,
-                'cursor' => $cursor
+                'domain' => $domain
             );
 
             $index = in_array($row_array, $check_existence, TRUE);
 
             if ($index == false) {
-                $values .= " ('','$app_id','$date','$app_version','$amount','$shop','$domain','$cursor'),";
+                $values .= " ('','$app_id','$date','$app_version','$amount','$shop','$domain'),";
             }
 
             $indices[] = $index;

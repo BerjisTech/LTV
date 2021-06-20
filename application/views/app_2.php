@@ -157,9 +157,9 @@
     function importDaily(data_set, cursor) {
         $.ajax({
             url: `<?php echo base_url("run_importer/$app_id/"); ?>${data_set}/${cursor}`,
-            success: (full_data) => {
+            success: (r) => {
                 // r = JSON.parse(r)
-                r = full_data["Processed Data"]["DB Stage"]["message"]
+                // r = full_data["message"]
                 console.log(r)
                 if (r.status == '200') {
                     imported_data += r.total_data

@@ -32,7 +32,7 @@ class Csvgen extends CI_Model
 
         if ($data_set == 'financials') {
             $extra_data = $this->api_financial_data($partner_id, $token_primary, $app_shopify_id, $time_start, $time_end, $cursor);
-            $data_table = 'app_financials';
+            $data_table = 'app_finance';
         }
 
         $processed_data = $this->process_user_data($extra_data, $data_table, $app_id, $time_start, $time_end);
@@ -71,7 +71,7 @@ class Csvgen extends CI_Model
             if ($table == 'shopify_data') {
                 $processed_data = $received_data['data']['app']['events'];
             }
-            if ($table == 'app_financials') {
+            if ($table == 'app_finance') {
                 $processed_data = $received_data['data']['transactions'];
             }
         }
@@ -111,7 +111,7 @@ class Csvgen extends CI_Model
         if ($table == 'shopify_data') {
             $rows = $this->get_user_rows($app_id, $data, $time_start, $time_end);
         }
-        if ($table == 'app_financials') {
+        if ($table == 'app_finance') {
             $rows = $this->get_finance_rows($app_id, $data, $time_start, $time_end);
         }
 
@@ -178,7 +178,7 @@ class Csvgen extends CI_Model
         $indices = array();
 
         // $where = "`app_id` = $app_id AND `date` >= '" . $time_start . "' AND `date` <='" . $time_end . "'";
-        $check_existence = $this->db->select('app_id, date, app_version, amount, shop, domain')->where('app_id', $app_id)->get('app_financials')->result_array();
+        $check_existence = $this->db->select('app_id, date, app_version, amount, shop, domain')->where('app_id', $app_id)->get('app_finance')->result_array();
 
         $values[] = "`finance_id`, `app_id`, `date`, `app_version`, `amount`, `shop`, `domain`,";
         foreach ($data as $finance) {

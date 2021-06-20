@@ -76,14 +76,14 @@ class Graphdata extends CI_Model
         $group_by = $this->getGroup($from, $to);
 
         $sql_sales = "SELECT date_format(from_unixtime(date), '%Y-%m') as y, @amount:=@amount + SUM(`amount`) as a
-                      FROM `app_financials`
+                      FROM `app_finance`
                       JOIN(select @amount:=0) as a 
                       WHERE $where
                       $group_by
                       ORDER BY `date` ASC";
 
         $data['net_sales'] = $this->db->query($sql_sales)->result_array();
-        $data['refunds'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, SUM(`amount`*-1) a")->where($this->finance_speficics($app_id, $from, $to)->where)->where('amount <', 0)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('app_financials')->result_array();
+        $data['refunds'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m') as y, SUM(`amount`*-1) a")->where($this->finance_speficics($app_id, $from, $to)->where)->where('amount <', 0)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%m%Y')")->get('app_finance')->result_array();
 
         return $data;
     }
@@ -92,14 +92,14 @@ class Graphdata extends CI_Model
     {
         $where = $this->finance_speficics($app_id, $from, $to)->where;
         $sql_sales = "SELECT date_format(from_unixtime(date), '%Y-%m-%d') as y, @amount:=@amount + SUM(`amount`) as a
-                      FROM `app_financials`
+                      FROM `app_finance`
                       JOIN(select @amount:=0) as a 
                       WHERE $where
                       GROUP BY date_format(from_unixtime(date), '%d%m%Y')
                       ORDER BY `date` ASC";
 
         $data['net_sales'] = $this->db->query($sql_sales)->result_array();
-        $data['refunds'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, SUM(`amount`*-1) a")->where($where)->where('amount <', 0)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_financials')->result_array();
+        $data['refunds'] = $this->db->select("date_format(from_unixtime(date), '%Y-%m-%d') as y, SUM(`amount`*-1) a")->where($where)->where('amount <', 0)->order_by('date', 'ASC')->group_by("date_format(from_unixtime(date), '%d%m%Y')")->get('app_finance')->result_array();
 
         return $data;
     }
@@ -209,7 +209,7 @@ class Graphdata extends CI_Model
                             @amount_f:=@amount_f + SUM(IF(`app_id` = 6, `amount`, FALSE)) f, 
                             @amount_g:=@amount_g + SUM(IF(`app_id` = 7, `amount`, FALSE)) g, 
                             @amount_h:=@amount_h + SUM(IF(`app_id` = 8, `amount`, FALSE)) h
-                      FROM `app_financials`
+                      FROM `app_finance`
                       JOIN(select @amount_a:=0) as a 
                       JOIN(select @amount_b:=0) as b 
                       JOIN(select @amount_c:=0) as c 
@@ -247,7 +247,7 @@ class Graphdata extends CI_Model
                             @amount_f:=@amount_f + SUM(IF(`app_id` = 6, `amount`, FALSE)) f, 
                             @amount_g:=@amount_g + SUM(IF(`app_id` = 7, `amount`, FALSE)) g, 
                             @amount_h:=@amount_h + SUM(IF(`app_id` = 8, `amount`, FALSE)) h
-                      FROM `app_financials`
+                      FROM `app_finance`
                       JOIN(select @amount_a:=0) as a 
                       JOIN(select @amount_b:=0) as b 
                       JOIN(select @amount_c:=0) as c 
@@ -274,7 +274,7 @@ class Graphdata extends CI_Model
             $app_name = $total_apps[$app]['app_name'];
             $app_id = $total_apps[$app]['app_id'];
 
-            $value = $this->db->select("'$app_name' as label, SUM(`amount`) value")->where($this->full_speficics($app_id, $from, $to)->where)->get('app_financials')->result_array()[0];
+            $value = $this->db->select("'$app_name' as label, SUM(`amount`) value")->where($this->full_speficics($app_id, $from, $to)->where)->get('app_finance')->result_array()[0];
             if ($value['value'] == null) {
                 $value['value'] = 0;
             }
@@ -396,5 +396,5 @@ class Graphdata extends CI_Model
 
 // SELECT `amount`, 
 //  @amount:=@amount + SUM(IF(`app_id` = 1, `amount`, TRUE)) net_sales
-// FROM `app_financials`
+// FROM `app_finance`
 // join ( select @amount:=0 ) as mrr 

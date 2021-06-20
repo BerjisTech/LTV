@@ -154,7 +154,7 @@ class Ltv extends CI_Controller
         }
 
         if ($data_set == 'financials') {
-            $last_entry = $this->db->where('app_id', $app_id)->order_by('date', 'DESC')->limit(1)->get('app_financials');
+            $last_entry = $this->db->where('app_id', $app_id)->order_by('date', 'DESC')->limit(1)->get('app_finance');
         }
 
         $time_start = strtotime('-3000 days');
@@ -182,7 +182,7 @@ class Ltv extends CI_Controller
         }
 
         if ($data_set == 'financials') {
-            $last_cursor = $this->db->where('app_id', $app_id)->order_by('date', 'ASC')->limit(1)->get('app_financials');
+            $last_cursor = $this->db->where('app_id', $app_id)->order_by('date', 'ASC')->limit(1)->get('app_finance');
         }
 
         if ($last_cursor->num_rows() == 1 && isset($last_cursor->row()->cursor)) {
@@ -242,30 +242,30 @@ class Ltv extends CI_Controller
         header('Content-Type: application/json');
 
         $query_5 = "SELECT @amount:=@amount + sum(amount) as a 
-                    FROM `app_financials`
+                    FROM `app_finance`
                     JOIN(select @amount:=0) as a
-                    LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
+                    LEFT OUTER JOIN `apps` ON `app_finance`.`app_id` = `apps`.`app_id`
                     WHERE `app_fund` = 5
                     GROUP BY date_format(from_unixtime(date), '%m%Y')
                     ORDER BY `date` ASC";
         $query_6 = "SELECT @amount:=@amount + sum(amount) as a 
-                    FROM `app_financials`
+                    FROM `app_finance`
                     JOIN(select @amount:=0) as a
-                    LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
+                    LEFT OUTER JOIN `apps` ON `app_finance`.`app_id` = `apps`.`app_id`
                     WHERE `app_fund` = 6
                     GROUP BY date_format(from_unixtime(date), '%m%Y')
                     ORDER BY `date` ASC";
         $query_7 = "SELECT @amount:=@amount + sum(amount) as a 
-                    FROM `app_financials`
+                    FROM `app_finance`
                     JOIN(select @amount:=0) as a
-                    LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
+                    LEFT OUTER JOIN `apps` ON `app_finance`.`app_id` = `apps`.`app_id`
                     WHERE `app_fund` = 7
                     GROUP BY date_format(from_unixtime(date), '%m%Y')
                     ORDER BY `date` ASC";
         $all = "SELECT @amount:=@amount + sum(amount) as a 
-                    FROM `app_financials`
+                    FROM `app_finance`
                     JOIN(select @amount:=0) as a
-                    LEFT OUTER JOIN `apps` ON `app_financials`.`app_id` = `apps`.`app_id`
+                    LEFT OUTER JOIN `apps` ON `app_finance`.`app_id` = `apps`.`app_id`
                     GROUP BY date_format(from_unixtime(date), '%Y')
                     ORDER BY `date` ASC";
 
@@ -277,7 +277,7 @@ class Ltv extends CI_Controller
                        @amount_f:=@amount_f + SUM(IF(`app_id` = 6, `amount`, FALSE)) f, 
                        @amount_g:=@amount_g + SUM(IF(`app_id` = 7, `amount`, FALSE)) g, 
                        @amount_h:=@amount_h + SUM(IF(`app_id` = 8, `amount`, FALSE)) h
-                    FROM `app_financials`
+                    FROM `app_finance`
                     JOIN(select @amount_a:=0) as a 
                     JOIN(select @amount_b:=0) as b 
                     JOIN(select @amount_c:=0) as c 
@@ -296,7 +296,7 @@ class Ltv extends CI_Controller
                        @amount_f:=@amount_f + SUM(IF(`app_id` = 6, `amount`, FALSE)) tfx, 
                        @amount_g:=@amount_g + SUM(IF(`app_id` = 7, `amount`, FALSE)) t2g, 
                        @amount_h:=@amount_h + SUM(IF(`app_id` = 8, `amount`, FALSE)) sk
-                    FROM `app_financials`
+                    FROM `app_finance`
                     JOIN(select @amount_a:=0) as pc
                     JOIN(select @amount_b:=0) as icu
                     JOIN(select @amount_c:=0) as pon
@@ -384,9 +384,9 @@ class Ltv extends CI_Controller
         $this->db->query($query);
     }
 
-    public function filter_app_financials()
+    public function filter_app_finance()
     {
-        $query = "delete from `app_financials` where `finance_id` not in (select min(`finance_id`) from (select * from `app_financials`) as x group by `date`)";
+        $query = "delete from `app_finance` where `finance_id` not in (select min(`finance_id`) from (select * from `app_finance`) as x group by `date`)";
         $this->db->query($query);
     }
 
@@ -418,9 +418,9 @@ class Ltv extends CI_Controller
 
             $app_code = $this->db->where('app_id', $app_id)->get('apps')->row()->app_code;
             $file = $app_code . "_" . $data_set;
-            $folder = "processed";
+            $folder = "processed_$data_set";
 
-            $csv_file = fopen(base_url("data/raw/$file.csv"), "r");
+            $csv_file = fopen(base_url("data/raw_$data_set/$file.csv"), "r");
             $csv_array = array();
             $file_output = array();
 
@@ -432,87 +432,100 @@ class Ltv extends CI_Controller
 
             echo "reached here";
 
-        // if ($data_set == 'users') :
+            if ($data_set == 'users') :
 
-        //     if (count($csv_array[0]) != 8) {
-        //         die('<script>window.location.href="' . base_url() . '"</script>');
-        //     }
+                if (count($csv_array[0]) != 8) {
+                    die('<script>window.location.href="' . base_url() . '"</script>');
+                }
 
-        //     foreach ($csv_array as $key => $row) {
-        //         $row[0] = strtotime($row[0]);
-        //         $row[3] = strtotime($row[3]);
+                foreach ($csv_array as $key => $row) {
+                    $row[0] = strtotime($row[0]);
+                    $row[3] = strtotime($row[3]);
 
-        //         for ($point = 0; $point < count($row); $point++) {
-        //             if ($row[$point] == '') {
-        //                 $row[$point] = 'NULL';
-        //             } else {
-        //                 $row[$point] = str_replace(',', '...', $row[$point]);
-        //             }
-        //         }
+                    for ($point = 0; $point < count($row); $point++) {
+                        if ($row[$point] == '') {
+                            $row[$point] = 'NULL';
+                        } else {
+                            $row[$point] = str_replace(',', '...', $row[$point]);
+                        }
+                    }
 
-        //         if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
-        //             $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7]";
-        //     }
-        // endif;
+                    if ($row[1] == 'Installed' || $row[1] == 'Uninstalled' || $row[1] == 'Closed Store' || $row[1] == 'Re-opened Store')
+                        $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7]";
+                }
+            endif;
 
-        // if ($data_set == 'finance') :
+            if ($data_set == 'finance') :
 
-        //     if (count($csv_array[0]) != 14) {
-        //         die('<script>window.location.href="' . base_url() . '"</script>');
-        //     }
+                if (count($csv_array[0]) != 14) {
+                    die('<script>window.location.href="' . base_url() . '"</script>');
+                }
 
-        //     foreach ($csv_array as $key => $row) {
-        //         if ($key > 0) :
-        //             $row[0] = strtotime($row[0]);
-        //             $row[1] = strtotime($row[1]);
-        //             $row[2] = strtotime($row[2]);
+                foreach ($csv_array as $key => $row) {
+                    if ($key > 0) :
+                        $row[0] = strtotime($row[0]);
+                        $row[1] = strtotime($row[1]);
+                        $row[2] = strtotime($row[2]);
 
-        //             for ($point = 0; $point < count($row); $point++) {
-        //                 if ($row[$point] == '') {
-        //                     $row[$point] = 'NULL';
-        //                 } else {
-        //                     $row[$point] = str_replace(',', '...', $row[$point]);
-        //                 }
-        //             }
+                        for ($point = 0; $point < count($row); $point++) {
+                            if ($row[$point] == '') {
+                                $row[$point] = 'NULL';
+                            } else {
+                                $row[$point] = str_replace(',', '...', $row[$point]);
+                            }
+                        }
 
-        //             $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]";
-        //         endif;
-        //     }
-        // endif;
-        // 
+                        $file_output[] = "NULL,$app_id,$row[0],$row[1],$row[2],$row[3],$row[4],$row[5],$row[6],$row[7],$row[8],$row[9],$row[10],$row[11],$row[12],$row[13]";
+                    endif;
+                }
+            endif;
 
-        // $path = $_SERVER['DOCUMENT_ROOT'] . "/data/$folder";
 
-        // // echo $_SERVER['DOCUMENT_ROOT'];
+            $path = $_SERVER['DOCUMENT_ROOT'] . "/ltv/data/$folder";
 
-        // $fp = fopen("$path", "wb");
+            // echo $_SERVER['DOCUMENT_ROOT'];
 
-        // foreach ($file_output as $line) {
-        //     $val = explode(",", $line);
-        //     fputcsv($fp, $val);
-        // }
+            $fp = fopen($path . '/' . $file . '.csv', 'wb');
 
-        // fclose($fp);
+            foreach ($file_output as $line) {
+                $val = explode(",", $line);
+                fputcsv($fp, $val);
+            }
+
+            fclose($fp);
 
         else :
             die('<script>window.location.href="' . base_url() . '"</script>');
         endif;
     }
 
-    public function kwengport_from_file($file)
+    public function kwengport_from_file($data_set)
     {
-        $sql = "LOAD DATA 
-        LOCAL 
-        INFILE '/var/www/ltv/data/processed/$file.csv'
-        INTO TABLE `app_users` 
-        FIELDS TERMINATED BY ','
-        LINES TERMINATED BY '\\n'";
+        for ($app = 1; $app <= 6; $app++) :
 
-        if ($this->db->query($sql)) {
-            echo "$file.csv imported";
-        } else {
-            print_r($this->db->error());
-        }
+            $app_code = $this->db->where('app_id', $app)->get('apps')->row()->app_code;
+
+            $file = $app_code . '_' . $data_set;
+            $folder = "processed_$data_set";
+            $path = $_SERVER['DOCUMENT_ROOT'] . "/ltv/data/$folder";
+            $csv_file = $path . '/' . $file . '.csv';
+            $table = 'app_' . $data_set;
+
+            if (file_exists($csv_file)) {
+                $sql = "LOAD DATA 
+                    LOW_PRIORITY 
+                    INFILE '$csv_file'
+                    INTO TABLE `$table` 
+                    FIELDS TERMINATED BY ','
+                    LINES TERMINATED BY '\\n'";
+
+                if ($this->db->query($sql)) {
+                    echo "$file.csv imported";
+                } else {
+                    print_r($this->db->error());
+                }
+            }
+        endfor;
     }
 
     /*public function csv($days)

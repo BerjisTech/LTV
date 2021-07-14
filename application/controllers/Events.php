@@ -115,6 +115,7 @@ class Events extends CI_Controller
         if (
             ctype_digit($timestamp) && 
             strtotime(date('Y-m-d H:i:s', $timestamp)) === (int)$timestamp &&
+            $timestamp > strtotime('01-01-2013') &&
             $timestamp <= 2147483647) {
             return true;
         } else {

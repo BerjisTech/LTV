@@ -528,6 +528,81 @@ class Ltv extends CI_Controller
         endfor;
     }
 
+    public function add_event()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST)) {
+
+            if (!isset($_POST['app_id']) || empty($_POST['app_id'])) {
+                $message = array(
+                    'status' => 'failed',
+                    'message' => 'App ID was not found'
+                );
+                $this->echo_message($message);
+                die();
+            }
+
+            if (!isset($_POST['event']) || empty($_POST['event'])) {
+                $message = array(
+                    'status' => 'failed',
+                    'message' => 'Event was not found'
+                );
+                $this->echo_message($message);
+                die();
+            }
+
+            if (!isset($_POST['date']) || empty($_POST['date'])) {
+                $message = array(
+                    'status' => 'failed',
+                    'message' => 'Date was not found'
+                );
+                $this->echo_message($message);
+                die();
+            }
+
+            if (!isset($_POST['shop']) || empty($_POST['shop'])) {
+                $message = array(
+                    'status' => 'failed',
+                    'message' => 'Shop cannot be empty'
+                );
+                $this->echo_message($message);
+                die();
+            }
+
+            $event_data = array(
+                'event_id' => '',
+                'app_id' => $_POST['app_id'],
+                'event' => $_POST['event'],
+                'shop' => $_POST['shop'],
+                'date' => $_POST['date'],
+                'email' => $_POST['email'],
+            );
+
+            $event_data = $this->security->xss_clean($event_data);
+
+            if ($this->db->insert('shop_events', $event_data)) {
+                $message = array(
+                    'status' => 'success',
+                    'message' => 'Event succesfully captured'
+                );
+                $this->echo_message($message);
+                die();
+            }
+        } else {
+            $message = array(
+                'status' => 'error',
+                'message' => 'No data was sent'
+            );
+            $this->echo_message($message);
+            die();
+        }
+    }
+
+    private function echo_message($message)
+    {
+        header('Content-Type: application/json');
+        echo json_encode($message);
+    }
+
     /*public function csv($days)
     {
         header('Content-Type: application/json');

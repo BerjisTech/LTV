@@ -50,7 +50,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */
 $default_controller = "ltv";
-$controller_exceptions = array('login', 'welcome');
+$controller_exceptions = array('login', 'welcome', 'events');
 
 $route['default_controller'] = $default_controller;
 $route["^((?!\b" . implode('\b|\b', $controller_exceptions) . "\b).*)$"] = $default_controller . '/$1';

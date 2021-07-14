@@ -528,7 +528,7 @@ class Ltv extends CI_Controller
         endfor;
     }
 
-    public function add_event()
+    public function add_event($token)
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST)) {
 
@@ -536,6 +536,29 @@ class Ltv extends CI_Controller
                 $message = array(
                     'status' => 'failed',
                     'message' => 'App ID was not found'
+                );
+                $this->echo_message($message);
+                die();
+            }
+
+            $app_id = $_POST['app_id'];
+
+            $app = $this->db->where('app_id', $app_id)->get('apps')->row();
+
+            $app_code = $app->app_code;
+            $app_name = $app->app_name;
+
+            $partner_id = $this->config->item($app_code . '_partner_id');
+            $app_shopify_id = $this->config->item($app_code . '_app_id');
+            $token_primary = $this->config->item($app_code . '_access');
+            $token_secondary = $this->config->item($app_code . '_secondary_access');
+
+            $security_token = sha1(md5("$partner_id@$app_shopify_id"));
+
+            if ($token != $security_token) {
+                $message = array(
+                    'status' => 'failed',
+                    'message' => "Invalid token $security_token"
                 );
                 $this->echo_message($message);
                 die();

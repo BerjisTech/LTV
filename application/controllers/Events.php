@@ -56,6 +56,16 @@ class Events extends CI_Controller
                 die();
             }
 
+            if ($this->isTimestamp($_POST['date']) !== true) {
+                $message = array(
+                    'status' => 'failed',
+                    'message' => 'Date must be a unix timestamp'
+                );
+                $this->echo_message($message);
+                die();
+            }
+
+
             if (!isset($_POST['shop']) || empty($_POST['shop'])) {
                 $message = array(
                     'status' => 'failed',
@@ -98,5 +108,17 @@ class Events extends CI_Controller
     {
         header('Content-Type: application/json');
         echo json_encode($message);
+    }
+
+    private function isTimestamp($timestamp)
+    {
+        if (
+            ctype_digit($timestamp) && 
+            strtotime(date('Y-m-d H:i:s', $timestamp)) === (int)$timestamp &&
+            $timestamp <= 2147483647) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
